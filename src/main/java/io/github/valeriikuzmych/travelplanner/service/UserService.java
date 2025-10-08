@@ -9,20 +9,22 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class UserService implements IUserService{
+public class UserService implements IUserService {
 
 
-    @Autowired
-     UserRepository userRepository;
-    @Autowired
-     PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
 
+    private final PasswordEncoder passwordEncoder;
 
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public void registerUser(String email, String rawPassword) {
 
-        if(userRepository.existsByEmail(email)){
+        if (userRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("Email already in use");
         }
 
@@ -39,7 +41,7 @@ public class UserService implements IUserService{
 
         Optional<User> userOpt = userRepository.findByEmail(email);
 
-        if (userOpt.isEmpty()){
+        if (userOpt.isEmpty()) {
             return false;
         }
 

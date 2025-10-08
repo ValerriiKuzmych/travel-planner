@@ -2,7 +2,6 @@ package io.github.valeriikuzmych.travelplanner.service;
 
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.repository.TripRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,14 +10,22 @@ import java.util.Optional;
 @Service
 public class TripService implements ITripService {
 
-    @Autowired
-    TripRepository tripRepository;
+
+    private final TripRepository tripRepository;
+
+    public TripService(TripRepository tripRepository) {
+        this.tripRepository = tripRepository;
+    }
 
     @Override
     public void createTrip(Trip trip) {
 
-        if (tripRepository.existsById(trip.getId())) {
-            throw new IllegalArgumentException("Trip already exists");
+        if (trip.getId() == null) {
+            throw new IllegalArgumentException("New trip must not have an ID");
+        }
+
+        if (trip.getStartDate().isAfter(trip.getEndDate())) {
+            throw new IllegalArgumentException("Start time cannot be after end time");
         } else {
 
             tripRepository.save(trip);
@@ -40,7 +47,7 @@ public class TripService implements ITripService {
     }
 
     @Override
-    public List<Trip> getTripsByUser(Long userId) {
+    public List<Trip> getTripsByUserId(Long userId) {
 
         return tripRepository.findByUserId(userId);
     }
@@ -48,12 +55,15 @@ public class TripService implements ITripService {
     @Override
     public void updateTrip(Long id, Trip updatedTrip) {
 
-        if (!tripRepository.existsById(id)) {
+        Trip trip = getTrip(id);
 
-            throw new IllegalArgumentException("Trip with " + id + " not exists.");
+        if (updatedTrip.getStartDate().isAfter(updatedTrip.getEndDate())) {
+
+            throw new IllegalArgumentException("Start time cannot be after end time");
+
         } else {
 
-            Trip trip = getTrip(id);
+
             trip.setCity(updatedTrip.getCity());
             trip.setStartDate(updatedTrip.getStartDate());
             trip.setEndDate(updatedTrip.getEndDate());
@@ -72,6 +82,7 @@ public class TripService implements ITripService {
         if (!tripRepository.existsById(id)) {
 
             throw new IllegalArgumentException("Trip with id " + id + "not found.");
+
         } else {
 
             tripRepository.deleteById(id);

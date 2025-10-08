@@ -12,7 +12,7 @@ public interface ITripService {
 
     Trip getTrip(Long Id);
 
-    List<Trip> getTripsByUser(Long userId);
+    List<Trip> getTripsByUserId(Long userId);
 
     void updateTrip(Long id, Trip updatedTrip);
 
