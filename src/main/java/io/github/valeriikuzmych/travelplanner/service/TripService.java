@@ -20,7 +20,7 @@ public class TripService implements ITripService {
     @Override
     public void createTrip(Trip trip) {
 
-        if (trip.getId() == null) {
+        if (trip.getId() != null) {
             throw new IllegalArgumentException("New trip must not have an ID");
         }
 

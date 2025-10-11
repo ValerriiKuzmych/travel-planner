@@ -12,4 +12,6 @@ public interface TripRepository extends JpaRepository<Trip, Long> {
 
     List<Trip> findByUserId(Long userId);
 
+    boolean existsByCity(String city);
+
 }

@@ -3,7 +3,7 @@ package io.github.valeriikuzmych.travelplanner.controller;
 import io.github.valeriikuzmych.travelplanner.dto.LoginRequest;
 import io.github.valeriikuzmych.travelplanner.dto.RegistrationRequest;
 import io.github.valeriikuzmych.travelplanner.service.IUserService;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,17 +15,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class AuthController {
 
-    @Autowired
-    IUserService userService;
+
+    private final IUserService userService;
+
+    public AuthController(IUserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login (@RequestBody LoginRequest loginRequest){
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
 
         boolean isAuthenticate = userService.authenticate(loginRequest.getEmail(), loginRequest.getPassword());
 
-        if(isAuthenticate){
+        if (isAuthenticate) {
+
             return ResponseEntity.ok("Login successful");
+            
         } else {
+
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
         }
 
@@ -33,7 +40,7 @@ public class AuthController {
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<?> registration (@RequestBody RegistrationRequest registrationRequest){
+    public ResponseEntity<?> registration(@RequestBody RegistrationRequest registrationRequest) {
 
         userService.registerUser(registrationRequest.getEmail(), registrationRequest.getPassword());
 

@@ -2,11 +2,13 @@ package io.github.valeriikuzmych.travelplanner.service;
 
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
 import io.github.valeriikuzmych.travelplanner.repository.ActivityRepository;
+import org.springframework.stereotype.Service;
 
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class ActivityService implements IActivityService {
 
 
