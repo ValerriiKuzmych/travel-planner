@@ -15,13 +15,11 @@ public class TripController {
 
     private final ITripService tripService;
 
-    private final UserRepository userRepository;
 
     public TripController(ITripService tripService, UserRepository userRepository) {
 
         this.tripService = tripService;
 
-        this.userRepository = userRepository;
     }
 
     @PostMapping

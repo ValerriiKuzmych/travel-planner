@@ -3,6 +3,7 @@ package io.github.valeriikuzmych.travelplanner.entity;
 import jakarta.persistence.*;
 
 import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Objects;
 
@@ -11,11 +12,11 @@ import java.util.Objects;
 public class Activity {
 
     @Id
-    @GeneratedValue( strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn( name = "trip_id", nullable=false)
+    @JoinColumn(name = "trip_id", nullable = false)
     private Trip trip;
 
 
@@ -24,6 +25,9 @@ public class Activity {
 
     @Column(nullable = false)
     private String type;
+
+    @Column(nullable = false)
+    private LocalDate date;
 
     @Column(nullable = false)
     private LocalTime startTime;
@@ -77,6 +81,14 @@ public class Activity {
 
     public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 
     @Override
