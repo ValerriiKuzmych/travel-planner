@@ -21,7 +21,7 @@ public class ActivityService implements IActivityService {
     @Override
     public void createActivity(Activity activity) {
 
-        if (activity.getId() == null) {
+        if (activity.getId() != null) {
             throw new IllegalArgumentException("New activity must not have an ID");
         }
 

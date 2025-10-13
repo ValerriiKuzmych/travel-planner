@@ -39,7 +39,6 @@ public class TripControllerTest {
     private ObjectMapper objectMapper;
 
     private User testUser;
-
     private Trip testTrip;
 
     @BeforeEach
@@ -61,7 +60,7 @@ public class TripControllerTest {
 
 
     @Test
-    @WithMockUser(username = "TripTest@example.com", roles = {"USER"})
+    @WithMockUser(username = "CreateTripTest@example.com", roles = {"USER"})
     void createTrip_success() throws Exception {
 
         User testCreateTripUser = new User();
