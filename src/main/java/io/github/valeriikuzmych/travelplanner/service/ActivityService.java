@@ -57,6 +57,7 @@ public class ActivityService implements IActivityService {
 
         activity.setName(updatedActivity.getName());
         activity.setType(updatedActivity.getType());
+        activity.setDate(updatedActivity.getDate());
         activity.setStartTime(updatedActivity.getStartTime());
         activity.setEndTime(updatedActivity.getEndTime());
 
