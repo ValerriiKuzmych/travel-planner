@@ -3,10 +3,12 @@ package io.github.valeriikuzmych.travelplanner.controller;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.repository.UserRepository;
 import io.github.valeriikuzmych.travelplanner.service.ITripService;
+import io.github.valeriikuzmych.travelplanner.service.WeatherService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/trips")
@@ -15,10 +17,13 @@ public class TripController {
 
     private final ITripService tripService;
 
+    private final WeatherService weatherService;
 
-    public TripController(ITripService tripService, UserRepository userRepository) {
+
+    public TripController(ITripService tripService, WeatherService weatherService) {
 
         this.tripService = tripService;
+        this.weatherService = weatherService;
 
     }
 
@@ -37,6 +42,7 @@ public class TripController {
         try {
             Trip trip = tripService.getTrip(tripId);
             return ResponseEntity.ok(trip);
+
         } catch (IllegalArgumentException e) {
 
             return ResponseEntity.notFound().build();
@@ -61,7 +67,9 @@ public class TripController {
             tripService.updateTrip(tripId, updatedTrip);
 
             return ResponseEntity.ok("Trip updated successfully");
+
         } catch (IllegalArgumentException e) {
+
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -74,11 +82,24 @@ public class TripController {
             tripService.deleteTrip(tripId);
 
             return ResponseEntity.ok("Trip deleted successfully");
+
         } catch (IllegalArgumentException e) {
 
             return ResponseEntity.badRequest().body(e.getMessage());
         }
 
+
+    }
+
+    @GetMapping("/{tripId}/weather")
+    public ResponseEntity<?> getTripWeather(@PathVariable Long tripId) {
+
+        Trip trip = tripService.getTrip(tripId);
+
+        Map<String, Object> weather = weatherService.getWeather(trip.getCity());
+
+
+        return ResponseEntity.ok(weather);
 
     }
 

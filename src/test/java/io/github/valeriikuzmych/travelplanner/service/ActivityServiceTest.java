@@ -1,7 +1,6 @@
 package io.github.valeriikuzmych.travelplanner.service;
 
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
-import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.repository.ActivityRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,8 +40,8 @@ public class ActivityServiceTest {
         activity.setName("Sauna");
         activity.setType("Relax");
         activity.setDate(LocalDate.of(2026, 12, 15));
-        activity.setStartTime(LocalTime.of(18, 00));
-        activity.setEndTime(LocalTime.of(19, 00));
+        activity.setStartTime(LocalTime.of(18, 0));
+        activity.setEndTime(LocalTime.of(19, 0));
 
         activityService.createActivity(activity);
 
@@ -59,8 +58,8 @@ public class ActivityServiceTest {
         activity.setName("Sauna");
         activity.setType("Relax");
         activity.setDate(LocalDate.of(2026, 12, 15));
-        activity.setStartTime(LocalTime.of(19, 00));
-        activity.setEndTime(LocalTime.of(18, 00));
+        activity.setStartTime(LocalTime.of(19, 0));
+        activity.setEndTime(LocalTime.of(18, 0));
 
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class, () -> activityService.createActivity(activity)
@@ -80,8 +79,8 @@ public class ActivityServiceTest {
         existingActivity.setName("Sauna");
         existingActivity.setType("Relax");
         existingActivity.setDate(LocalDate.of(2026, 12, 15));
-        existingActivity.setStartTime(LocalTime.of(18, 00));
-        existingActivity.setEndTime(LocalTime.of(19, 00));
+        existingActivity.setStartTime(LocalTime.of(18, 0));
+        existingActivity.setEndTime(LocalTime.of(19, 0));
 
         when(activityRepository.findById(1L)).thenReturn(Optional.of(existingActivity));
 
@@ -90,8 +89,8 @@ public class ActivityServiceTest {
         updatedActivity.setName("Sauna1");
         updatedActivity.setType("Relax1");
         updatedActivity.setDate(LocalDate.of(2027, 1, 16));
-        updatedActivity.setStartTime(LocalTime.of(20, 00));
-        updatedActivity.setEndTime(LocalTime.of(21, 00));
+        updatedActivity.setStartTime(LocalTime.of(20, 0));
+        updatedActivity.setEndTime(LocalTime.of(21, 0));
 
 
         activityService.updateActivity(1L, updatedActivity);
