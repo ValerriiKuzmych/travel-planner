@@ -60,7 +60,7 @@ public class TripControllerTest {
 
 
     @Test
-    @WithMockUser(username = "CreateTripTest@example.com", roles = {"USER"})
+    @WithMockUser(username = "TripTest@example.com", roles = {"USER"})
     void createTrip_success() throws Exception {
 
         User testCreateTripUser = new User();
