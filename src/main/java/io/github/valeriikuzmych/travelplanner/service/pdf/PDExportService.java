@@ -19,6 +19,7 @@ public class PDExportService implements IPDExportService {
 
     @Override
     public byte[] exportTripPlanToPdf(TripPlanDTO plan) throws IOException {
+
         try (PDDocument document = new PDDocument()) {
 
             PDPage page = new PDPage();
@@ -29,6 +30,11 @@ public class PDExportService implements IPDExportService {
             PdfState state = new PdfState(page, contentStream, 750);
 
             state.setY(writeTitle(state, plan));
+
+            state.setY(writeWeather(document, state, plan));
+
+            state.setY(writeActivity(document, state, plan));
+
 
             state.getContentStream().close();
 
@@ -65,11 +71,13 @@ public class PDExportService implements IPDExportService {
 
     private int writeTitle(PdfState state, TripPlanDTO plan) throws IOException {
 
-        state.getContentStream().beginText();
-        state.getContentStream().setFont(PDType1Font.HELVETICA_BOLD, 18);
-        state.getContentStream().newLineAtOffset(50, state.getY());
-        state.getContentStream().showText("Trip Plan: " + plan.getCity());
-        state.getContentStream().endText();
+        var cs = state.getContentStream();
+
+        cs.beginText();
+        cs.setFont(PDType1Font.HELVETICA_BOLD, 18);
+        cs.newLineAtOffset(50, state.getY());
+        cs.showText("Trip Plan: " + plan.getCity());
+        cs.endText();
 
         return state.getY() - 40;
 
@@ -77,11 +85,13 @@ public class PDExportService implements IPDExportService {
 
     private int writeWeather(PDDocument document, PdfState state, TripPlanDTO plan) throws IOException {
 
-        state.getContentStream().beginText();
-        state.getContentStream().setFont(PDType1Font.HELVETICA_BOLD, 14);
-        state.getContentStream().newLineAtOffset(50, state.getY());
-        state.getContentStream().showText("Weather Forecast:");
-        state.getContentStream().endText();
+        var cs = state.getContentStream();
+
+        cs.beginText();
+        cs.setFont(PDType1Font.HELVETICA_BOLD, 14);
+        cs.newLineAtOffset(50, state.getY());
+        cs.showText("Weather Forecast:");
+        cs.endText();
 
         state.setY(state.getY() - 25);
 
@@ -91,49 +101,56 @@ public class PDExportService implements IPDExportService {
 
             WeatherDayDTO weather = entry.getValue();
 
-            state.getContentStream().beginText();
-            state.getContentStream().setFont(PDType1Font.HELVETICA, 12);
-            state.getContentStream().newLineAtOffset(60, state.getY());
-            state.getContentStream().showText(entry.getKey() + ": " + weather.getTemperature() + "°C, " + weather.getDescription());
-            state.getContentStream().endText();
+            cs = state.getContentStream();
+            cs.beginText();
+            cs.setFont(PDType1Font.HELVETICA, 12);
+            cs.newLineAtOffset(60, state.getY());
+            cs.showText(entry.getKey() + ": " + weather.getTemperature() + "°C — " + weather.getDescription());
+            cs.endText();
+
+            state.setY(state.getY() - 18);
         }
 
-        return state.getY() - 20;
+        return state.getY() - 10;
 
     }
 
     private int writeActivity(PDDocument document, PdfState state, TripPlanDTO plan) throws IOException {
 
-        state = checkPage(document, state);
+        var cs = state.getContentStream();
 
-        state.getContentStream().beginText();
-        state.getContentStream().setFont(PDType1Font.HELVETICA_BOLD, 14);
-        state.getContentStream().newLineAtOffset(50, state.getY());
-        state.getContentStream().showText("Activities:");
-        state.getContentStream().endText();
+        cs.beginText();
+        cs.setFont(PDType1Font.HELVETICA_BOLD, 14);
+        cs.newLineAtOffset(50, state.getY());
+        cs.showText("Activities:");
+        cs.endText();
+
+        state.setY(state.getY() - 25);
 
 
         for (Map.Entry<LocalDate, List<ActivityDTO>> entry : plan.getActivities().entrySet()) {
 
             state = checkPage(document, state);
 
-            state.getContentStream().beginText();
-            state.getContentStream().setFont(PDType1Font.HELVETICA_BOLD, 12);
-            state.getContentStream().newLineAtOffset(60, state.getY());
-            state.getContentStream().showText(entry.getKey().toString() + ":");
-            state.getContentStream().endText();
+            cs = state.getContentStream();
+            cs.beginText();
+            cs.setFont(PDType1Font.HELVETICA_BOLD, 12);
+            cs.newLineAtOffset(60, state.getY());
+            cs.showText(entry.getKey().toString() + ":");
+            cs.endText();
+
+            state.setY(state.getY() - 16);
 
             for (ActivityDTO act : entry.getValue()) {
 
-                state = checkPage(document, state);
+                cs = state.getContentStream();
+                cs.beginText();
+                cs.setFont(PDType1Font.HELVETICA, 12);
+                cs.newLineAtOffset(80, state.getY());
+                cs.showText(act.getStartTime() + " — " + act.getName());
+                cs.endText();
 
-                state.getContentStream().beginText();
-                state.getContentStream().setFont(PDType1Font.HELVETICA, 12);
-                state.getContentStream().newLineAtOffset(80, state.getY());
-                state.getContentStream().showText(act.getStartTime() + "-" + act.getEndTime() + " - " + act.getName());
-                state.getContentStream().endText();
-
-                state.setY(state.getY() - 15);
+                state.setY(state.getY() - 14);
 
 
             }
