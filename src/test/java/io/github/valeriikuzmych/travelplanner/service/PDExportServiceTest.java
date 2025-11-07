@@ -52,6 +52,15 @@ public class PDExportServiceTest {
         try (PDDocument doc = PDDocument.load(pdfBytes)) {
 
             PDFTextStripper stripper = new PDFTextStripper();
+
+            String text = stripper.getText(doc);
+
+            assertThat(text).contains("Trip Plan: Rome");
+            assertThat(text).contains("Weather Forecast");
+            assertThat(text).contains("2025-10-10");
+            assertThat(text).contains("Sunny");
+            assertThat(text).contains("Colosseum Tour");
+            assertThat(text).contains("Vatican Museum");
         }
     }
 }
