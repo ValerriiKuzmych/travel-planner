@@ -1,55 +1,51 @@
 package io.github.valeriikuzmych.travelplanner.controller;
 
+
 import io.github.valeriikuzmych.travelplanner.dto.TripPlanDTO;
 import io.github.valeriikuzmych.travelplanner.service.ITripPlannerService;
+import io.github.valeriikuzmych.travelplanner.service.pdf.IPDExportService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.util.Map;
-
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
-public class TripPlannerControllerTest {
+public class PdfExportControllerTest {
+
 
     @Autowired
-    private MockMvc mockMvc;
+    MockMvc mockMvc;
 
     @MockitoBean
-    private ITripPlannerService tripPlannerService;
+    IPDExportService pdfExportService;
+
+    @MockitoBean
+    ITripPlannerService tripPlannerService;
+
 
     @Test
     @WithMockUser
-    void getTripPlan_success() throws Exception {
+    void exportPdf_success() throws Exception {
 
         TripPlanDTO dto = new TripPlanDTO();
-        dto.setTripId(1L);
         dto.setCity("Rome");
-        dto.setStartDate(LocalDate.of(2025, 10, 10));
-        dto.setEndDate(LocalDate.of(2025, 10, 15));
-        dto.setActivities(Map.of());
-        dto.setWeather(Map.of());
 
         when(tripPlannerService.getPlanForTrip(1L)).thenReturn(dto);
+        when(pdfExportService.exportTripPlanToPdf(dto)).thenReturn(new byte[]{1, 2, 3});
 
-        mockMvc.perform(get("/trips/1/plan")).andExpect(status().isOk()).andExpect(jsonPath("$.city").value("Rome")).andExpect(jsonPath("$.tripId").value(1L));
-
-        verify(tripPlannerService, times(1)).getPlanForTrip(1L);
+        mockMvc.perform(get("/trips/1/plan/pdf"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Content-Type", "application/pdf"))
+                .andExpect(header().string("Content-Disposition", "attachment; filename=trip-plan-1.pdf"));
     }
-
 
 }

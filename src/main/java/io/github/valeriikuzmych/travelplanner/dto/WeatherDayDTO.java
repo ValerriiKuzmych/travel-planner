@@ -5,6 +5,14 @@ public class WeatherDayDTO {
     private Double temperature;
     private String description;
 
+    public WeatherDayDTO() {
+    }
+
+    public WeatherDayDTO(String description, Double temperature) {
+        this.description = description;
+        this.temperature = temperature;
+    }
+
     public Double getTemperature() {
         return temperature;
     }
