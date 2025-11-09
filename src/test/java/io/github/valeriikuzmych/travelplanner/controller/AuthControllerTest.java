@@ -30,26 +30,25 @@ public class AuthControllerTest {
     IUserService userService;
 
 
-
     @Test
-    void registerUser_success() throws  Exception {
+    void registerUser_success() throws Exception {
 
         mockMvc.perform(post("/auth/registration")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"email\":\"t@t.com\",\"password\":\"pass\"}"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"t3@t.com\",\"password\":\"pass\"}"))
                 .andExpect(status().isOk());
 
-        assertTrue(userRepository.existsByEmail("t@t.com"));
+        assertTrue(userRepository.existsByEmail("t3@t.com"));
     }
 
     @Test
     void loginUser_success() throws Exception {
 
-        userService.registerUser("t1@t.com", "pass");
+        userService.registerUser("t2@t.com", "pass");
 
         mockMvc.perform(post("/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"email\":\"t1@t.com\",\"password\":\"pass\"}"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"t2@t.com\",\"password\":\"pass\"}"))
                 .andExpect(status().isOk());
 
     }

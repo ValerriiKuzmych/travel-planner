@@ -15,7 +15,8 @@ public class UserService implements IUserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository,
+                       PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -30,7 +31,7 @@ public class UserService implements IUserService {
         User user = new User();
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(rawPassword));
-        user.setRole("user");
+        user.setRole("USER");
 
         userRepository.save(user);
     }
