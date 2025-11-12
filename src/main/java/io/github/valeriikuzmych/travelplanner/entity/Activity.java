@@ -1,9 +1,9 @@
 package io.github.valeriikuzmych.travelplanner.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 
-import java.sql.Time;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Objects;
