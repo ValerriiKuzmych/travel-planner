@@ -1,6 +1,7 @@
 package io.github.valeriikuzmych.travelplanner.security;
 
 import io.github.valeriikuzmych.travelplanner.service.CustomUserDetailsService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -53,7 +54,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         httpSecurity
-                .csrf(csrf -> csrf.disable())
+                .csrf(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/css/**", "/js/**").permitAll()
                         .requestMatchers("/login", "/register", "/auth/**").permitAll()
@@ -71,7 +72,23 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/login?logout")
                         .permitAll())
 
-                .httpBasic(withDefaults());
+                .httpBasic(withDefaults())
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request,
+                                                   response,
+                                                   authException) -> {
+
+                            String accept = request.getHeader("Accept");
+
+                            if (accept != null && accept.contains("text/html")) {
+
+                                response.sendRedirect("/login");
+
+                            } else {
+                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                            }
+                        })
+                );
 
         return httpSecurity.build();
     }
