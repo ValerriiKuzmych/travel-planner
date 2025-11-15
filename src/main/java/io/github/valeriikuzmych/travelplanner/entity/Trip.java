@@ -30,7 +30,7 @@ public class Trip {
     @Column(nullable = false)
     private LocalDate endDate;
 
-    @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Activity> activities;
 

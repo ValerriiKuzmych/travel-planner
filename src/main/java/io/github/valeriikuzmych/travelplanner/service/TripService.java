@@ -18,6 +18,13 @@ public class TripService implements ITripService {
     }
 
     @Override
+    public List<Trip> getTripsForUser(String emailOrUsername) {
+
+        return tripRepository.findAllByUserEmail(emailOrUsername);
+
+    }
+
+    @Override
     public void createTrip(Trip trip) {
 
         if (trip.getId() != null) {
@@ -92,5 +99,5 @@ public class TripService implements ITripService {
 
     }
 
-    
+
 }

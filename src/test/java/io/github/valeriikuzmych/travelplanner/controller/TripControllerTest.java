@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -81,7 +82,7 @@ public class TripControllerTest {
         String tripJson = objectMapper.writeValueAsString(testCreateTrip);
 
 
-        mockMvc.perform(post("/trips")
+        mockMvc.perform(post("/trips").with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(tripJson))
                 .andExpect(status().isOk());
@@ -167,7 +168,7 @@ public class TripControllerTest {
         String tripUpdatedJson = objectMapper.writeValueAsString(updatedTrip);
 
 
-        mockMvc.perform(put("/trips/{id}", testTrip.getId())
+        mockMvc.perform(put("/trips/{id}", testTrip.getId()).with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(tripUpdatedJson))
                 .andExpect(status().isOk());
@@ -186,7 +187,7 @@ public class TripControllerTest {
     void deleteTrip_success() throws Exception {
 
 
-        mockMvc.perform(delete("/trips/{id}", testTrip.getId())
+        mockMvc.perform(delete("/trips/{id}", testTrip.getId()).with(csrf())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 

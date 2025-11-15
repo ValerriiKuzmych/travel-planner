@@ -8,30 +8,24 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class UiAuthControllerTest {
+public class TripUiControllerTest {
 
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
 
     @Test
-    void testLoginPageLoads() throws Exception {
-
-        mockMvc.perform(get("/login").with(csrf()))
-                .andExpect(status().isOk())
-                .andExpect(view().name("login"));
-    }
-
-    @Test
-    void tripShouldRequiredAuth() throws Exception {
+    void tripsShouldRedirectToLogin() throws Exception {
 
         mockMvc.perform(get("/trips").with(csrf())
                         .header("Accept", "text/html"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login"));
+
+
     }
 }

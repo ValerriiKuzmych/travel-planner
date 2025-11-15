@@ -22,6 +22,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -93,7 +94,7 @@ public class ActivityControllerTest {
 
         String activityJson = objectMapper.writeValueAsString(createTestActivity);
 
-        mockMvc.perform(post("/activities")
+        mockMvc.perform(post("/activities").with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(activityJson))
                 .andExpect(status().isOk());
@@ -194,7 +195,7 @@ public class ActivityControllerTest {
         String updatedActivityJson = objectMapper.writeValueAsString(updatedActivity);
 
 
-        mockMvc.perform(put("/activities/{id}", testActivity.getId())
+        mockMvc.perform(put("/activities/{id}", testActivity.getId()).with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatedActivityJson))
                 .andExpect(status().isOk());
@@ -217,7 +218,7 @@ public class ActivityControllerTest {
     void deleteActivity_success() throws Exception {
 
 
-        mockMvc.perform(delete("/activities/{id}", testActivity.getId())
+        mockMvc.perform(delete("/activities/{id}", testActivity.getId()).with(csrf())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 

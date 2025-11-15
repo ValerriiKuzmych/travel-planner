@@ -8,6 +8,9 @@ import java.util.List;
 
 public interface ITripService {
 
+
+    List<Trip> getTripsForUser(String emailOrUsername);
+
     void createTrip(Trip trip);
 
     Trip getTrip(Long Id);

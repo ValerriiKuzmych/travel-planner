@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Trips</title>
+</head>
+<body>
+
+<h2> My Trips</h2>
+
+<a th:href="@{/trips/create}">
+    <button> Create Trip</button>
+</a>
+
+</br></br>
+
+<table border="1" cellpadding="8">
+    <thead>
+    <tr>
+        <th>City</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr the:each="trip : ${trips}">
+        <td th:text="${trip.city}"></td>
+        <td th:text="${trip.startDate}"></td>
+        <td th:text="${trip.endDate}"></td>
+
+
+        <td>
+            <a th:href="@{/trips/{id}(id=${trip.id})}">
+                <button>Open</button>
+            </a>
+            <a th:href="@{/trips/{id}/pdf(id=${trip.id})}">
+            <button>PDF</button>
+            </a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+
+
+</body>
+</html>

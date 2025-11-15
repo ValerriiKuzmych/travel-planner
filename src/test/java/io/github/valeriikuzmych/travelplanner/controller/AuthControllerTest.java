@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -33,7 +34,7 @@ public class AuthControllerTest {
     @Test
     void registerUser_success() throws Exception {
 
-        mockMvc.perform(post("/auth/registration")
+        mockMvc.perform(post("/auth/registration").with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"t3@t.com\",\"password\":\"pass\"}"))
                 .andExpect(status().isOk());
@@ -46,7 +47,7 @@ public class AuthControllerTest {
 
         userService.registerUser("t2@t.com", "pass");
 
-        mockMvc.perform(post("/auth/login")
+        mockMvc.perform(post("/auth/login").with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"t2@t.com\",\"password\":\"pass\"}"))
                 .andExpect(status().isOk());
