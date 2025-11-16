@@ -8,7 +8,7 @@
 
 <h1>Create Trip</h1>
 
-<form th:action="@{/trips/create}" th:object="{trip}" method="post">
+<form th:action="@{/trips/create}" th:object="${trip}" method="post">
 
     <label>City:
         <input type="text" th:field="*{city}">
