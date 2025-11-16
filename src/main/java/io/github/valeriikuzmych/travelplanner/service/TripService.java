@@ -1,7 +1,9 @@
 package io.github.valeriikuzmych.travelplanner.service;
 
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
+import io.github.valeriikuzmych.travelplanner.entity.User;
 import io.github.valeriikuzmych.travelplanner.repository.TripRepository;
+import io.github.valeriikuzmych.travelplanner.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,8 +15,11 @@ public class TripService implements ITripService {
 
     private final TripRepository tripRepository;
 
-    public TripService(TripRepository tripRepository) {
+    private final UserRepository userRepository;
+
+    public TripService(TripRepository tripRepository, UserRepository userRepository) {
         this.tripRepository = tripRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -41,7 +46,24 @@ public class TripService implements ITripService {
 
     }
 
+    @Override
+    public void createTripForUser(String email, Trip trip) {
 
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+
+        if (optionalUser.isEmpty()) {
+
+            throw new IllegalArgumentException("User with email: " + email + "not found");
+        }
+
+        User user = optionalUser.get();
+
+        trip.setUser(user);
+        createTrip(trip);
+
+    }
+
+    @Override
     public Trip getTrip(Long id) {
 
         Optional<Trip> optionalTrip = tripRepository.findById(id);

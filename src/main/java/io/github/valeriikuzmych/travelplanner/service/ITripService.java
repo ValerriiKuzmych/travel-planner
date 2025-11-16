@@ -21,6 +21,8 @@ public interface ITripService {
 
     void deleteTrip(Long id);
 
+    void createTripForUser(String email, Trip trip);
+
 
 }
 
