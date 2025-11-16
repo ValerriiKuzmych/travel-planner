@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>My Trips</title>
@@ -12,36 +12,45 @@
     <button> Create Trip</button>
 </a>
 
-</br></br>
+<br/><br/>
 
 <table border="1" cellpadding="8">
     <thead>
     <tr>
         <th>City</th>
-        <th>Start Date</th>
-        <th>End Date</th>
+        <th>Start Date - End Date</th>
         <th>Actions</th>
     </tr>
     </thead>
     <tbody>
-    <tr the:each="trip : ${trips}">
+    <tr th:each="trip : ${trips}">
         <td th:text="${trip.city}"></td>
-        <td th:text="${trip.startDate}"></td>
-        <td th:text="${trip.endDate}"></td>
+        <td>
+
+            <span th:text="${trip.startDate}"></span>
+            -
+            <span th:text="${trip.endDate}"></span>
+
+
+        </td>
 
 
         <td>
-            <a th:href="@{/trips/{id}(id=${trip.id})}">
-                <button>Open</button>
+            <a th:href="@{/trips/{id}/edit(id=${trip.id})}">
+                <button>Edit</button>
             </a>
+            <form th:action="@{/trips/{id}/delete(id=${trip.id})}"
+                  method="post"
+                  style="display:inline;">
+                <button type="submit">Delete</button>
+            </form>
             <a th:href="@{/trips/{id}/pdf(id=${trip.id})}">
-            <button>PDF</button>
+                <button>PDF</button>
             </a>
         </td>
     </tr>
     </tbody>
 </table>
-
 
 
 </body>
