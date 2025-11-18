@@ -102,4 +102,17 @@ public class Activity {
     public int hashCode() {
         return Objects.hash(id, trip, name, type, startTime, endTime);
     }
+
+    @Override
+    public String toString() {
+        return "Activity{" +
+                "id=" + id +
+                ", trip=" + trip +
+                ", name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", date=" + date +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                '}';
+    }
 }

@@ -1,7 +1,10 @@
 package io.github.valeriikuzmych.travelplanner.service;
 
+import io.github.valeriikuzmych.travelplanner.dto.ActivityForm;
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
+import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.repository.ActivityRepository;
+import io.github.valeriikuzmych.travelplanner.repository.TripRepository;
 import org.springframework.stereotype.Service;
 
 
@@ -13,21 +16,65 @@ public class ActivityService implements IActivityService {
 
 
     private final ActivityRepository activityRepository;
+    private final TripRepository tripRepository;
 
-    public ActivityService(ActivityRepository activityRepository) {
+    public ActivityService(ActivityRepository activityRepository,
+                           TripRepository tripRepository) {
         this.activityRepository = activityRepository;
+        this.tripRepository = tripRepository;
     }
 
     @Override
     public void createActivity(Activity activity) {
 
-        if (activity.getId() != null) {
-            throw new IllegalArgumentException("New activity must not have an ID");
+        if (activity.getTrip() == null || activity.getTrip().getId() == null) {
+            throw new IllegalArgumentException("Trip must be provided");
+        }
+
+        Trip trip = tripRepository.findById(activity.getTrip().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Trip not found"));
+
+        if (activity.getDate().isBefore(trip.getStartDate()) ||
+                activity.getDate().isAfter(trip.getEndDate())) {
+            throw new IllegalArgumentException("Activity date must be within trip dates");
         }
 
         if (activity.getStartTime().isAfter(activity.getEndTime())) {
             throw new IllegalArgumentException("Start time cannot be after end time");
         }
+
+        activity.setTrip(trip);
+
+        activityRepository.save(activity);
+    }
+
+    @Override
+    public void createActivity(ActivityForm form) {
+
+
+        Trip trip = tripRepository.findById(form.getTripId())
+                .orElseThrow(() -> new IllegalArgumentException("Trip not found"));
+
+
+        if (form.getDate().isBefore(trip.getStartDate()) ||
+                form.getDate().isAfter(trip.getEndDate())) {
+            throw new IllegalArgumentException("Activity date must be within trip dates");
+        }
+
+
+        if (form.getStartTime().isAfter(form.getEndTime())) {
+            throw new IllegalArgumentException("Start time cannot be after end time");
+        }
+
+
+        Activity activity = new Activity();
+
+        activity.setTrip(trip);
+        activity.setName(form.getName());
+        activity.setType(form.getType());
+        activity.setDate(form.getDate());
+        activity.setStartTime(form.getStartTime());
+        activity.setEndTime(form.getEndTime());
 
         activityRepository.save(activity);
     }
@@ -63,6 +110,31 @@ public class ActivityService implements IActivityService {
 
         activityRepository.save(activity);
 
+    }
+
+    @Override
+    public void updateActivity(Long id, ActivityForm form) {
+
+        Activity activity = getActivity(id);
+        Trip trip = activity.getTrip();
+
+        
+        if (form.getDate().isBefore(trip.getStartDate()) ||
+                form.getDate().isAfter(trip.getEndDate())) {
+            throw new IllegalArgumentException("Activity date must be within trip dates");
+        }
+
+        if (form.getStartTime().isAfter(form.getEndTime())) {
+            throw new IllegalArgumentException("Start time cannot be after end time");
+        }
+
+        activity.setName(form.getName());
+        activity.setType(form.getType());
+        activity.setDate(form.getDate());
+        activity.setStartTime(form.getStartTime());
+        activity.setEndTime(form.getEndTime());
+
+        activityRepository.save(activity);
     }
 
 
