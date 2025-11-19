@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Activities List</title>
+</head>
+<body>
+
+<h2>Activities for trip: [[${trip.city}]]</h2>
+
+<a th:href="@'/trips/' + ${trip.id + 'activities/create' }">Create activity</a>
+
+
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Date</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Actions</th>
+    </tr>
+
+    <tr th:each="a : ${activities}">
+        <td th:text="${a.name}"></td>
+        <td th:text="${a.type}"></td>
+        <td th:text="${a.date}"></td>
+        <td th:text="${a.startTime}"></td>
+        <td th:text="${a.endTime}"></td>
+
+        <td>
+            <a th:href="@{'/trips/' + ${trip.id} + '/activities/' + ${a.id} + '/edit'}">Edit</a>
+
+            <form th:action="@{'/trips/' + ${trip.id} + '/activities/' + ${a.id} + '/delete'}"
+                  method="post">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+</table>
+
+
+</body>
+</html>
