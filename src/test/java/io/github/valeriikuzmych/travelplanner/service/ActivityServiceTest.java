@@ -1,7 +1,9 @@
 package io.github.valeriikuzmych.travelplanner.service;
 
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
+import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.repository.ActivityRepository;
+import io.github.valeriikuzmych.travelplanner.repository.TripRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -23,6 +25,9 @@ public class ActivityServiceTest {
     @Mock
     private ActivityRepository activityRepository;
 
+    @Mock
+    private TripRepository tripRepository;
+
     @InjectMocks
     private ActivityService activityService;
 
@@ -35,13 +40,22 @@ public class ActivityServiceTest {
     void createActivity_success() {
 
 
+        Trip trip = new Trip();
+        trip.setId(1L);
+        trip.setCity("Paris");
+        trip.setStartDate(LocalDate.of(2026, 12, 10));
+        trip.setEndDate(LocalDate.of(2026, 12, 20));
+
         Activity activity = new Activity();
 
+        activity.setTrip(trip);
         activity.setName("Sauna");
         activity.setType("Relax");
         activity.setDate(LocalDate.of(2026, 12, 15));
         activity.setStartTime(LocalTime.of(18, 0));
         activity.setEndTime(LocalTime.of(19, 0));
+
+        when(tripRepository.findById(1L)).thenReturn(Optional.of(trip));
 
         activityService.createActivity(activity);
 
@@ -53,13 +67,23 @@ public class ActivityServiceTest {
     @Test
     void createActivity_invalidTimes_throwsException() {
 
+
+        Trip trip = new Trip();
+        trip.setId(1L);
+        trip.setCity("Paris");
+        trip.setStartDate(LocalDate.of(2026, 12, 10));
+        trip.setEndDate(LocalDate.of(2026, 12, 20));
+
         Activity activity = new Activity();
 
+        activity.setTrip(trip);
         activity.setName("Sauna");
         activity.setType("Relax");
         activity.setDate(LocalDate.of(2026, 12, 15));
         activity.setStartTime(LocalTime.of(19, 0));
         activity.setEndTime(LocalTime.of(18, 0));
+
+        when(tripRepository.findById(1L)).thenReturn(Optional.of(trip));
 
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class, () -> activityService.createActivity(activity)

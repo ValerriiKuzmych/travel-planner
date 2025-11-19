@@ -87,7 +87,7 @@ public class ActivityControllerTest {
         Activity createTestActivity = new Activity();
         createTestActivity.setType("Sport1");
         createTestActivity.setName("Tennis1");
-        createTestActivity.setDate(LocalDate.of(2027, 10, 11));
+        createTestActivity.setDate(LocalDate.of(2026, 10, 11));
         createTestActivity.setStartTime(LocalTime.of(15, 00));
         createTestActivity.setEndTime(LocalTime.of(16, 00));
         createTestActivity.setTrip(testTrip);
@@ -108,7 +108,7 @@ public class ActivityControllerTest {
         assertThat(savedActivity.getName()).isEqualTo("Tennis1");
         assertThat(savedActivity.getTrip().getUser().getId()).isEqualTo(testUser.getId());
         assertThat(savedActivity.getTrip().getId()).isEqualTo(testTrip.getId());
-        assertThat(savedActivity.getDate()).isEqualTo(LocalDate.of(2027, 10, 11));
+        assertThat(savedActivity.getDate()).isEqualTo(LocalDate.of(2026, 10, 11));
         assertThat(savedActivity.getStartTime()).isEqualTo(LocalTime.of(15, 00));
         assertThat(savedActivity.getEndTime()).isEqualTo(LocalTime.of(16, 00));
         assertThat(savedActivity.getStartTime().isBefore(savedActivity.getEndTime()));
@@ -124,7 +124,7 @@ public class ActivityControllerTest {
         Activity testActivity1 = new Activity();
         testActivity1.setType("Sport1");
         testActivity1.setName("Tennis1");
-        testActivity1.setDate(LocalDate.of(2027, 10, 11));
+        testActivity1.setDate(LocalDate.of(2026, 10, 11));
         testActivity1.setStartTime(LocalTime.of(15, 00));
         testActivity1.setEndTime(LocalTime.of(16, 00));
         testActivity1.setTrip(testTrip);
@@ -156,7 +156,7 @@ public class ActivityControllerTest {
         assertThat(savedActivity1.getName()).isEqualTo("Tennis1");
         assertThat(savedActivity1.getTrip().getUser().getId()).isEqualTo(testUser.getId());
         assertThat(savedActivity1.getTrip().getId()).isEqualTo(testTrip.getId());
-        assertThat(savedActivity1.getDate()).isEqualTo(LocalDate.of(2027, 10, 11));
+        assertThat(savedActivity1.getDate()).isEqualTo(LocalDate.of(2026, 10, 11));
         assertThat(savedActivity1.getStartTime()).isEqualTo(LocalTime.of(15, 00));
         assertThat(savedActivity1.getEndTime()).isEqualTo(LocalTime.of(16, 00));
         assertThat(savedActivity1.getStartTime().isBefore(testActivity1.getEndTime()));
