@@ -1,6 +1,7 @@
 package io.github.valeriikuzmych.travelplanner.controller;
 
 
+import io.github.valeriikuzmych.travelplanner.dto.TripDetailsDTO;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.service.ITripService;
 import org.springframework.stereotype.Controller;
@@ -72,6 +73,19 @@ public class UiTripController {
         tripService.deleteTrip(id);
 
         return "redirect:/trips";
+    }
+
+    @GetMapping("/{id}")
+    public String viewTrip(
+            @PathVariable Long id,
+            Model model,
+            Principal principal) {
+
+        TripDetailsDTO dto = tripService.getTripDetailsForUser(id, principal.getName());
+
+        model.addAttribute("trip", dto);
+
+        return "trip_details";
     }
 
 

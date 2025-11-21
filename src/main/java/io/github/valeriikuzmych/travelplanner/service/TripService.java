@@ -91,16 +91,22 @@ public class TripService implements ITripService {
         dto.setStartDate(trip.getStartDate());
         dto.setEndDate(trip.getEndDate());
 
-        Map<LocalDate, List<ActivityDTO>> grouped = trip.getActivities().stream().sorted(Comparator.comparing(Activity::getDate).thenComparing(Activity::getStartTime)).map(a -> {
-            ActivityDTO d = new ActivityDTO();
-            d.setId(a.getId());
-            d.setName(a.getName());
-            d.setDate(a.getDate());
-            d.setStartTime(a.getStartTime());
-            d.setEndTime(a.getEndTime());
+        Map<LocalDate, List<ActivityDTO>> grouped = trip.getActivities()
+                .stream()
+                .sorted(Comparator.comparing(Activity::getDate)
+                        .thenComparing(Activity::getStartTime))
+                .map(a -> {
 
-            return d;
-        }).collect(Collectors.groupingBy(ActivityDTO::getDate));
+                    ActivityDTO d = new ActivityDTO();
+                    d.setId(a.getId());
+                    d.setName(a.getName());
+                    d.setDate(a.getDate());
+                    d.setStartTime(a.getStartTime());
+                    d.setEndTime(a.getEndTime());
+
+                    return d;
+
+                }).collect(Collectors.groupingBy(ActivityDTO::getDate));
 
         dto.setActivitiesByDate(grouped);
         dto.setEditable(true);
