@@ -1,13 +1,17 @@
 package io.github.valeriikuzmych.travelplanner.service;
 
+import io.github.valeriikuzmych.travelplanner.dto.ActivityDTO;
+import io.github.valeriikuzmych.travelplanner.dto.TripDetailsDTO;
+import io.github.valeriikuzmych.travelplanner.entity.Activity;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.entity.User;
 import io.github.valeriikuzmych.travelplanner.repository.TripRepository;
 import io.github.valeriikuzmych.travelplanner.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TripService implements ITripService {
@@ -61,6 +65,47 @@ public class TripService implements ITripService {
         trip.setUser(user);
         createTrip(trip);
 
+    }
+
+    @Override
+    public TripDetailsDTO getTripDetailsForUser(Long tripId, String email) {
+
+        Optional<Trip> optTrip = tripRepository.findById(tripId);
+
+        if (optTrip.isEmpty()) {
+
+            throw new IllegalArgumentException("Trip not found");
+        }
+
+        Trip trip = optTrip.get();
+
+        if (!trip.getUser().getEmail().equals(email)) {
+
+            throw new SecurityException("Yoo do not own this trip");
+        }
+
+        TripDetailsDTO dto = new TripDetailsDTO();
+
+        dto.setId(trip.getId());
+        dto.setCity(trip.getCity());
+        dto.setStartDate(trip.getStartDate());
+        dto.setEndDate(trip.getEndDate());
+
+        Map<LocalDate, List<ActivityDTO>> grouped = trip.getActivities().stream().sorted(Comparator.comparing(Activity::getDate).thenComparing(Activity::getStartTime)).map(a -> {
+            ActivityDTO d = new ActivityDTO();
+            d.setId(a.getId());
+            d.setName(a.getName());
+            d.setDate(a.getDate());
+            d.setStartTime(a.getStartTime());
+            d.setEndTime(a.getEndTime());
+
+            return d;
+        }).collect(Collectors.groupingBy(ActivityDTO::getDate));
+
+        dto.setActivitiesByDate(grouped);
+        dto.setEditable(true);
+
+        return dto;
     }
 
     @Override
