@@ -82,7 +82,7 @@ public class TripControllerTest {
         String tripJson = objectMapper.writeValueAsString(testCreateTrip);
 
 
-        mockMvc.perform(post("/trips").with(csrf())
+        mockMvc.perform(post("/api/trips").with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(tripJson))
                 .andExpect(status().isOk());
@@ -116,7 +116,7 @@ public class TripControllerTest {
         tripRepository.saveAll(List.of(testTrip, testTrip1));
 
 
-        mockMvc.perform(get("/trips/user/{userId}", testUser.getId())
+        mockMvc.perform(get("/api/trips/user/{userId}", testUser.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
@@ -145,7 +145,7 @@ public class TripControllerTest {
     void getTripById_success() throws Exception {
 
 
-        mockMvc.perform(get("/trips/{id}", testTrip.getId())
+        mockMvc.perform(get("/api/trips/{id}", testTrip.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.city").value("TripTest"))
@@ -168,7 +168,7 @@ public class TripControllerTest {
         String tripUpdatedJson = objectMapper.writeValueAsString(updatedTrip);
 
 
-        mockMvc.perform(put("/trips/{id}", testTrip.getId()).with(csrf())
+        mockMvc.perform(put("/api/trips/{id}", testTrip.getId()).with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(tripUpdatedJson))
                 .andExpect(status().isOk());
@@ -187,7 +187,7 @@ public class TripControllerTest {
     void deleteTrip_success() throws Exception {
 
 
-        mockMvc.perform(delete("/trips/{id}", testTrip.getId()).with(csrf())
+        mockMvc.perform(delete("/api/trips/{id}", testTrip.getId()).with(csrf())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 

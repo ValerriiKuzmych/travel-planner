@@ -1,6 +1,7 @@
 package io.github.valeriikuzmych.travelplanner.dto;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -12,7 +13,8 @@ public class TripDetailsDTO {
     private LocalDate startDate;
     private LocalDate endDate;
 
-    private Map<LocalDate, List<ActivityDTO>> activitiesByDate;
+    private Map<LocalDate, List<ActivityDTO>> activitiesByDate = new HashMap<>();
+    ;
 
     private boolean editable;
 
