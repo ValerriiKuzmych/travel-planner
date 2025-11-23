@@ -132,7 +132,7 @@ public class ActivityControllerTest {
         activityRepository.saveAll(List.of(testActivity, testActivity1));
 
 
-        mockMvc.perform(get("/activities/trip/{tripId}", testTrip.getId())
+        mockMvc.perform(get("/api/activities/trip/{tripId}", testTrip.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 

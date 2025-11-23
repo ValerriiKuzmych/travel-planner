@@ -8,16 +8,18 @@
 
 <h2>Edit activity</h2>
 
-<form method="post">
-    <input type="hidden" th:field="${form.tripId}"/>
+<form method="post" th:object="${form}">
 
-    Name: <input type="text" th:field="${form.name}"/><br/>
-    Type: <input type="text" th:field="${form.type}"/><br/>
-    Date: <input type="date" th:field="${form.date}"/><br/>
-    Start time: <input type="time" th:field="${form.startTime}"/><br/>
-    End time: <input type="time" th:field="${form.endTime}"/><br/>
+    <input type="hidden" th:field="*{id}"/>
+    <input type="hidden" th:field="*{tripId}"/>
 
-    <button>Save</button>
+    Name: <input type="text" th:field="*{name}"/><br/>
+    Type: <input type="text" th:field="*{type}"/><br/>
+    Date: <input type="date" th:field="*{date}"/><br/>
+    Start time: <input type="time" th:field="*{startTime}"/><br/>
+    End time: <input type="time" th:field="*{endTime}"/><br/>
+
+    <button type="submit">Save</button>
 </form>
 
 </body>

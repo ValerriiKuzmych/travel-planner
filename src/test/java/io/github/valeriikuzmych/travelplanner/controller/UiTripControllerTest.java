@@ -79,7 +79,7 @@ public class UiTripControllerTest {
         dto.setCity("Rome");
         dto.setStartDate(LocalDate.of(2025, 1, 1));
         dto.setEndDate(LocalDate.of(2025, 1, 5));
-        dto.setActivitiesByDate(new HashMap<>()); // important for Thymeleaf
+        dto.setActivitiesByDate(new HashMap<>());
 
         when(tripService.getTripDetailsForUser(eq(1L), eq("test@example.com")))
                 .thenReturn(dto);
@@ -91,5 +91,5 @@ public class UiTripControllerTest {
                 .andExpect(view().name("trip_details"))
                 .andExpect(model().attributeExists("trip"));
     }
-    
+
 }

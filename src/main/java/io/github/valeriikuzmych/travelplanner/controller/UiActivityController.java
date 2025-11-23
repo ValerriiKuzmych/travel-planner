@@ -59,7 +59,7 @@ public class UiActivityController {
 
             model.addAttribute("error", e.getMessage());
 
-            return "activity_create";
+            return "create_activity";
         }
     }
 
