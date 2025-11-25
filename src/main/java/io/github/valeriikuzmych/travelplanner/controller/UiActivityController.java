@@ -2,8 +2,8 @@ package io.github.valeriikuzmych.travelplanner.controller;
 
 import io.github.valeriikuzmych.travelplanner.dto.ActivityForm;
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
-import io.github.valeriikuzmych.travelplanner.service.IActivityService;
-import io.github.valeriikuzmych.travelplanner.service.ITripService;
+import io.github.valeriikuzmych.travelplanner.service.ActivityService;
+import io.github.valeriikuzmych.travelplanner.service.TripService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.*;
 public class UiActivityController {
 
 
-    private final IActivityService activityService;
-    private final ITripService tripService;
+    private final ActivityService activityService;
+    private final TripService tripService;
 
-    public UiActivityController(IActivityService activityService, ITripService tripService) {
+    public UiActivityController(ActivityService activityService, TripService tripService) {
 
         this.activityService = activityService;
         this.tripService = tripService;

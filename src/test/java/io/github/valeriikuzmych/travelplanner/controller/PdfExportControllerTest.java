@@ -2,7 +2,7 @@ package io.github.valeriikuzmych.travelplanner.controller;
 
 
 import io.github.valeriikuzmych.travelplanner.dto.TripPlanDTO;
-import io.github.valeriikuzmych.travelplanner.service.ITripPlannerService;
+import io.github.valeriikuzmych.travelplanner.service.TripPlannerService;
 import io.github.valeriikuzmych.travelplanner.service.pdf.IPDExportService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class PdfExportControllerTest {
     IPDExportService pdfExportService;
 
     @MockitoBean
-    ITripPlannerService tripPlannerService;
+    TripPlannerService tripPlannerService;
 
 
     @Test

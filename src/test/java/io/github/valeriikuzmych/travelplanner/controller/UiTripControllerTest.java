@@ -3,9 +3,8 @@ package io.github.valeriikuzmych.travelplanner.controller;
 import io.github.valeriikuzmych.travelplanner.dto.TripDetailsDTO;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.repository.UserRepository;
-import io.github.valeriikuzmych.travelplanner.service.TripService;
+import io.github.valeriikuzmych.travelplanner.service.TripServiceImpl;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,7 +32,7 @@ public class UiTripControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    TripService tripService;
+    TripServiceImpl tripServiceImpl;
 
     @MockitoBean
     UserRepository userRepository;
@@ -51,7 +50,7 @@ public class UiTripControllerTest {
 
         List<Trip> mockTrips = List.of(new Trip(), new Trip());
 
-        when(tripService.getTripsForUser("user@test.com")).thenReturn(mockTrips);
+        when(tripServiceImpl.getTripsForUser("user@test.com")).thenReturn(mockTrips);
 
         mockMvc.perform(get("/trips").with(user("user@test.com")).with(csrf())).andExpect(status().isOk()).andExpect(view().name("trips")).andExpect(model().attributeExists("trips"));
 
@@ -68,7 +67,7 @@ public class UiTripControllerTest {
 
         mockMvc.perform(post("/trips/create").param("city", "Paris").param("startDate", "2025-01-01").param("endDate", "2025-01-05").with(user("user@test.com")).with(csrf())).andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/trips"));
 
-        verify(tripService).createTripForUser(eq("user@test.com"), any(Trip.class));
+        verify(tripServiceImpl).createTripForUser(eq("user@test.com"), any(Trip.class));
     }
 
     @Test
@@ -81,7 +80,7 @@ public class UiTripControllerTest {
         dto.setEndDate(LocalDate.of(2025, 1, 5));
         dto.setActivitiesByDate(new HashMap<>());
 
-        when(tripService.getTripDetailsForUser(eq(1L), eq("test@example.com")))
+        when(tripServiceImpl.getTripDetailsForUser(eq(1L), eq("test@example.com")))
                 .thenReturn(dto);
 
         mockMvc.perform(get("/trips/1")

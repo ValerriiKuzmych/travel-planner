@@ -1,13 +1,12 @@
 package io.github.valeriikuzmych.travelplanner.controller;
 
 import io.github.valeriikuzmych.travelplanner.dto.TripPlanDTO;
-import io.github.valeriikuzmych.travelplanner.service.ITripPlannerService;
+import io.github.valeriikuzmych.travelplanner.service.TripPlannerService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -30,7 +29,7 @@ public class TripPlannerControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private ITripPlannerService tripPlannerService;
+    private TripPlannerService tripPlannerService;
 
     @Test
     @WithMockUser

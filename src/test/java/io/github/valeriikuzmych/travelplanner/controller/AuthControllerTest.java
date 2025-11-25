@@ -2,7 +2,7 @@ package io.github.valeriikuzmych.travelplanner.controller;
 
 
 import io.github.valeriikuzmych.travelplanner.repository.UserRepository;
-import io.github.valeriikuzmych.travelplanner.service.IUserService;
+import io.github.valeriikuzmych.travelplanner.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -28,7 +28,7 @@ public class AuthControllerTest {
     UserRepository userRepository;
 
     @Autowired
-    IUserService userService;
+    UserService userService;
 
 
     @Test

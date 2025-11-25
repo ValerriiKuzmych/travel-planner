@@ -1,176 +1,37 @@
 package io.github.valeriikuzmych.travelplanner.service;
 
-import io.github.valeriikuzmych.travelplanner.dto.ActivityDTO;
+
 import io.github.valeriikuzmych.travelplanner.dto.TripDetailsDTO;
-import io.github.valeriikuzmych.travelplanner.entity.Activity;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
-import io.github.valeriikuzmych.travelplanner.entity.User;
-import io.github.valeriikuzmych.travelplanner.repository.TripRepository;
-import io.github.valeriikuzmych.travelplanner.repository.UserRepository;
-import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
-
-@Service
-public class TripService implements ITripService {
+import java.util.List;
 
 
-    private final TripRepository tripRepository;
-
-    private final UserRepository userRepository;
-
-    public TripService(TripRepository tripRepository, UserRepository userRepository) {
-        this.tripRepository = tripRepository;
-        this.userRepository = userRepository;
-    }
-
-    @Override
-    public List<Trip> getTripsForUser(String emailOrUsername) {
-
-        return tripRepository.findAllByUserEmail(emailOrUsername);
-
-    }
-
-    @Override
-    public void createTrip(Trip trip) {
-
-        if (trip.getId() != null) {
-            throw new IllegalArgumentException("New trip must not have an ID");
-        }
-
-        if (trip.getStartDate().isAfter(trip.getEndDate())) {
-            throw new IllegalArgumentException("Start time cannot be after end time");
-        } else {
-
-            tripRepository.save(trip);
-        }
+public interface TripService {
 
 
-    }
+    List<Trip> getTripsForUser(String emailOrUsername);
 
-    @Override
-    public void createTripForUser(String email, Trip trip) {
+    void createTrip(Trip trip);
 
-        Optional<User> optionalUser = userRepository.findByEmail(email);
+    Trip getTrip(Long Id);
 
-        if (optionalUser.isEmpty()) {
+    List<Trip> getTripsByUserId(Long userId);
 
-            throw new IllegalArgumentException("User with email: " + email + "not found");
-        }
+    void updateTrip(Long id, Trip updatedTrip);
 
-        User user = optionalUser.get();
+    void deleteTrip(Long id);
 
-        trip.setUser(user);
-        createTrip(trip);
+    void createTripForUser(String email, Trip trip);
 
-    }
+    TripDetailsDTO getTripDetailsForUser(Long tripId, String email);
 
-    @Override
-    public TripDetailsDTO getTripDetailsForUser(Long tripId, String email) {
+    Trip getTripForUser(Long id, String email);
 
-        Optional<Trip> optTrip = tripRepository.findById(tripId);
+    void updateTripForUser(Long id, Trip updatedTrip, String email);
 
-        if (optTrip.isEmpty()) {
-
-            throw new IllegalArgumentException("Trip not found");
-        }
-
-        Trip trip = optTrip.get();
-
-        if (!trip.getUser().getEmail().equals(email)) {
-
-            throw new SecurityException("Yoo do not own this trip");
-        }
-
-        TripDetailsDTO dto = new TripDetailsDTO();
-
-        dto.setId(trip.getId());
-        dto.setCity(trip.getCity());
-        dto.setStartDate(trip.getStartDate());
-        dto.setEndDate(trip.getEndDate());
-
-        Map<LocalDate, List<ActivityDTO>> grouped = trip.getActivities()
-                .stream()
-                .sorted(Comparator.comparing(Activity::getDate)
-                        .thenComparing(Activity::getStartTime))
-                .map(a -> {
-
-                    ActivityDTO d = new ActivityDTO();
-                    d.setId(a.getId());
-                    d.setName(a.getName());
-                    d.setDate(a.getDate());
-                    d.setStartTime(a.getStartTime());
-                    d.setEndTime(a.getEndTime());
-
-                    return d;
-
-                }).collect(Collectors.groupingBy(ActivityDTO::getDate));
-
-        dto.setActivitiesByDate(grouped);
-        dto.setEditable(true);
-
-        return dto;
-    }
-
-    @Override
-    public Trip getTrip(Long id) {
-
-        Optional<Trip> optionalTrip = tripRepository.findById(id);
-
-        if (optionalTrip.isEmpty()) {
-            throw new IllegalArgumentException("Trip with id " + id + " not found");
-        }
-
-        return optionalTrip.get();
-    }
-
-    @Override
-    public List<Trip> getTripsByUserId(Long userId) {
-
-        return tripRepository.findByUserId(userId);
-    }
-
-    @Override
-    public void updateTrip(Long id, Trip updatedTrip) {
-
-        Trip trip = getTrip(id);
-
-        if (updatedTrip.getStartDate().isAfter(updatedTrip.getEndDate())) {
-
-            throw new IllegalArgumentException("Start time cannot be after end time");
-
-        } else {
-
-
-            trip.setCity(updatedTrip.getCity());
-            trip.setStartDate(updatedTrip.getStartDate());
-            trip.setEndDate(updatedTrip.getEndDate());
-
-            tripRepository.save(trip);
-
-
-        }
-
-
-    }
-
-    @Override
-    public void deleteTrip(Long id) {
-
-        if (!tripRepository.existsById(id)) {
-
-            throw new IllegalArgumentException("Trip with id " + id + "not found.");
-
-        } else {
-
-            tripRepository.deleteById(id);
-
-        }
-
-
-    }
+    void deleteTripForUser(Long id, String email);
 
 
 }
+

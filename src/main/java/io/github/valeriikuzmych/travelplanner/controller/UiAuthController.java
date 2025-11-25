@@ -1,7 +1,7 @@
 package io.github.valeriikuzmych.travelplanner.controller;
 
 import io.github.valeriikuzmych.travelplanner.dto.RegistrationRequest;
-import io.github.valeriikuzmych.travelplanner.service.IUserService;
+import io.github.valeriikuzmych.travelplanner.service.UserService;
 import org.springframework.stereotype.Controller;
 
 import org.springframework.ui.Model;
@@ -28,7 +28,7 @@ public class UiAuthController {
 
     @PostMapping("/register")
     public String registerSubmit(@ModelAttribute RegistrationRequest user,
-                                 IUserService userService, Model model) {
+                                 UserService userService, Model model) {
 
         try {
             userService.registerUser(user.getEmail(), user.getPassword());

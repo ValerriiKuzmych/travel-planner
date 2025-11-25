@@ -15,13 +15,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-public class TripServiceTest {
+public class TripServiceImplTest {
 
     @Mock
     private TripRepository tripRepository;
 
     @InjectMocks
-    private TripService tripService;
+    private TripServiceImpl tripServiceImpl;
 
     @BeforeEach
     void setUp() {
@@ -38,7 +38,7 @@ public class TripServiceTest {
         trip.setStartDate(LocalDate.of(2026, 10, 10));
         trip.setEndDate(LocalDate.of(2026, 10, 15));
 
-        tripService.createTrip(trip);
+        tripServiceImpl.createTrip(trip);
 
         verify(tripRepository, times(1)).save(trip);
 
@@ -54,7 +54,7 @@ public class TripServiceTest {
         trip.setEndDate(LocalDate.of(2025, 10, 10));
 
         IllegalArgumentException ex = assertThrows(
-                IllegalArgumentException.class, () -> tripService.createTrip(trip)
+                IllegalArgumentException.class, () -> tripServiceImpl.createTrip(trip)
         );
 
         assertEquals("Start time cannot be after end time", ex.getMessage());
@@ -81,7 +81,7 @@ public class TripServiceTest {
         updatedTrip.setEndDate(LocalDate.of(2027, 10, 15));
 
 
-        tripService.updateTrip(1L, updatedTrip);
+        tripServiceImpl.updateTrip(1L, updatedTrip);
 
         verify(tripRepository, times(1)).save(existingTrip);
 
@@ -95,7 +95,7 @@ public class TripServiceTest {
 
         when(tripRepository.existsById(tripId)).thenReturn(true);
 
-        tripService.deleteTrip(1L);
+        tripServiceImpl.deleteTrip(1L);
 
         verify(tripRepository, times(1)).deleteById(tripId);
 

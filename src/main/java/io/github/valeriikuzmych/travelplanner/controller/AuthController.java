@@ -2,7 +2,7 @@ package io.github.valeriikuzmych.travelplanner.controller;
 
 import io.github.valeriikuzmych.travelplanner.dto.LoginRequest;
 import io.github.valeriikuzmych.travelplanner.dto.RegistrationRequest;
-import io.github.valeriikuzmych.travelplanner.service.IUserService;
+import io.github.valeriikuzmych.travelplanner.service.UserService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,10 +23,10 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
 
-    private final IUserService userService;
+    private final UserService userService;
 
     public AuthController(AuthenticationManager authenticationManager,
-                          IUserService userService) {
+                          UserService userService) {
 
         this.authenticationManager = authenticationManager;
         this.userService = userService;

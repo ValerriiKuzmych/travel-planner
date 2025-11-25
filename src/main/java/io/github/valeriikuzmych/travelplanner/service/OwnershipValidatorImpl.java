@@ -13,13 +13,14 @@ public class OwnershipValidatorImpl implements OwnershipValidator {
 
     public OwnershipValidatorImpl(TripRepository tripRepository,
                                   ActivityRepository activityRepository) {
+
         this.tripRepository = tripRepository;
         this.activityRepository = activityRepository;
 
     }
 
     @Override
-    public void asserUserOwnTrip(Long tripId, String userEmail) {
+    public void assertUserOwnTrip(Long tripId, String userEmail) {
 
         Trip trip = tripRepository.findById(tripId)
                 .orElseThrow(() -> new IllegalArgumentException("trip not found"));
@@ -33,7 +34,7 @@ public class OwnershipValidatorImpl implements OwnershipValidator {
     }
 
     @Override
-    public void asserUserOwnActivity(Long activityId, String userEmail) {
+    public void assertUserOwnActivity(Long activityId, String userEmail) {
 
         Activity activity = activityRepository.findById(activityId)
                 .orElseThrow(() -> new IllegalArgumentException("activity not found"));

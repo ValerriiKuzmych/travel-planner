@@ -3,7 +3,7 @@ package io.github.valeriikuzmych.travelplanner.controller;
 
 import io.github.valeriikuzmych.travelplanner.dto.TripDetailsDTO;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
-import io.github.valeriikuzmych.travelplanner.service.ITripService;
+import io.github.valeriikuzmych.travelplanner.service.TripService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +15,9 @@ import java.util.List;
 @RequestMapping("/trips")
 public class UiTripController {
 
-    private final ITripService tripService;
+    private final TripService tripService;
 
-    public UiTripController(ITripService tripService) {
+    public UiTripController(TripService tripService) {
         this.tripService = tripService;
     }
 
@@ -42,17 +42,23 @@ public class UiTripController {
     }
 
     @PostMapping("/create")
-    public String createTrip(@ModelAttribute Trip trip, Principal principal) {
+    public String createTrip(@ModelAttribute Trip trip,
+                             Principal principal) {
 
-        tripService.createTripForUser(principal.getName(), trip);
+        String email = principal.getName();
+
+        tripService.createTripForUser(email, trip);
 
         return "redirect:/trips";
     }
 
     @GetMapping("/{id}/edit")
-    public String editTripForm(@PathVariable Long id, Model model) {
+    public String editTripForm(@PathVariable Long id,
+                               Model model, Principal principal) {
 
-        Trip trip = tripService.getTrip(id);
+        String email = principal.getName();
+
+        Trip trip = tripService.getTripForUser(id, email);
 
         model.addAttribute("trip", trip);
 
@@ -60,17 +66,24 @@ public class UiTripController {
     }
 
     @PostMapping("/{id}/edit")
-    public String updateTrip(@PathVariable Long id, @ModelAttribute Trip trip) {
+    public String updateTrip(@PathVariable Long id,
+                             @ModelAttribute Trip trip,
+                             Principal principal) {
 
-        tripService.updateTrip(id, trip);
+
+        String email = principal.getName();
+
+        tripService.updateTripForUser(id, trip, email);
 
         return "redirect:/trips";
     }
 
     @PostMapping("/{id}/delete")
-    public String deleteTrip(@PathVariable Long id) {
+    public String deleteTrip(@PathVariable Long id, Principal principal) {
 
-        tripService.deleteTrip(id);
+        String email = principal.getName();
+
+        tripService.deleteTripForUser(id, email);
 
         return "redirect:/trips";
     }

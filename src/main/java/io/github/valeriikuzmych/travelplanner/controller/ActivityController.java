@@ -1,7 +1,7 @@
 package io.github.valeriikuzmych.travelplanner.controller;
 
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
-import io.github.valeriikuzmych.travelplanner.service.IActivityService;
+import io.github.valeriikuzmych.travelplanner.service.ActivityService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,10 +11,10 @@ import java.util.List;
 @RequestMapping("/activities")
 public class ActivityController {
 
-    private final IActivityService activityService;
+    private final ActivityService activityService;
 
 
-    public ActivityController(IActivityService activityService) {
+    public ActivityController(ActivityService activityService) {
 
         this.activityService = activityService;
 

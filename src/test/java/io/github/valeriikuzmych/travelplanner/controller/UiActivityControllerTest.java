@@ -1,7 +1,7 @@
 package io.github.valeriikuzmych.travelplanner.controller;
 
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
-import io.github.valeriikuzmych.travelplanner.service.TripService;
+import io.github.valeriikuzmych.travelplanner.service.TripServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -25,14 +25,14 @@ public class UiActivityControllerTest {
     MockMvc mockMvc;
 
     @MockitoBean
-    TripService tripService;
+    TripServiceImpl tripServiceImpl;
 
     @Test
     void redirectIfNotAuthenticated() throws Exception {
 
         Trip mockTrip = new Trip();
 
-        when(tripService.getTrip(1L)).thenReturn(mockTrip);
+        when(tripServiceImpl.getTrip(1L)).thenReturn(mockTrip);
 
         mockMvc.perform(get("/trips/1/activities")
                         .with(csrf())
@@ -46,7 +46,7 @@ public class UiActivityControllerTest {
 
         Trip mockTrip = new Trip();
 
-        when(tripService.getTrip(1L)).thenReturn(mockTrip);
+        when(tripServiceImpl.getTrip(1L)).thenReturn(mockTrip);
 
         mockMvc.perform(get("/trips/1/activities").with(csrf()))
                 .andExpect(status().isOk())

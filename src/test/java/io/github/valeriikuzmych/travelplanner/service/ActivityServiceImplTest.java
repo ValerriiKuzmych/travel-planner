@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class ActivityServiceTest {
+public class ActivityServiceImplTest {
 
 
     @Mock
@@ -29,7 +29,7 @@ public class ActivityServiceTest {
     private TripRepository tripRepository;
 
     @InjectMocks
-    private ActivityService activityService;
+    private ActivityServiceImpl activityServiceImpl;
 
     @BeforeEach
     void setUp() {
@@ -57,7 +57,7 @@ public class ActivityServiceTest {
 
         when(tripRepository.findById(1L)).thenReturn(Optional.of(trip));
 
-        activityService.createActivity(activity);
+        activityServiceImpl.createActivity(activity);
 
         verify(activityRepository, times(1)).save(activity);
 
@@ -86,7 +86,7 @@ public class ActivityServiceTest {
         when(tripRepository.findById(1L)).thenReturn(Optional.of(trip));
 
         IllegalArgumentException ex = assertThrows(
-                IllegalArgumentException.class, () -> activityService.createActivity(activity)
+                IllegalArgumentException.class, () -> activityServiceImpl.createActivity(activity)
         );
 
         assertEquals("Start time cannot be after end time", ex.getMessage());
@@ -117,7 +117,7 @@ public class ActivityServiceTest {
         updatedActivity.setEndTime(LocalTime.of(21, 0));
 
 
-        activityService.updateActivity(1L, updatedActivity);
+        activityServiceImpl.updateActivity(1L, updatedActivity);
 
         verify(activityRepository, times(1)).save(existingActivity);
 
@@ -131,7 +131,7 @@ public class ActivityServiceTest {
 
         when(activityRepository.existsById(activityId)).thenReturn(true);
 
-        activityService.deleteActivity(1L);
+        activityServiceImpl.deleteActivity(1L);
 
         verify(activityRepository, times(1)).deleteById(activityId);
 

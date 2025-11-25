@@ -14,7 +14,6 @@ public class TripDetailsDTO {
     private LocalDate endDate;
 
     private Map<LocalDate, List<ActivityDTO>> activitiesByDate = new HashMap<>();
-    ;
 
     private boolean editable;
 

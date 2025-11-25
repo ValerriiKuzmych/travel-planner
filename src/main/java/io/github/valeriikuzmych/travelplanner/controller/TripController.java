@@ -1,8 +1,7 @@
 package io.github.valeriikuzmych.travelplanner.controller;
 
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
-import io.github.valeriikuzmych.travelplanner.repository.UserRepository;
-import io.github.valeriikuzmych.travelplanner.service.ITripService;
+import io.github.valeriikuzmych.travelplanner.service.TripService;
 import io.github.valeriikuzmych.travelplanner.service.WeatherService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,12 +14,12 @@ import java.util.Map;
 public class TripController {
 
 
-    private final ITripService tripService;
+    private final TripService tripService;
 
     private final WeatherService weatherService;
 
 
-    public TripController(ITripService tripService, WeatherService weatherService) {
+    public TripController(TripService tripService, WeatherService weatherService) {
 
         this.tripService = tripService;
         this.weatherService = weatherService;

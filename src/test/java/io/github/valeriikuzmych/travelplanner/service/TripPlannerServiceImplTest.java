@@ -20,7 +20,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class TripPlannerServiceTest {
+public class TripPlannerServiceImplTest {
 
 
     @Mock
@@ -30,7 +30,7 @@ public class TripPlannerServiceTest {
     private WeatherService weatherService;
 
     @InjectMocks
-    private TripPlannerService tripPlannerService;
+    private TripPlannerServiceImpl tripPlannerServiceImpl;
 
     private Trip trip;
     private Activity activity;
@@ -70,7 +70,7 @@ public class TripPlannerServiceTest {
         );
         when(weatherService.getWeather("Rome")).thenReturn(rawWeather);
 
-        TripPlanDTO dto = tripPlannerService.getPlanForTrip(1L);
+        TripPlanDTO dto = tripPlannerServiceImpl.getPlanForTrip(1L);
 
         assertEquals(1L, dto.getTripId());
         assertEquals("Rome", dto.getCity());
@@ -96,7 +96,7 @@ public class TripPlannerServiceTest {
         when(tripRepository.findById(99L)).thenReturn(Optional.empty());
 
         assertThrows(IllegalArgumentException.class,
-                () -> tripPlannerService.getPlanForTrip(99L));
+                () -> tripPlannerServiceImpl.getPlanForTrip(99L));
     }
 }
 
