@@ -30,7 +30,11 @@ public class ActivityServiceImpl implements ActivityService {
 
 
     @Override
-    public void createActivity(ActivityForm form, String email) {
+    public Activity createActivity(ActivityForm form, String email) {
+
+
+        Trip trip = tripRepository.findById(form.getTripId())
+                .orElseThrow(() -> new IllegalArgumentException("Trip not found"));
 
         ownershipValidator.assertUserOwnTrip(form.getTripId(), email);
 
@@ -38,6 +42,7 @@ public class ActivityServiceImpl implements ActivityService {
 
         activityRepository.save(activity);
 
+        return activity;
 
     }
 
@@ -62,7 +67,7 @@ public class ActivityServiceImpl implements ActivityService {
 
 
     @Override
-    public void updateActivity(Long id, ActivityForm form, String email) {
+    public Activity updateActivity(Long id, ActivityForm form, String email) {
 
         ownershipValidator.assertUserOwnActivity(id, email);
 
@@ -85,6 +90,8 @@ public class ActivityServiceImpl implements ActivityService {
         existing.setEndTime(form.getEndTime());
 
         activityRepository.save(existing);
+
+        return existing;
     }
 
 

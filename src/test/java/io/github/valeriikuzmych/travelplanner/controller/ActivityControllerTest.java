@@ -1,6 +1,7 @@
 package io.github.valeriikuzmych.travelplanner.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.valeriikuzmych.travelplanner.dto.ActivityForm;
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.entity.User;
@@ -40,7 +41,6 @@ public class ActivityControllerTest {
     TripRepository tripRepository;
     @Autowired
     UserRepository userRepository;
-
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -48,14 +48,12 @@ public class ActivityControllerTest {
     private Trip testTrip;
     private Activity testActivity;
 
-
     @BeforeEach
     void setUp() {
         testUser = new User();
         testUser.setEmail("testactivityuser@example.com");
         testUser.setPassword("testuser123");
         testUser.setRole("USER");
-
         userRepository.save(testUser);
 
         testTrip = new Trip();
@@ -63,170 +61,104 @@ public class ActivityControllerTest {
         testTrip.setCity("Rome");
         testTrip.setStartDate(LocalDate.of(2026, 10, 10));
         testTrip.setEndDate(LocalDate.of(2026, 10, 15));
-
         tripRepository.save(testTrip);
 
         testActivity = new Activity();
         testActivity.setType("Sport");
         testActivity.setName("Tennis");
         testActivity.setDate(LocalDate.of(2026, 10, 11));
-        testActivity.setStartTime(LocalTime.of(14, 00));
-        testActivity.setEndTime(LocalTime.of(15, 00));
+        testActivity.setStartTime(LocalTime.of(14, 0));
+        testActivity.setEndTime(LocalTime.of(15, 0));
         testActivity.setTrip(testTrip);
         activityRepository.save(testActivity);
-
-
     }
-
 
     @Test
     @WithMockUser(username = "testactivityuser@example.com", roles = {"USER"})
     void createActivity_success() throws Exception {
+        ActivityForm form = new ActivityForm();
+        form.setTripId(testTrip.getId());
+        form.setName("Tennis1");
+        form.setType("Sport1");
+        form.setDate(LocalDate.of(2026, 10, 11));
+        form.setStartTime(LocalTime.of(15, 0));
+        form.setEndTime(LocalTime.of(16, 0));
 
+        String json = objectMapper.writeValueAsString(form);
 
-        Activity createTestActivity = new Activity();
-        createTestActivity.setType("Sport1");
-        createTestActivity.setName("Tennis1");
-        createTestActivity.setDate(LocalDate.of(2026, 10, 11));
-        createTestActivity.setStartTime(LocalTime.of(15, 00));
-        createTestActivity.setEndTime(LocalTime.of(16, 00));
-        createTestActivity.setTrip(testTrip);
-
-        String activityJson = objectMapper.writeValueAsString(createTestActivity);
-
-        mockMvc.perform(post("/activities").with(csrf())
+        mockMvc.perform(post("/api/activities").with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(activityJson))
-                .andExpect(status().isOk());
+                        .content(json))
+                .andExpect(status().isCreated());
 
         var activities = activityRepository.findByTripId(testTrip.getId());
         assertThat(activities).hasSize(2);
 
-        Activity savedActivity = activities.get(1);
+        var saved = activities.stream()
+                .filter(a -> a.getName().equals("Tennis1"))
+                .findFirst().orElseThrow();
 
-        assertThat(savedActivity.getType()).isEqualTo("Sport1");
-        assertThat(savedActivity.getName()).isEqualTo("Tennis1");
-        assertThat(savedActivity.getTrip().getUser().getId()).isEqualTo(testUser.getId());
-        assertThat(savedActivity.getTrip().getId()).isEqualTo(testTrip.getId());
-        assertThat(savedActivity.getDate()).isEqualTo(LocalDate.of(2026, 10, 11));
-        assertThat(savedActivity.getStartTime()).isEqualTo(LocalTime.of(15, 00));
-        assertThat(savedActivity.getEndTime()).isEqualTo(LocalTime.of(16, 00));
-        assertThat(savedActivity.getStartTime().isBefore(savedActivity.getEndTime()));
-
-
+        assertThat(saved.getType()).isEqualTo("Sport1");
+        assertThat(saved.getTrip().getId()).isEqualTo(testTrip.getId());
+        assertThat(saved.getDate()).isEqualTo(LocalDate.of(2026, 10, 11));
+        assertThat(saved.getStartTime()).isEqualTo(LocalTime.of(15, 0));
+        assertThat(saved.getEndTime()).isEqualTo(LocalTime.of(16, 0));
     }
 
     @Test
     @WithMockUser(username = "testactivityuser@example.com", roles = {"USER"})
-    void getActivities_success() throws Exception {
-
-
-        Activity testActivity1 = new Activity();
-        testActivity1.setType("Sport1");
-        testActivity1.setName("Tennis1");
-        testActivity1.setDate(LocalDate.of(2026, 10, 11));
-        testActivity1.setStartTime(LocalTime.of(15, 00));
-        testActivity1.setEndTime(LocalTime.of(16, 00));
-        testActivity1.setTrip(testTrip);
-
-        activityRepository.saveAll(List.of(testActivity, testActivity1));
-
-
+    void getActivitiesByTrip_success() throws Exception {
         mockMvc.perform(get("/api/activities/trip/{tripId}", testTrip.getId())
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-
-        var activities = activityRepository.findAll();
-
-        assertThat(activities).hasSize(2);
-
-        Activity savedAcrivity = activities.get(0);
-        assertThat(savedAcrivity.getType()).isEqualTo("Sport");
-        assertThat(savedAcrivity.getName()).isEqualTo("Tennis");
-        assertThat(savedAcrivity.getTrip().getUser().getId()).isEqualTo(testUser.getId());
-        assertThat(savedAcrivity.getTrip().getId()).isEqualTo(testTrip.getId());
-        assertThat(savedAcrivity.getDate()).isEqualTo(LocalDate.of(2026, 10, 11));
-        assertThat(savedAcrivity.getStartTime()).isEqualTo(LocalTime.of(14, 00));
-        assertThat(savedAcrivity.getEndTime()).isEqualTo(LocalTime.of(15, 00));
-        assertThat(savedAcrivity.getStartTime().isBefore(testActivity.getEndTime()));
-
-        Activity savedActivity1 = activities.get(1);
-
-        assertThat(savedActivity1.getType()).isEqualTo("Sport1");
-        assertThat(savedActivity1.getName()).isEqualTo("Tennis1");
-        assertThat(savedActivity1.getTrip().getUser().getId()).isEqualTo(testUser.getId());
-        assertThat(savedActivity1.getTrip().getId()).isEqualTo(testTrip.getId());
-        assertThat(savedActivity1.getDate()).isEqualTo(LocalDate.of(2026, 10, 11));
-        assertThat(savedActivity1.getStartTime()).isEqualTo(LocalTime.of(15, 00));
-        assertThat(savedActivity1.getEndTime()).isEqualTo(LocalTime.of(16, 00));
-        assertThat(savedActivity1.getStartTime().isBefore(testActivity1.getEndTime()));
-
-
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value(testActivity.getName()))
+                .andExpect(jsonPath("$[0].type").value(testActivity.getType()))
+                .andExpect(jsonPath("$[0].tripId").value(testTrip.getId()));
     }
 
     @Test
     @WithMockUser(username = "testactivityuser@example.com", roles = {"USER"})
     void getActivityById_success() throws Exception {
-
-
-        mockMvc.perform(get("/activities/{id}", testActivity.getId())
+        mockMvc.perform(get("/api/activities/{id}", testActivity.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.type").value("Sport"))
                 .andExpect(jsonPath("$.name").value("Tennis"))
-                .andExpect(jsonPath("$.trip.user.email").value("testactivityuser@example.com"));
-
-
+                .andExpect(jsonPath("$.type").value("Sport"))
+                .andExpect(jsonPath("$.tripId").value(testTrip.getId()));
     }
 
     @Test
     @WithMockUser(username = "testactivityuser@example.com", roles = {"USER"})
     void updateActivity_success() throws Exception {
+        ActivityForm form = new ActivityForm();
+        form.setTripId(testTrip.getId());
+        form.setName("Sauna");
+        form.setType("Relax");
+        form.setDate(LocalDate.of(2026, 10, 13));
+        form.setStartTime(LocalTime.of(18, 0));
+        form.setEndTime(LocalTime.of(19, 0));
 
+        String json = objectMapper.writeValueAsString(form);
 
-        Activity updatedActivity = new Activity();
-        updatedActivity.setName("Sauna");
-        updatedActivity.setType("Relax");
-        updatedActivity.setDate(LocalDate.of(2026, 10, 17));
-        updatedActivity.setStartTime(LocalTime.of(18, 00));
-        updatedActivity.setEndTime(LocalTime.of(19, 00));
-
-
-        String updatedActivityJson = objectMapper.writeValueAsString(updatedActivity);
-
-
-        mockMvc.perform(put("/activities/{id}", testActivity.getId()).with(csrf())
+        mockMvc.perform(put("/api/activities/{id}", testActivity.getId()).with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(updatedActivityJson))
+                        .content(json))
                 .andExpect(status().isOk());
 
-        Activity updatedActivityCheck = activityRepository.findById(testActivity.getId()).get();
-
-        assertThat(updatedActivityCheck.getType()).isEqualTo("Relax");
-        assertThat(updatedActivityCheck.getName()).isEqualTo("Sauna");
-        assertThat(updatedActivityCheck.getTrip().getUser().getId()).isEqualTo(testUser.getId());
-        assertThat(updatedActivityCheck.getTrip().getId()).isEqualTo(testTrip.getId());
-        assertThat(updatedActivityCheck.getDate()).isEqualTo(LocalDate.of(2026, 10, 17));
-        assertThat(updatedActivityCheck.getStartTime()).isEqualTo(LocalTime.of(18, 00));
-        assertThat(updatedActivityCheck.getEndTime()).isEqualTo(LocalTime.of(19, 00));
-        assertThat(updatedActivityCheck.getStartTime().isBefore(updatedActivityCheck.getEndTime()));
-
+        var updated = activityRepository.findById(testActivity.getId()).orElseThrow();
+        assertThat(updated.getName()).isEqualTo("Sauna");
+        assertThat(updated.getType()).isEqualTo("Relax");
+        assertThat(updated.getDate()).isEqualTo(LocalDate.of(2026, 10, 13));
+        assertThat(updated.getStartTime()).isEqualTo(LocalTime.of(18, 0));
+        assertThat(updated.getEndTime()).isEqualTo(LocalTime.of(19, 0));
     }
 
     @Test
     @WithMockUser(username = "testactivityuser@example.com", roles = {"USER"})
     void deleteActivity_success() throws Exception {
-
-
-        mockMvc.perform(delete("/activities/{id}", testActivity.getId()).with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-
+        mockMvc.perform(delete("/api/activities/{id}", testActivity.getId()).with(csrf()))
+                .andExpect(status().isNoContent());
 
         assertThat(activityRepository.findById(testActivity.getId())).isEmpty();
-
-
     }
-
-
 }

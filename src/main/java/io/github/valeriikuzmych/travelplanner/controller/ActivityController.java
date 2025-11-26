@@ -1,6 +1,7 @@
 package io.github.valeriikuzmych.travelplanner.controller;
 
 import io.github.valeriikuzmych.travelplanner.dto.ActivityForm;
+import io.github.valeriikuzmych.travelplanner.dto.ActivityResponseDTO;
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
 import io.github.valeriikuzmych.travelplanner.service.ActivityService;
 import io.github.valeriikuzmych.travelplanner.service.OwnershipValidator;
@@ -26,57 +27,62 @@ public class ActivityController {
 
 
     @PostMapping
-    public ResponseEntity<Activity> create(@RequestBody ActivityForm form,
-                                           Principal principal) {
+    public ResponseEntity<ActivityResponseDTO> create(@RequestBody ActivityForm form,
+                                                      Principal principal) {
+
         String email = principal.getName();
 
-        activityService.createActivity(form, email);
+        Activity created = activityService.createActivity(form, email);
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ActivityResponseDTO.fromEntity(created));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Activity> getActivity(@PathVariable Long id,
-                                                Principal principal) {
+    public ResponseEntity<ActivityResponseDTO> getActivity(@PathVariable Long id,
+                                                           Principal principal) {
 
         String email = principal.getName();
 
         Activity activity = activityService.getActivityForUser(id, email);
 
-        return ResponseEntity.ok(activity);
+        return ResponseEntity.ok(ActivityResponseDTO.fromEntity(activity));
     }
 
 
     @GetMapping("/trip/{tripId}")
-    public ResponseEntity<List<Activity>> getByTrip(@PathVariable Long tripId,
-                                                    Principal principal) {
+    public ResponseEntity<List<ActivityResponseDTO>> getByTrip(@PathVariable Long tripId,
+                                                               Principal principal) {
 
         String email = principal.getName();
-
-        ownershipValidator.assertUserOwnTrip(tripId, email);
 
         List<Activity> activities =
                 activityService.getActivitiesByTripForUser(tripId, email);
 
-        return ResponseEntity.ok(activities);
+        List<ActivityResponseDTO> dtos = activities.stream()
+                .map(ActivityResponseDTO::fromEntity)
+                .toList();
+
+        return ResponseEntity.ok(dtos);
     }
 
 
-    @PutMapping("/{activityId}")
-    public ResponseEntity<?> updateActivity(@PathVariable Long id,
-                                            @RequestBody ActivityForm form,
-                                            Principal principal) {
+    @PutMapping("/{id}")
+    public ResponseEntity<ActivityResponseDTO> updateActivity(@PathVariable Long id,
+                                                              @RequestBody ActivityForm form,
+                                                              Principal principal) {
 
         String email = principal.getName();
 
-        activityService.updateActivity(id, form, email);
+        Activity updated = activityService.updateActivity(id, form, email);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(ActivityResponseDTO.fromEntity(updated));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id,
-                                    Principal principal) {
+    public ResponseEntity<Void> delete(@PathVariable Long id,
+                                       Principal principal) {
 
         String email = principal.getName();
 

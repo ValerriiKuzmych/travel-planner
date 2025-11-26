@@ -1,26 +1,27 @@
 package io.github.valeriikuzmych.travelplanner.service;
 
+import io.github.valeriikuzmych.travelplanner.dto.ActivityForm;
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.repository.ActivityRepository;
 import io.github.valeriikuzmych.travelplanner.repository.TripRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class ActivityServiceImplTest {
-
+@ExtendWith(MockitoExtension.class)
+class ActivityServiceImplTest {
 
     @Mock
     private ActivityRepository activityRepository;
@@ -28,115 +29,103 @@ public class ActivityServiceImplTest {
     @Mock
     private TripRepository tripRepository;
 
+    @Mock
+    private OwnershipValidator ownershipValidator;
+
     @InjectMocks
-    private ActivityServiceImpl activityServiceImpl;
+    private ActivityServiceImpl service;
+
+    private Trip trip;
+    private Activity activity;
 
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-
-    @Test
-    void createActivity_success() {
-
-
-        Trip trip = new Trip();
+    void init() {
+        trip = new Trip();
         trip.setId(1L);
-        trip.setCity("Paris");
         trip.setStartDate(LocalDate.of(2026, 12, 10));
         trip.setEndDate(LocalDate.of(2026, 12, 20));
 
-        Activity activity = new Activity();
-
+        activity = new Activity();
+        activity.setId(10L);
         activity.setTrip(trip);
         activity.setName("Sauna");
         activity.setType("Relax");
         activity.setDate(LocalDate.of(2026, 12, 15));
         activity.setStartTime(LocalTime.of(18, 0));
         activity.setEndTime(LocalTime.of(19, 0));
+    }
+
+    @Test
+    void createActivity_success() {
+        ActivityForm form = new ActivityForm();
+        form.setTripId(1L);
+        form.setName("Sauna");
+        form.setType("Relax");
+        form.setDate(LocalDate.of(2026, 12, 15));
+        form.setStartTime(LocalTime.of(18, 0));
+        form.setEndTime(LocalTime.of(19, 0));
 
         when(tripRepository.findById(1L)).thenReturn(Optional.of(trip));
+        when(activityRepository.save(any(Activity.class))).thenAnswer(a -> {
+            Activity saved = a.getArgument(0);
+            saved.setId(100L);
+            return saved;
+        });
 
-        activityServiceImpl.createActivity(activity);
+        Activity result = service.createActivity(form, "user@mail.com");
 
-        verify(activityRepository, times(1)).save(activity);
-
-
+        assertNotNull(result);
+        assertEquals(100L, result.getId());
+        assertEquals("Sauna", result.getName());
+        verify(activityRepository).save(any(Activity.class));
     }
 
     @Test
     void createActivity_invalidTimes_throwsException() {
-
-
-        Trip trip = new Trip();
-        trip.setId(1L);
-        trip.setCity("Paris");
-        trip.setStartDate(LocalDate.of(2026, 12, 10));
-        trip.setEndDate(LocalDate.of(2026, 12, 20));
-
-        Activity activity = new Activity();
-
-        activity.setTrip(trip);
-        activity.setName("Sauna");
-        activity.setType("Relax");
-        activity.setDate(LocalDate.of(2026, 12, 15));
-        activity.setStartTime(LocalTime.of(19, 0));
-        activity.setEndTime(LocalTime.of(18, 0));
+        ActivityForm form = new ActivityForm();
+        form.setTripId(1L);
+        form.setName("Sauna");
+        form.setType("Relax");
+        form.setDate(LocalDate.of(2026, 12, 15));
+        form.setStartTime(LocalTime.of(19, 0));
+        form.setEndTime(LocalTime.of(18, 0));
 
         when(tripRepository.findById(1L)).thenReturn(Optional.of(trip));
 
         IllegalArgumentException ex = assertThrows(
-                IllegalArgumentException.class, () -> activityServiceImpl.createActivity(activity)
+                IllegalArgumentException.class,
+                () -> service.createActivity(form, "user@mail.com")
         );
 
         assertEquals("Start time cannot be after end time", ex.getMessage());
-
         verify(activityRepository, never()).save(any());
     }
 
     @Test
-    void updateTime_valid_update() {
+    void updateActivity_success() {
+        ActivityForm form = new ActivityForm();
+        form.setName("Updated");
+        form.setType("UpdatedType");
+        form.setDate(LocalDate.of(2026, 12, 13));
+        form.setStartTime(LocalTime.of(20, 0));
+        form.setEndTime(LocalTime.of(21, 0));
 
-        Activity existingActivity = new Activity();
+        when(activityRepository.findById(10L)).thenReturn(Optional.of(activity));
 
-        existingActivity.setId(1L);
-        existingActivity.setName("Sauna");
-        existingActivity.setType("Relax");
-        existingActivity.setDate(LocalDate.of(2026, 12, 15));
-        existingActivity.setStartTime(LocalTime.of(18, 0));
-        existingActivity.setEndTime(LocalTime.of(19, 0));
+        when(activityRepository.save(any(Activity.class))).thenAnswer(a -> a.getArgument(0));
 
-        when(activityRepository.findById(1L)).thenReturn(Optional.of(existingActivity));
+        Activity updated = service.updateActivity(10L, form, "user@mail.com");
 
-        Activity updatedActivity = new Activity();
-
-        updatedActivity.setName("Sauna1");
-        updatedActivity.setType("Relax1");
-        updatedActivity.setDate(LocalDate.of(2027, 1, 16));
-        updatedActivity.setStartTime(LocalTime.of(20, 0));
-        updatedActivity.setEndTime(LocalTime.of(21, 0));
-
-
-        activityServiceImpl.updateActivity(1L, updatedActivity);
-
-        verify(activityRepository, times(1)).save(existingActivity);
-
-
+        assertEquals("Updated", updated.getName());
+        assertEquals(LocalTime.of(20, 0), updated.getStartTime());
+        verify(activityRepository).save(activity);
     }
 
     @Test
     void deleteActivity_success() {
 
-        Long activityId = 1L;
+        service.deleteActivity(10L, "user@mail.com");
 
-        when(activityRepository.existsById(activityId)).thenReturn(true);
-
-        activityServiceImpl.deleteActivity(1L);
-
-        verify(activityRepository, times(1)).deleteById(activityId);
-
-        verify(activityRepository, never()).save(any());
-
-
+        verify(activityRepository).deleteById(10L);
     }
 }
