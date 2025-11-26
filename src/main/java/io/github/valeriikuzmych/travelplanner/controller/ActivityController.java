@@ -1,88 +1,88 @@
 package io.github.valeriikuzmych.travelplanner.controller;
 
+import io.github.valeriikuzmych.travelplanner.dto.ActivityForm;
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
 import io.github.valeriikuzmych.travelplanner.service.ActivityService;
+import io.github.valeriikuzmych.travelplanner.service.OwnershipValidator;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/activities")
+@RequestMapping("/api/activities")
 public class ActivityController {
 
     private final ActivityService activityService;
+    private final OwnershipValidator ownershipValidator;
 
-
-    public ActivityController(ActivityService activityService) {
-
+    public ActivityController(ActivityService activityService,
+                              OwnershipValidator ownershipValidator) {
         this.activityService = activityService;
-
+        this.ownershipValidator = ownershipValidator;
     }
 
 
     @PostMapping
-    public ResponseEntity<String> createActivity(@RequestBody Activity activity) {
+    public ResponseEntity<Activity> create(@RequestBody ActivityForm form,
+                                           Principal principal) {
+        String email = principal.getName();
 
-        activityService.createActivity(activity);
+        activityService.createActivity(form, email);
 
-        return ResponseEntity.ok("Activity created successfully");
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Activity> getActivity(@PathVariable Long id) {
+    public ResponseEntity<Activity> getActivity(@PathVariable Long id,
+                                                Principal principal) {
 
-        try {
-            Activity activity = activityService.getActivity(id);
+        String email = principal.getName();
 
-            return ResponseEntity.ok(activity);
+        Activity activity = activityService.getActivityForUser(id, email);
 
-        } catch (IllegalArgumentException ex) {
-
-            return ResponseEntity.notFound().build();
-
-        }
+        return ResponseEntity.ok(activity);
     }
 
 
     @GetMapping("/trip/{tripId}")
-    public ResponseEntity<List<Activity>> getActivities(@PathVariable Long tripId) {
+    public ResponseEntity<List<Activity>> getByTrip(@PathVariable Long tripId,
+                                                    Principal principal) {
 
-        List<Activity> activities = activityService.getActivitiesByTripId(tripId);
+        String email = principal.getName();
+
+        ownershipValidator.assertUserOwnTrip(tripId, email);
+
+        List<Activity> activities =
+                activityService.getActivitiesByTripForUser(tripId, email);
 
         return ResponseEntity.ok(activities);
-
-
     }
 
 
     @PutMapping("/{activityId}")
-    public ResponseEntity<String> updateActivity(@PathVariable Long activityId, @RequestBody Activity updatedActivity) {
+    public ResponseEntity<?> updateActivity(@PathVariable Long id,
+                                            @RequestBody ActivityForm form,
+                                            Principal principal) {
 
-        try {
-            activityService.updateActivity(activityId, updatedActivity);
+        String email = principal.getName();
 
-            return ResponseEntity.ok("Activity updated successfully");
-        } catch (IllegalArgumentException ex) {
+        activityService.updateActivity(id, form, email);
 
-            return ResponseEntity.badRequest().body(ex.getMessage());
-
-
-        }
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteActivity(@PathVariable Long id) {
+    public ResponseEntity<?> delete(@PathVariable Long id,
+                                    Principal principal) {
 
+        String email = principal.getName();
 
-        try {
+        activityService.deleteActivity(id, email);
 
-            activityService.deleteActivity(id);
-            return ResponseEntity.ok("Activity deleted successfully");
-        } catch (IllegalArgumentException ex) {
-
-            return ResponseEntity.badRequest().body(ex.getMessage());
-        }
+        return ResponseEntity.noContent().build();
     }
 
 

@@ -4,35 +4,33 @@ import io.github.valeriikuzmych.travelplanner.entity.Activity;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Objects;
 
-public class ActivityForm {
+public class ActivityResponseDTO {
 
     private Long id;
     private Long tripId;
-
     private String name;
     private String type;
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
 
-    public ActivityForm() {
+    public ActivityResponseDTO() {
     }
 
-    public static ActivityForm fromEntity(Activity a) {
+    public static ActivityResponseDTO fromEntity(Activity a) {
 
-        ActivityForm f = new ActivityForm();
-        f.setId(a.getId());
-        f.setTripId(a.getTrip().getId());
-        f.setName(a.getName());
-        f.setType(a.getType());
-        f.setDate(a.getDate());
-        f.setStartTime(a.getStartTime());
-        f.setEndTime(a.getEndTime());
-        
-        return f;
+        ActivityResponseDTO dto = new ActivityResponseDTO();
 
+        dto.setId(a.getId());
+        dto.setTripId(a.getTrip().getId());
+        dto.setName(a.getName());
+        dto.setType(a.getType());
+        dto.setDate(a.getDate());
+        dto.setStartTime(a.getStartTime());
+        dto.setEndTime(a.getEndTime());
+
+        return dto;
     }
 
     public Long getId() {
@@ -89,21 +87,5 @@ public class ActivityForm {
 
     public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof ActivityForm that)) return false;
-        return Objects.equals(id, that.id) && Objects.equals(tripId, that.tripId) && Objects.equals(name, that.name) && Objects.equals(type, that.type) && Objects.equals(date, that.date) && Objects.equals(startTime, that.startTime) && Objects.equals(endTime, that.endTime);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, tripId, name, type, date, startTime, endTime);
-    }
-
-    @Override
-    public String toString() {
-        return "ActivityForm{" + "id=" + id + ", tripId=" + tripId + ", name='" + name + '\'' + ", type='" + type + '\'' + ", date=" + date + ", startTime=" + startTime + ", endTime=" + endTime + '}';
     }
 }

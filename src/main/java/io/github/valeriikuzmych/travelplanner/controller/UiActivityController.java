@@ -97,15 +97,7 @@ public class UiActivityController {
 
         Activity activity = activityService.getActivityForUser(id, email);
 
-        ActivityForm form = new ActivityForm();
-
-        form.setId(activity.getId());
-        form.setTripId(tripId);
-        form.setName(activity.getName());
-        form.setType(activity.getType());
-        form.setDate(activity.getDate());
-        form.setStartTime(activity.getStartTime());
-        form.setEndTime(activity.getEndTime());
+        ActivityForm form = ActivityForm.fromEntity(activity);
 
         model.addAttribute("form", form);
 
