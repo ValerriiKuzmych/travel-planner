@@ -1,7 +1,10 @@
 package io.github.valeriikuzmych.travelplanner.service;
 
 
+import io.github.valeriikuzmych.travelplanner.dto.TripBasicDTO;
 import io.github.valeriikuzmych.travelplanner.dto.TripDetailsDTO;
+import io.github.valeriikuzmych.travelplanner.dto.TripForm;
+import io.github.valeriikuzmych.travelplanner.dto.TripPlanDTO;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
 
 import java.util.List;
@@ -10,28 +13,19 @@ import java.util.List;
 public interface TripService {
 
 
-    List<Trip> getTripsForUser(String emailOrUsername);
+    Trip createTrip(TripForm form, String userEmail);
 
-    void createTrip(Trip trip);
+    Trip updateTrip(Long id, TripForm form, String userEmail);
 
-    Trip getTrip(Long Id);
+    Trip getTrip(Long id, String userEmail);
 
-    List<Trip> getTripsByUserId(Long userId);
+    List<TripBasicDTO> getTripsForUser(String email);
 
-    void updateTrip(Long id, Trip updatedTrip);
+    TripDetailsDTO getTripDetails(Long id, String email);
 
-    void deleteTrip(Long id);
+    TripPlanDTO getTripPlan(Long id, String email);
 
-    void createTripForUser(String email, Trip trip);
-
-    TripDetailsDTO getTripDetailsForUser(Long tripId, String email);
-
-    Trip getTripForUser(Long id, String email);
-
-    void updateTripForUser(Long id, Trip updatedTrip, String email);
-
-    void deleteTripForUser(Long id, String email);
-
+    void deleteTrip(Long id, String email);
 
 }
 

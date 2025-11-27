@@ -1,7 +1,6 @@
 package io.github.valeriikuzmych.travelplanner.service;
 
-import io.github.valeriikuzmych.travelplanner.dto.ActivityDTO;
-import io.github.valeriikuzmych.travelplanner.dto.TripDetailsDTO;
+import io.github.valeriikuzmych.travelplanner.dto.*;
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.entity.User;
@@ -11,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
+
 
 @Service
 public class TripServiceImpl implements TripService {
@@ -31,173 +30,163 @@ public class TripServiceImpl implements TripService {
     }
 
     @Override
-    public List<Trip> getTripsForUser(String email) {
+    public List<TripBasicDTO> getTripsForUser(String email) {
 
-        return tripRepository.findAllByUserEmail(email);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
+        return tripRepository.findByUserId(user.getId()).stream()
+                .map(this::mapToBasicDTO)
+                .toList();
     }
 
 
     @Override
-    public void createTripForUser(String email, Trip trip) {
+    public Trip createTrip(TripForm form, String email) {
 
-        Optional<User> optionalUser = userRepository.findByEmail(email);
+        validateDates(form.getStartDate(), form.getEndDate());
 
-        if (optionalUser.isEmpty()) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-            throw new IllegalArgumentException("User with email: " + email + "not found");
-        }
-
-        User user = optionalUser.get();
-
+        Trip trip = new Trip();
+        trip.setCity(form.getCity());
+        trip.setStartDate(form.getStartDate());
+        trip.setEndDate(form.getEndDate());
         trip.setUser(user);
 
-        createTrip(trip);
-
+        return tripRepository.save(trip);
     }
 
-    @Override
-    public TripDetailsDTO getTripDetailsForUser(Long tripId, String email) {
-
-        validator.assertUserOwnTrip(tripId, email);
-
-        return convertTripToTripDetails(tripId);
-    }
 
     @Override
-    public Trip getTripForUser(Long id, String email) {
+    public Trip getTrip(Long id, String email) {
 
         validator.assertUserOwnTrip(id, email);
 
-        return getTrip(id);
+        return tripRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Trip not found"));
+
     }
 
     @Override
-    public void updateTripForUser(Long id, Trip updatedTrip, String email) {
+    public Trip updateTrip(Long id, TripForm form, String email) {
 
         validator.assertUserOwnTrip(id, email);
 
-        updateTrip(id, updatedTrip);
+        validateDates(form.getStartDate(), form.getEndDate());
 
+        Trip trip = tripRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Trip not found"));
+
+        trip.setCity(form.getCity());
+        trip.setStartDate(form.getStartDate());
+        trip.setEndDate(form.getEndDate());
+
+        return tripRepository.save(trip);
+    }
+
+
+    @Override
+    public TripDetailsDTO getTripDetails(Long id, String email) {
+
+        Trip trip = getTrip(id, email);
+
+        return mapToDetailsDTO(trip);
     }
 
     @Override
-    public void deleteTripForUser(Long id, String email) {
+    public TripPlanDTO getTripPlan(Long id, String email) {
+
+        Trip trip = getTrip(id, email);
+
+        return mapToPlanDTO(trip);
+    }
+
+    @Override
+    public void deleteTrip(Long id, String email) {
 
         validator.assertUserOwnTrip(id, email);
 
-        deleteTrip(id);
-
+        tripRepository.deleteById(id);
     }
 
 
-    @Override
-    public List<Trip> getTripsByUserId(Long userId) {
+    private void validateDates(LocalDate start, LocalDate end) {
 
-        return tripRepository.findByUserId(userId);
-    }
-
-    @Override
-    public void updateTrip(Long id, Trip updatedTrip) {
-
-        Trip trip = getTrip(id);
-
-        if (updatedTrip.getStartDate().isAfter(updatedTrip.getEndDate())) {
-
-            throw new IllegalArgumentException("Start time cannot be after end time");
-
-        } else {
-
-
-            trip.setCity(updatedTrip.getCity());
-            trip.setStartDate(updatedTrip.getStartDate());
-            trip.setEndDate(updatedTrip.getEndDate());
-
-            tripRepository.save(trip);
-
-
+        if (start.isAfter(end)) {
+            throw new IllegalArgumentException("Start date cannot be after end date");
         }
 
-
     }
 
-    @Override
-    public void deleteTrip(Long id) {
+    private TripBasicDTO mapToBasicDTO(Trip trip) {
 
-        if (!tripRepository.existsById(id)) {
-
-            throw new IllegalArgumentException("Trip with id " + id + "not found.");
-
-        } else {
-
-            tripRepository.deleteById(id);
-
-        }
-
-
-    }
-
-    @Override
-    public void createTrip(Trip trip) {
-
-        if (trip.getId() != null) {
-            throw new IllegalArgumentException("New trip must not have an ID");
-        }
-
-        if (trip.getStartDate().isAfter(trip.getEndDate())) {
-            throw new IllegalArgumentException("Start time cannot be after end time");
-        } else {
-
-            tripRepository.save(trip);
-        }
-
-
-    }
-
-    @Override
-    public Trip getTrip(Long id) {
-
-        Optional<Trip> optionalTrip = tripRepository.findById(id);
-
-        if (optionalTrip.isEmpty()) {
-            throw new IllegalArgumentException("Trip with id " + id + " not found");
-        }
-
-        return optionalTrip.get();
-    }
-
-
-    private TripDetailsDTO convertTripToTripDetails(Long id) {
-
-        Trip trip = getTrip(id);
-
-        TripDetailsDTO dto = new TripDetailsDTO();
-
+        TripBasicDTO dto = new TripBasicDTO();
         dto.setId(trip.getId());
         dto.setCity(trip.getCity());
         dto.setStartDate(trip.getStartDate());
         dto.setEndDate(trip.getEndDate());
 
-        Map<LocalDate, List<ActivityDTO>> grouped = trip.getActivities()
-                .stream()
-                .sorted(Comparator.comparing(Activity::getDate)
-                        .thenComparing(Activity::getStartTime))
-                .map(a -> {
+        dto.setActivities(
+                trip.getActivities().stream()
+                        .map(this::mapActivity)
+                        .toList()
+        );
 
-                    ActivityDTO d = new ActivityDTO();
-                    d.setId(a.getId());
-                    d.setName(a.getName());
-                    d.setDate(a.getDate());
-                    d.setStartTime(a.getStartTime());
-                    d.setEndTime(a.getEndTime());
+        return dto;
+    }
 
-                    return d;
+    private TripDetailsDTO mapToDetailsDTO(Trip trip) {
 
-                }).collect(Collectors.groupingBy(ActivityDTO::getDate));
+        TripDetailsDTO dto = new TripDetailsDTO();
+        dto.setId(trip.getId());
+        dto.setCity(trip.getCity());
+        dto.setStartDate(trip.getStartDate());
+        dto.setEndDate(trip.getEndDate());
+
+        Map<LocalDate, List<ActivityDTO>> grouped = new HashMap<>();
+        for (Activity a : trip.getActivities()) {
+            grouped.computeIfAbsent(a.getDate(),
+                    d -> new ArrayList<>()).add(mapActivity(a));
+        }
 
         dto.setActivitiesByDate(grouped);
         dto.setEditable(true);
 
         return dto;
     }
+
+    private TripPlanDTO mapToPlanDTO(Trip trip) {
+
+        TripPlanDTO dto = new TripPlanDTO();
+        dto.setTripId(trip.getId());
+        dto.setCity(trip.getCity());
+        dto.setStartDate(trip.getStartDate());
+        dto.setEndDate(trip.getEndDate());
+
+        Map<LocalDate, List<ActivityDTO>> grouped = new HashMap<>();
+        for (Activity a : trip.getActivities()) {
+            grouped.computeIfAbsent(a.getDate(),
+                    d -> new ArrayList<>()).add(mapActivity(a));
+        }
+
+        dto.setActivities(grouped);
+
+        return dto;
+    }
+
+    private ActivityDTO mapActivity(Activity activity) {
+
+        ActivityDTO dto = new ActivityDTO();
+
+        dto.setId(activity.getId());
+        dto.setName(activity.getName());
+        dto.setDate(activity.getDate());
+        dto.setStartTime(activity.getStartTime());
+        dto.setEndTime(activity.getEndTime());
+
+        return dto;
+    }
+
 }

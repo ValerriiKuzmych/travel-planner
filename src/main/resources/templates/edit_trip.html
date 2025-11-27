@@ -8,8 +8,8 @@
 
 <h1>Edit Trip</h1>
 
-<form th:action="@{/trips/{id}/edit(id=${trip.id})"
-      th:object="${trip}"
+<form th:action="@{/trips/{id}/edit(id=${form.id})}"
+      th:object="${form}"
       method="post">
     <label>City:
         <input type="text" th:field="*{city}">

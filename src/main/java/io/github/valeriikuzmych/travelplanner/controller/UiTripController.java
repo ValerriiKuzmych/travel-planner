@@ -1,8 +1,11 @@
 package io.github.valeriikuzmych.travelplanner.controller;
 
 
+import io.github.valeriikuzmych.travelplanner.dto.TripBasicDTO;
 import io.github.valeriikuzmych.travelplanner.dto.TripDetailsDTO;
+import io.github.valeriikuzmych.travelplanner.dto.TripForm;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
+import io.github.valeriikuzmych.travelplanner.service.OwnershipValidator;
 import io.github.valeriikuzmych.travelplanner.service.TripService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,9 +19,13 @@ import java.util.List;
 public class UiTripController {
 
     private final TripService tripService;
+    private final OwnershipValidator ownershipValidator;
 
-    public UiTripController(TripService tripService) {
+    public UiTripController(TripService tripService,
+                            OwnershipValidator ownershipValidator) {
+
         this.tripService = tripService;
+        this.ownershipValidator = ownershipValidator;
     }
 
     @GetMapping
@@ -26,31 +33,25 @@ public class UiTripController {
 
         String email = principal.getName();
 
-        List<Trip> trips = tripService.getTripsForUser(email);
+        List<TripBasicDTO> trips = tripService.getTripsForUser(email);
 
         model.addAttribute("trips", trips);
 
         return "trips";
     }
 
-    @GetMapping("/create")
-    public String createTripForm(Model model) {
-
-        model.addAttribute("trip", new Trip());
-
-        return "create_trip";
-    }
-
     @PostMapping("/create")
-    public String createTrip(@ModelAttribute Trip trip,
+    public String createTrip(@ModelAttribute TripForm form,
                              Principal principal) {
+
 
         String email = principal.getName();
 
-        tripService.createTripForUser(email, trip);
+        tripService.createTrip(form, email);
 
-        return "redirect:/trips";
+        return "redirect:/profile";
     }
+
 
     @GetMapping("/{id}/edit")
     public String editTripForm(@PathVariable Long id,
@@ -58,24 +59,25 @@ public class UiTripController {
 
         String email = principal.getName();
 
-        Trip trip = tripService.getTripForUser(id, email);
+        Trip trip = tripService.getTrip(id, email);
 
-        model.addAttribute("trip", trip);
+        TripForm form = TripForm.fromEntity(trip);
+
+        model.addAttribute("form", form);
 
         return "edit_trip";
     }
 
     @PostMapping("/{id}/edit")
     public String updateTrip(@PathVariable Long id,
-                             @ModelAttribute Trip trip,
+                             @ModelAttribute TripForm form,
                              Principal principal) {
-
 
         String email = principal.getName();
 
-        tripService.updateTripForUser(id, trip, email);
+        tripService.updateTrip(id, form, email);
 
-        return "redirect:/trips";
+        return "redirect:/trips/" + id;
     }
 
     @PostMapping("/{id}/delete")
@@ -83,18 +85,18 @@ public class UiTripController {
 
         String email = principal.getName();
 
-        tripService.deleteTripForUser(id, email);
+        tripService.deleteTrip(id, email);
 
         return "redirect:/trips";
     }
 
     @GetMapping("/{id}")
     public String viewTrip(
-            @PathVariable Long id,
-            Model model,
-            Principal principal) {
+            @PathVariable Long id, Model model, Principal principal) {
 
-        TripDetailsDTO dto = tripService.getTripDetailsForUser(id, principal.getName());
+        String email = principal.getName();
+
+        TripDetailsDTO dto = tripService.getTripDetails(id, email);
 
         model.addAttribute("trip", dto);
 

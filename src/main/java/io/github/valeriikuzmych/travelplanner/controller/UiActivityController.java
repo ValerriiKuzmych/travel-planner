@@ -36,7 +36,7 @@ public class UiActivityController {
 
         String email = principal.getName();
 
-        Trip trip = tripService.getTripForUser(tripId, email);
+        Trip trip = tripService.getTrip(tripId, email);
 
         List<Activity> activityLilst =
                 activityService.getActivitiesByTripForUser(tripId, email);

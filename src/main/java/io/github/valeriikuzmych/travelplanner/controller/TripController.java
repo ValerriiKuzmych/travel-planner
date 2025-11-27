@@ -1,11 +1,13 @@
 package io.github.valeriikuzmych.travelplanner.controller;
 
+import io.github.valeriikuzmych.travelplanner.dto.TripForm;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.service.TripService;
 import io.github.valeriikuzmych.travelplanner.service.WeatherService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -27,80 +29,51 @@ public class TripController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createTrip(@RequestBody Trip trip) {
+    public ResponseEntity<?> createTrip(@RequestBody TripForm form,
+                                        Principal principal) {
 
-        tripService.createTrip(trip);
+        Trip created = tripService.createTrip(form, principal.getName());
 
-        return ResponseEntity.ok("Trip created successfully");
-
+        return ResponseEntity.ok(Map.of("id", created.getId()));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Trip> getTrip(@PathVariable("id") Long tripId) {
 
-        try {
-            Trip trip = tripService.getTrip(tripId);
-            return ResponseEntity.ok(trip);
+    //TODO
+//    @GetMapping("/{id}")
+//    public ResponseEntity<Trip> getTrip(@PathVariable("id") Long tripId) {
+//
+//        try {
+//            Trip trip = tripService.getTrip(tripId);
+//            return ResponseEntity.ok(trip);
+//
+//        } catch (IllegalArgumentException e) {
+//
+//            return ResponseEntity.notFound().build();
+//        }
+//
+//
+//    }
 
-        } catch (IllegalArgumentException e) {
+    //TODO
+//    @GetMapping("/user/{userId}")
+//    public ResponseEntity<List<Trip>> getAllTrips(@PathVariable Long userId) {
+//
+//        List<Trip> trips = tripService.getTripsByUserId(userId);
+//
+//        return ResponseEntity.ok(trips);
+//
+//    }
 
-            return ResponseEntity.notFound().build();
-        }
-
-
-    }
-
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Trip>> getAllTrips(@PathVariable Long userId) {
-
-        List<Trip> trips = tripService.getTripsByUserId(userId);
-
-        return ResponseEntity.ok(trips);
-
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updateTrip(@PathVariable("id") Long tripId, @RequestBody Trip updatedTrip) {
-
-        try {
-            tripService.updateTrip(tripId, updatedTrip);
-
-            return ResponseEntity.ok("Trip updated successfully");
-
-        } catch (IllegalArgumentException e) {
-
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    @DeleteMapping("/{id}")
-
-    public ResponseEntity<String> deleteTrip(@PathVariable("id") Long tripId) {
-
-        try {
-            tripService.deleteTrip(tripId);
-
-            return ResponseEntity.ok("Trip deleted successfully");
-
-        } catch (IllegalArgumentException e) {
-
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-
-
-    }
-
-    @GetMapping("/{tripId}/weather")
-    public ResponseEntity<?> getTripWeather(@PathVariable Long tripId) {
-
-        Trip trip = tripService.getTrip(tripId);
-
-        Map<String, Object> weather = weatherService.getWeather(trip.getCity());
-
-
-        return ResponseEntity.ok(weather);
-
-    }
+    //TODO
+//    @PutMapping("/{id}")
+//    public ResponseEntity<?> updateTrip(@PathVariable Long id,
+//                                        @RequestBody TripForm form,
+//                                        Principal principal) {
+//
+//        Trip updated = tripService.updateTrip(id, form, principal.getName());
+//
+//        return ResponseEntity.ok(Map.of("id", updated.getId()));
+//    }
 
 
 }

@@ -1,8 +1,11 @@
 package io.github.valeriikuzmych.travelplanner.controller;
 
+import io.github.valeriikuzmych.travelplanner.dto.TripBasicDTO;
 import io.github.valeriikuzmych.travelplanner.dto.TripDetailsDTO;
+import io.github.valeriikuzmych.travelplanner.dto.TripForm;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.repository.UserRepository;
+import io.github.valeriikuzmych.travelplanner.service.TripService;
 import io.github.valeriikuzmych.travelplanner.service.TripServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,49 +29,104 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class UiTripControllerTest {
+class UiTripControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockitoBean
-    TripServiceImpl tripServiceImpl;
+    private TripService tripService;
 
-    @MockitoBean
-    UserRepository userRepository;
 
     @Test
     void tripsShouldRedirectToLogin() throws Exception {
-
-        mockMvc.perform(get("/trips").with(csrf()).header("Accept", "text/html")).andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/login"));
-
-
+        mockMvc.perform(get("/trips").with(csrf())
+                        .header("Accept", "text/html"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login"));
     }
+
 
     @Test
     void tripsShouldReturnView() throws Exception {
 
-        List<Trip> mockTrips = List.of(new Trip(), new Trip());
+        List<TripBasicDTO> dtoList = List.of(new TripBasicDTO(), new TripBasicDTO());
 
-        when(tripServiceImpl.getTripsForUser("user@test.com")).thenReturn(mockTrips);
+        when(tripService.getTripsForUser("user@test.com")).thenReturn(dtoList);
 
-        mockMvc.perform(get("/trips").with(user("user@test.com")).with(csrf())).andExpect(status().isOk()).andExpect(view().name("trips")).andExpect(model().attributeExists("trips"));
-
+        mockMvc.perform(get("/trips")
+                        .with(user("user@test.com"))
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("trips"))
+                .andExpect(model().attributeExists("trips"));
     }
 
-    @Test
-    void createTripFormShouldRenderTemplate() throws Exception {
-
-        mockMvc.perform(get("/trips/create").with(user("user@test.com")).with(csrf())).andExpect(status().isOk()).andExpect(view().name("create_trip")).andExpect(model().attributeExists("trip"));
-    }
 
     @Test
     void createTripShouldRedirect() throws Exception {
 
-        mockMvc.perform(post("/trips/create").param("city", "Paris").param("startDate", "2025-01-01").param("endDate", "2025-01-05").with(user("user@test.com")).with(csrf())).andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/trips"));
+        mockMvc.perform(post("/trips/create")
+                        .with(user("user@test.com"))
+                        .with(csrf())
+                        .param("city", "Paris")
+                        .param("startDate", "2025-01-01")
+                        .param("endDate", "2025-01-05"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/profile"));
 
-        verify(tripServiceImpl).createTripForUser(eq("user@test.com"), any(Trip.class));
+        verify(tripService).createTrip(any(TripForm.class), eq("user@test.com"));
     }
+
+
+    @Test
+    void editTripFormShouldRender() throws Exception {
+
+        Trip trip = new Trip();
+        trip.setId(1L);
+        trip.setCity("Rome");
+        trip.setStartDate(LocalDate.of(2025, 1, 1));
+        trip.setEndDate(LocalDate.of(2025, 1, 5));
+
+        when(tripService.getTrip(1L, "user@test.com")).thenReturn(trip);
+
+        mockMvc.perform(get("/trips/1/edit")
+                        .with(user("user@test.com"))
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("edit_trip"))
+                .andExpect(model().attributeExists("form"));
+    }
+
+
+    @Test
+    void updateTripShouldRedirect() throws Exception {
+
+        mockMvc.perform(post("/trips/1/edit")
+                        .with(user("user@test.com"))
+                        .with(csrf())
+                        .param("city", "London")
+                        .param("startDate", "2025-05-01")
+                        .param("endDate", "2025-05-10"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/trips/1"));
+
+        verify(tripService).updateTrip(eq(1L), any(TripForm.class), eq("user@test.com"));
+    }
+
+
+    @Test
+    void deleteTripShouldRedirect() throws Exception {
+
+        mockMvc.perform(post("/trips/1/delete")
+                        .with(user("user@test.com"))
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/trips"));
+
+        verify(tripService).deleteTrip(1L, "user@test.com");
+    }
+
 
     @Test
     void tripDetailsPageShouldRender() throws Exception {
@@ -80,8 +138,7 @@ public class UiTripControllerTest {
         dto.setEndDate(LocalDate.of(2025, 1, 5));
         dto.setActivitiesByDate(new HashMap<>());
 
-        when(tripServiceImpl.getTripDetailsForUser(eq(1L), eq("test@example.com")))
-                .thenReturn(dto);
+        when(tripService.getTripDetails(1L, "test@example.com")).thenReturn(dto);
 
         mockMvc.perform(get("/trips/1")
                         .with(user("test@example.com"))
@@ -90,5 +147,4 @@ public class UiTripControllerTest {
                 .andExpect(view().name("trip_details"))
                 .andExpect(model().attributeExists("trip"));
     }
-
 }
