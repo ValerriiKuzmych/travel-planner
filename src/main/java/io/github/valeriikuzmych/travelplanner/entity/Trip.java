@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -32,7 +33,7 @@ public class Trip {
 
     @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonBackReference
-    private List<Activity> activities;
+    private List<Activity> activities = new ArrayList<>();
 
     public Long getId() {
         return id;

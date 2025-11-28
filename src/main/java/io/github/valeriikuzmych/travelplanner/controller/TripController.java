@@ -1,5 +1,6 @@
 package io.github.valeriikuzmych.travelplanner.controller;
 
+import io.github.valeriikuzmych.travelplanner.dto.TripBasicDTO;
 import io.github.valeriikuzmych.travelplanner.dto.TripForm;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.service.TripService;
@@ -38,42 +39,39 @@ public class TripController {
     }
 
 
-    //TODO
-//    @GetMapping("/{id}")
-//    public ResponseEntity<Trip> getTrip(@PathVariable("id") Long tripId) {
-//
-//        try {
-//            Trip trip = tripService.getTrip(tripId);
-//            return ResponseEntity.ok(trip);
-//
-//        } catch (IllegalArgumentException e) {
-//
-//            return ResponseEntity.notFound().build();
-//        }
-//
-//
-//    }
+    @GetMapping("/{id}")
+    public ResponseEntity<Trip> getTrip(@PathVariable Long id, Principal principal) {
 
-    //TODO
-//    @GetMapping("/user/{userId}")
-//    public ResponseEntity<List<Trip>> getAllTrips(@PathVariable Long userId) {
-//
-//        List<Trip> trips = tripService.getTripsByUserId(userId);
-//
-//        return ResponseEntity.ok(trips);
-//
-//    }
+        Trip trip = tripService.getTrip(id, principal.getName());
 
-    //TODO
-//    @PutMapping("/{id}")
-//    public ResponseEntity<?> updateTrip(@PathVariable Long id,
-//                                        @RequestBody TripForm form,
-//                                        Principal principal) {
-//
-//        Trip updated = tripService.updateTrip(id, form, principal.getName());
-//
-//        return ResponseEntity.ok(Map.of("id", updated.getId()));
-//    }
+        return ResponseEntity.ok(trip);
+    }
 
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<TripBasicDTO>> getTripsByUser(@PathVariable Long userId, Principal principal) {
+
+        List<TripBasicDTO> trips = tripService.getTripsForUser(principal.getName());
+
+        return ResponseEntity.ok(trips);
+    }
+
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateTrip(@PathVariable Long id, @RequestBody TripForm form,
+                                        Principal principal) {
+
+        Trip updated = tripService.updateTrip(id, form, principal.getName());
+
+        return ResponseEntity.ok(Map.of("id", updated.getId()));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteTrip(@PathVariable Long id, Principal principal) {
+
+        tripService.deleteTrip(id, principal.getName());
+
+        return ResponseEntity.ok().build();
+    }
 
 }

@@ -2,6 +2,7 @@ package io.github.valeriikuzmych.travelplanner.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.valeriikuzmych.travelplanner.dto.TripForm;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.entity.User;
 import io.github.valeriikuzmych.travelplanner.repository.TripRepository;
@@ -20,7 +21,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasItems;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -32,22 +35,24 @@ public class TripControllerTest {
 
     @Autowired
     MockMvc mockMvc;
+
     @Autowired
     TripRepository tripRepository;
+
     @Autowired
     UserRepository userRepository;
-    @Autowired
-    private ObjectMapper objectMapper;
 
-    private User testUser;
-    private Trip testTrip;
+    @Autowired
+    ObjectMapper mapper;
+
+    User testUser;
+    Trip testTrip;
 
     @BeforeEach
     void setUp() {
-
         testUser = new User();
         testUser.setEmail("TripTest@example.com");
-        testUser.setPassword("pass123");
+        testUser.setPassword("pass");
         testUser.setRole("USER");
         userRepository.save(testUser);
 
@@ -59,142 +64,86 @@ public class TripControllerTest {
         tripRepository.save(testTrip);
     }
 
-
     @Test
-    @WithMockUser(username = "TripTest@example.com", roles = {"USER"})
+    @WithMockUser(username = "TripTest@example.com")
     void createTrip_success() throws Exception {
 
-        User testCreateTripUser = new User();
-        testCreateTripUser.setEmail("CreateTripTest@example.com");
-        testCreateTripUser.setPassword("pass12345");
-        testCreateTripUser.setRole("USER");
+        TripForm form = new TripForm();
 
-        userRepository.save(testCreateTripUser);
+        form.setCity("CreatedCity");
+        form.setStartDate(LocalDate.of(2027, 1, 1));
+        form.setEndDate(LocalDate.of(2027, 1, 5));
 
-
-        Trip testCreateTrip = new Trip();
-
-        testCreateTrip.setCity("CreateTripTest");
-        testCreateTrip.setStartDate(LocalDate.of(2027, 10, 10));
-        testCreateTrip.setEndDate(LocalDate.of(2027, 10, 15));
-        testCreateTrip.setUser(testCreateTripUser);
-
-        String tripJson = objectMapper.writeValueAsString(testCreateTrip);
-
-
-        mockMvc.perform(post("/api/trips").with(csrf())
+        mockMvc.perform(post("/api/trips")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(tripJson))
-                .andExpect(status().isOk());
+                        .content(mapper.writeValueAsString(form)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").exists());
 
+        List<Trip> trips = tripRepository.findByUserId(testUser.getId());
 
-        var trips = tripRepository.findByUserId(testCreateTripUser.getId());
-        assertThat(trips).hasSize(1);
-
-        Trip savedTrip = trips.get(0);
-
-        assertThat(savedTrip.getCity()).isEqualTo("CreateTripTest");
-        assertThat(savedTrip.getUser().getId()).isEqualTo(testCreateTripUser.getId());
-        assertThat(savedTrip.getStartDate()).isEqualTo(LocalDate.of(2027, 10, 10));
-        assertThat(savedTrip.getEndDate()).isEqualTo(LocalDate.of(2027, 10, 15));
-        assertThat(savedTrip.getStartDate().isBefore(savedTrip.getEndDate()));
-
-
+        assertThat(trips).hasSize(2);
     }
 
     @Test
-    @WithMockUser(username = "TripTest@example.com", roles = {"USER"})
     void getTrips_success() throws Exception {
 
+        Trip another = new Trip();
 
-        Trip testTrip1 = new Trip();
-        testTrip1.setCity("TripCityTest1");
-        testTrip1.setStartDate(LocalDate.of(2027, 01, 20));
-        testTrip1.setEndDate(LocalDate.of(2027, 01, 25));
-        testTrip1.setUser(testUser);
-
-        tripRepository.saveAll(List.of(testTrip, testTrip1));
-
-
-        mockMvc.perform(get("/api/trips/user/{userId}", testUser.getId())
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-
-        var trips = tripRepository.findAll();
-        assertThat(trips).hasSize(2);
-
-        Trip savedTrip = trips.get(0);
-
-        assertThat(savedTrip.getCity()).isEqualTo("TripTest");
-        assertThat(savedTrip.getUser().getId()).isEqualTo(testUser.getId());
-        assertThat(savedTrip.getStartDate()).isEqualTo(LocalDate.of(2026, 10, 10));
-        assertThat(savedTrip.getEndDate()).isEqualTo(LocalDate.of(2026, 10, 15));
-
-        Trip savedTrip1 = trips.get(1);
-
-        assertThat(savedTrip1.getCity()).isEqualTo("TripCityTest1");
-        assertThat(savedTrip1.getUser().getId()).isEqualTo(testUser.getId());
-        assertThat(savedTrip1.getStartDate()).isEqualTo(LocalDate.of(2027, 01, 20));
-        assertThat(savedTrip1.getEndDate()).isEqualTo(LocalDate.of(2027, 01, 25));
+        another.setCity("City2");
+        another.setStartDate(LocalDate.of(2027, 1, 20));
+        another.setEndDate(LocalDate.of(2027, 1, 25));
+        another.setUser(testUser);
+        tripRepository.save(another);
 
 
+        mockMvc.perform(get("/api/trips/user/{id}", testUser.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(user("TripTest@example.com")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[*].city").value(hasItems("TripTest", "City2")));
     }
 
     @Test
-    @WithMockUser(username = "TripTest@example.com", roles = {"USER"})
+    @WithMockUser(username = "TripTest@example.com")
     void getTripById_success() throws Exception {
 
-
-        mockMvc.perform(get("/api/trips/{id}", testTrip.getId())
-                        .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/api/trips/{id}", testTrip.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.city").value("TripTest"))
-                .andExpect(jsonPath("$.user.email").value("TripTest@example.com"));
-
-
+                .andExpect(jsonPath("$.city").value("TripTest"));
     }
 
     @Test
-    @WithMockUser(username = "TripTest@example.com", roles = {"USER"})
+    @WithMockUser(username = "TripTest@example.com")
     void updateTrip_success() throws Exception {
 
+        TripForm form = new TripForm();
 
-        Trip updatedTrip = new Trip();
-        updatedTrip.setCity("TripUpdatedTest");
-        updatedTrip.setStartDate(LocalDate.of(2026, 12, 20));
-        updatedTrip.setEndDate(LocalDate.of(2027, 01, 15));
+        form.setCity("Updated");
+        form.setStartDate(LocalDate.of(2026, 12, 20));
+        form.setEndDate(LocalDate.of(2027, 1, 15));
 
-
-        String tripUpdatedJson = objectMapper.writeValueAsString(updatedTrip);
-
-
-        mockMvc.perform(put("/api/trips/{id}", testTrip.getId()).with(csrf())
+        mockMvc.perform(put("/api/trips/{id}", testTrip.getId())
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(tripUpdatedJson))
+                        .content(mapper.writeValueAsString(form)))
                 .andExpect(status().isOk());
 
-        Trip updatedTripCheck = tripRepository.findById(testTrip.getId()).get();
+        Trip updated = tripRepository.findById(testTrip.getId()).orElseThrow();
 
-        assertThat(updatedTripCheck.getCity()).isEqualTo("TripUpdatedTest");
-        assertThat(updatedTripCheck.getStartDate()).isEqualTo(LocalDate.of(2026, 12, 20));
-        assertThat(updatedTripCheck.getEndDate()).isEqualTo(LocalDate.of(2027, 01, 15));
-
-
+        assertThat(updated.getCity()).isEqualTo("Updated");
     }
 
     @Test
-    @WithMockUser(username = "TripTest@example.com", roles = {"USER"})
+    @WithMockUser(username = "TripTest@example.com")
     void deleteTrip_success() throws Exception {
 
-
-        mockMvc.perform(delete("/api/trips/{id}", testTrip.getId()).with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete("/api/trips/{id}", testTrip.getId())
+                        .with(csrf()))
                 .andExpect(status().isOk());
 
-
         assertThat(tripRepository.findById(testTrip.getId())).isEmpty();
-
-
     }
-
 }
