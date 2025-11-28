@@ -32,23 +32,24 @@ public class TripPlannerControllerTest {
     private TripPlannerService tripPlannerService;
 
     @Test
-    @WithMockUser
+    @WithMockUser(username = "john@example.com")
     void getTripPlan_success() throws Exception {
 
         TripPlanDTO dto = new TripPlanDTO();
         dto.setTripId(1L);
         dto.setCity("Rome");
-        dto.setStartDate(LocalDate.of(2025, 10, 10));
-        dto.setEndDate(LocalDate.of(2025, 10, 15));
         dto.setActivities(Map.of());
         dto.setWeather(Map.of());
 
-        when(tripPlannerService.getPlanForTrip(1L)).thenReturn(dto);
+        when(tripPlannerService.getPlanForTrip(eq(1L), eq("john@example.com")))
+                .thenReturn(dto);
 
-        mockMvc.perform(get("/trips/1/plan")).andExpect(status().isOk()).andExpect(jsonPath("$.city").value("Rome")).andExpect(jsonPath("$.tripId").value(1L));
+        mockMvc.perform(get("/api/trips/1/plan"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.tripId").value(1L))
+                .andExpect(jsonPath("$.city").value("Rome"));
 
-        verify(tripPlannerService, times(1)).getPlanForTrip(1L);
+        verify(tripPlannerService, times(1))
+                .getPlanForTrip(1L, "john@example.com");
     }
-
-
 }

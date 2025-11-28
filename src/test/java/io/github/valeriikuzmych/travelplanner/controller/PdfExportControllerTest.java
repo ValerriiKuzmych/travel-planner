@@ -33,13 +33,13 @@ public class PdfExportControllerTest {
 
 
     @Test
-    @WithMockUser
+    @WithMockUser(username = "john@example.com")
     void exportPdf_success() throws Exception {
 
         TripPlanDTO dto = new TripPlanDTO();
         dto.setCity("Rome");
 
-        when(tripPlannerService.getPlanForTrip(1L)).thenReturn(dto);
+        when(tripPlannerService.getPlanForTrip(1L, "john@example.com")).thenReturn(dto);
         when(pdfExportService.exportTripPlanToPdf(dto)).thenReturn(new byte[]{1, 2, 3});
 
         mockMvc.perform(get("/trips/1/plan/pdf"))

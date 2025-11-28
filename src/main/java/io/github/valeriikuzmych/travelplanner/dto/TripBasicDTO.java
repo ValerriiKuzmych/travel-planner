@@ -1,6 +1,7 @@
 package io.github.valeriikuzmych.travelplanner.dto;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,7 +16,7 @@ public class TripBasicDTO {
 
     private LocalDate endDate;
 
-    private List<ActivityDTO> activities;
+    private List<ActivityDTO> activities = new ArrayList<>();
 
     public Long getId() {
         return id;

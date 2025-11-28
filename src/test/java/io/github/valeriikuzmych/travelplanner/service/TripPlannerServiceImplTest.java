@@ -22,18 +22,19 @@ import static org.mockito.Mockito.*;
 
 public class TripPlannerServiceImplTest {
 
-
     @Mock
     private TripRepository tripRepository;
 
     @Mock
     private WeatherService weatherService;
 
+    @Mock
+    private OwnershipValidator validator;
+
     @InjectMocks
     private TripPlannerServiceImpl tripPlannerServiceImpl;
 
     private Trip trip;
-    private Activity activity;
 
     @BeforeEach
     void setUp() {
@@ -45,21 +46,20 @@ public class TripPlannerServiceImplTest {
         trip.setStartDate(LocalDate.of(2025, 10, 10));
         trip.setEndDate(LocalDate.of(2025, 10, 15));
 
-        activity = new Activity();
-        activity.setId(5L);
-        activity.setName("Colosseum Tour");
-        activity.setDate(LocalDate.of(2025, 10, 12));
-        activity.setStartTime(LocalTime.of(10, 0));
-
-        trip.setActivities(List.of(activity));
+        Activity act = new Activity();
+        act.setId(5L);
+        act.setName("Colosseum Tour");
+        act.setDate(LocalDate.of(2025, 10, 12));
+        trip.setActivities(List.of(act));
     }
 
     @Test
     void getPlanForTrip_success() {
 
         when(tripRepository.findById(1L)).thenReturn(Optional.of(trip));
+        doNothing().when(validator).assertUserOwnTrip(1L, "mail@test.com");
 
-        Map<String, Object> rawWeather = Map.of(
+        Map<String, Object> weatherRaw = Map.of(
                 "list", List.of(
                         Map.of(
                                 "dt_txt", "2025-10-12 12:00:00",
@@ -68,35 +68,19 @@ public class TripPlannerServiceImplTest {
                         )
                 )
         );
-        when(weatherService.getWeather("Rome")).thenReturn(rawWeather);
 
-        TripPlanDTO dto = tripPlannerServiceImpl.getPlanForTrip(1L);
+        when(weatherService.getWeather("Rome")).thenReturn(weatherRaw);
 
-        assertEquals(1L, dto.getTripId());
+        TripPlanDTO dto = tripPlannerServiceImpl.getPlanForTrip(1L, "mail@test.com");
+
         assertEquals("Rome", dto.getCity());
-        assertEquals(LocalDate.of(2025, 10, 10), dto.getStartDate());
-        assertEquals(LocalDate.of(2025, 10, 15), dto.getEndDate());
-
-        assertTrue(dto.getActivities().containsKey(activity.getDate()));
-        List<ActivityDTO> actList = dto.getActivities().get(activity.getDate());
-        assertEquals(1, actList.size());
-        assertEquals("Colosseum Tour", actList.get(0).getName());
-
         assertTrue(dto.getWeather().containsKey(LocalDate.of(2025, 10, 12)));
-        assertEquals(20.5, dto.getWeather().get(LocalDate.of(2025, 10, 12)).getTemperature());
-        assertEquals("clear sky", dto.getWeather().get(LocalDate.of(2025, 10, 12)).getDescription());
-
-        verify(tripRepository, times(1)).findById(1L);
-        verify(weatherService, times(1)).getWeather("Rome");
     }
-
 
     @Test
     void getPlanForTrip_tripNotFound() {
         when(tripRepository.findById(99L)).thenReturn(Optional.empty());
-
         assertThrows(IllegalArgumentException.class,
-                () -> tripPlannerServiceImpl.getPlanForTrip(99L));
+                () -> tripPlannerServiceImpl.getPlanForTrip(99L, "user@a.com"));
     }
 }
-

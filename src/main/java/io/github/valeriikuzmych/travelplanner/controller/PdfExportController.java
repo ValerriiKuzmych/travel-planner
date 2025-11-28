@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/trips")
@@ -19,7 +20,8 @@ public class PdfExportController {
     private final TripPlannerService tripPlannerService;
 
 
-    public PdfExportController(IPDExportService pdfExportService, TripPlannerService tripPlannerService) {
+    public PdfExportController(IPDExportService pdfExportService,
+                               TripPlannerService tripPlannerService) {
 
         this.pdfExportService = pdfExportService;
         this.tripPlannerService = tripPlannerService;
@@ -28,15 +30,17 @@ public class PdfExportController {
 
 
     @GetMapping("/{id}/plan/pdf")
-    public ResponseEntity<byte[]> exportTripPlan(@PathVariable Long id) throws IOException {
+    public ResponseEntity<byte[]> exportTripPlan(@PathVariable Long id, Principal principal)
+            throws IOException {
 
-        TripPlanDTO dto = tripPlannerService.getPlanForTrip(id);
+        TripPlanDTO dto = tripPlannerService.getPlanForTrip(id, principal.getName());
 
         byte[] pdf = pdfExportService.exportTripPlanToPdf(dto);
 
         return ResponseEntity.ok()
                 .header("Content-Type", "application/pdf")
-                .header("Content-Disposition", "attachment; filename=trip-plan-" + id + ".pdf")
+                .header("Content-Disposition",
+                        "attachment; filename=trip-plan-" + id + ".pdf")
                 .body(pdf);
 
     }

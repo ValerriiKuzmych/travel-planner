@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
+
 @RestController
-@RequestMapping("/trips")
+@RequestMapping("/api/trips")
 public class TripPlannerController {
 
 
@@ -22,11 +24,9 @@ public class TripPlannerController {
     }
 
     @GetMapping("/{id}/plan")
-    public ResponseEntity<TripPlanDTO> getTripPlan(@PathVariable Long id) {
+    public ResponseEntity<TripPlanDTO> getTripPlan(@PathVariable Long id, Principal principal) {
 
-        TripPlanDTO plan = tripPlannerService.getPlanForTrip(id);
-
-        return ResponseEntity.ok(plan);
+        return ResponseEntity.ok(tripPlannerService.getPlanForTrip(id, principal.getName()));
 
     }
 }

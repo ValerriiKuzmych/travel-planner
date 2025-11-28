@@ -22,7 +22,9 @@ public class TripServiceImpl implements TripService {
 
     private final OwnershipValidator validator;
 
-    public TripServiceImpl(TripRepository tripRepository, UserRepository userRepository, OwnershipValidator validator) {
+    public TripServiceImpl(TripRepository tripRepository,
+                           UserRepository userRepository,
+                           OwnershipValidator validator) {
 
         this.tripRepository = tripRepository;
         this.userRepository = userRepository;

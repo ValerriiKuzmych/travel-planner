@@ -4,6 +4,6 @@ import io.github.valeriikuzmych.travelplanner.dto.TripPlanDTO;
 
 public interface TripPlannerService {
 
-    TripPlanDTO getPlanForTrip(Long tripId);
+    TripPlanDTO getPlanForTrip(Long tripId, String userEmail);
 
 }

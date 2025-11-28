@@ -1,6 +1,7 @@
 package io.github.valeriikuzmych.travelplanner.dto;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -12,8 +13,9 @@ public class TripPlanDTO {
     private LocalDate startDate;
     private LocalDate endDate;
 
-    Map<LocalDate, WeatherDayDTO> weather;
-    Map<LocalDate, List<ActivityDTO>> activities;
+    Map<LocalDate, WeatherDayDTO> weather = new HashMap<>();
+    ;
+    Map<LocalDate, List<ActivityDTO>> activities = new HashMap<>();
 
     public Long getTripId() {
         return tripId;

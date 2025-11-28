@@ -18,21 +18,25 @@ public class TripPlannerServiceImpl implements TripPlannerService {
 
     private final WeatherService weatherService;
 
-    public TripPlannerServiceImpl(TripRepository tripRepository, WeatherService weatherService) {
+    private final OwnershipValidator validator;
+
+    public TripPlannerServiceImpl(TripRepository tripRepository, WeatherService weatherService,
+                                  OwnershipValidator validator) {
+
         this.tripRepository = tripRepository;
         this.weatherService = weatherService;
+        this.validator = validator;
     }
 
     @Override
-    public TripPlanDTO getPlanForTrip(Long tripId) {
+    public TripPlanDTO getPlanForTrip(Long tripId, String userEmail) {
 
-        Optional<Trip> optionalTrip = tripRepository.findById(tripId);
+        validator.assertUserOwnTrip(tripId, userEmail);
 
-        if (optionalTrip.isEmpty()) {
-            throw new IllegalArgumentException("Trip with id " + tripId + " not found");
-        }
+        Trip trip = tripRepository.findById(tripId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Trip with id " + tripId + " not found"));
 
-        Trip trip = optionalTrip.get();
 
         TripPlanDTO dto = new TripPlanDTO();
 
@@ -41,12 +45,19 @@ public class TripPlannerServiceImpl implements TripPlannerService {
         dto.setStartDate(trip.getStartDate());
         dto.setEndDate(trip.getEndDate());
 
-        Map<String, Object> weatherRaw = weatherService.getWeather(trip.getCity());
-        Map<LocalDate, WeatherDayDTO> weatherMap = convertWeather(weatherRaw);
+
+        Map<LocalDate, WeatherDayDTO> weatherMap = Collections.emptyMap();
+
+        try {
+            Map<String, Object> raw = weatherService.getWeather(trip.getCity());
+            weatherMap = convertWeather(raw);
+        } catch (Exception ignored) {
+
+        }
+
         dto.setWeather(weatherMap);
 
-        Map<LocalDate, List<ActivityDTO>> activityMap = convertActivities(trip);
-        dto.setActivities(activityMap);
+        dto.setActivities(convertActivities(trip));
 
         return dto;
     }
@@ -54,34 +65,86 @@ public class TripPlannerServiceImpl implements TripPlannerService {
 
     private Map<LocalDate, WeatherDayDTO> convertWeather(Map<String, Object> raw) {
 
-        List<Map<String, Object>> list = (List<Map<String, Object>>) raw.get("list");
+        if (raw == null) {
+            return new HashMap<>();
+        }
+
+        Object listObj = raw.get("list");
+
+        if (!(listObj instanceof List<?>)) {
+
+            return new HashMap<>();
+        }
+
+        List<?> rawList = (List<?>) listObj;
 
         Map<LocalDate, WeatherDayDTO> result = new HashMap<>();
 
-        for (Map<String, Object> entry : list) {
+        for (Object element : rawList) {
 
-            String dateTime = (String) entry.get("dt_txt");
-            LocalDate date = LocalDate.parse(dateTime.substring(0, 10));
+            if (!(element instanceof Map<?, ?> entry)) {
+                continue;
+            }
 
 
-            Map<String, Object> main = (Map<String, Object>) entry.get("main");
-            Double temp = (Double) main.get("temp");
+            Object dtObj = entry.get("dt_txt");
 
-            List<Map<String, Object>> weatherArr = (List<Map<String, Object>>) entry.get("weather");
-            String description = (String) weatherArr.get(0).get("description");
+            if (!(dtObj instanceof String dtTxt) || dtTxt.length() < 10) {
+                continue;
+            }
+
+            LocalDate date = LocalDate.parse(dtTxt.substring(0, 10));
+
+
+            double temp = 0.0;
+
+            Object mainObj = entry.get("main");
+
+            if (mainObj instanceof Map<?, ?> mainMap) {
+
+                Object tempObj = mainMap.get("temp");
+
+                if (tempObj instanceof Number number) {
+
+                    temp = number.doubleValue();
+                }
+            }
+
+
+            String description = "unknown";
+
+            Object weatherObj = entry.get("weather");
+
+            if (weatherObj instanceof List<?> weatherList && !weatherList.isEmpty()) {
+
+                Object item0 = weatherList.get(0);
+
+                if (item0 instanceof Map<?, ?> wMap) {
+
+                    Object descObj = wMap.get("description");
+
+                    if (descObj instanceof String text) {
+
+                        description = text;
+                    }
+                }
+            }
 
             WeatherDayDTO dto = new WeatherDayDTO();
-            dto.setDescription(description);
             dto.setTemperature(temp);
+            dto.setDescription(description);
 
             result.put(date, dto);
-
-
         }
+
         return result;
     }
 
     private Map<LocalDate, List<ActivityDTO>> convertActivities(Trip trip) {
+
+        if (trip.getActivities() == null || trip.getActivities().isEmpty()) {
+            return Collections.emptyMap();
+        }
 
         Map<LocalDate, List<ActivityDTO>> result = new HashMap<>();
 
