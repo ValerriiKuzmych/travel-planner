@@ -17,7 +17,8 @@ public class Activity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "trip_id", nullable = false)
+    @JoinColumn(name = "trip_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_trip"))
     private Trip trip;
 
 
