@@ -35,49 +35,49 @@ public class UiActivityControllerTest {
     @MockitoBean
     private ActivityService activityService;
 
-//    @Test
-//    void redirectIfNotAuthenticated() throws Exception {
-//        mockMvc.perform(get("/trips/1/activities"))
-//                .andExpect(status().isUnauthorized()); // проверяем 401
-//    }
-//
-//    @Test
-//    @WithMockUser(username = "user@mail.com", roles = {"USER"})
-//    void pageLoads_success() throws Exception {
-//
-//        Trip mockTrip = new Trip();
-//        mockTrip.setId(1L);
-//        mockTrip.setCity("Paris");
-//
-//        when(tripServiceImpl.getTripForUser(1L, "user@mail.com")).thenReturn(mockTrip);
-//
-//        ActivityDTO activityDTO = new ActivityDTO();
-//        activityDTO.setId(10L);
-//        activityDTO.setName("Sauna");
-//        activityDTO.setDate(java.time.LocalDate.of(2026, 12, 15));
-//        activityDTO.setStartTime(java.time.LocalTime.of(18, 0));
-//        activityDTO.setEndTime(java.time.LocalTime.of(19, 0));
-//
-//        when(activityService.getActivitiesByTripForUser(1L, "user@mail.com"))
-//                .thenReturn(List.of(convertToActivity(activityDTO)));
-//
-//        mockMvc.perform(get("/trips/1/activities").with(csrf()))
-//                .andExpect(status().isOk())
-//                .andExpect(view().name("activities_list"))
-//                .andExpect(model().attributeExists("trip"))
-//                .andExpect(model().attributeExists("activities"));
-//    }
-//
-//
-//    private io.github.valeriikuzmych.travelplanner.entity.Activity convertToActivity(ActivityDTO dto) {
-//        io.github.valeriikuzmych.travelplanner.entity.Activity activity =
-//                new io.github.valeriikuzmych.travelplanner.entity.Activity();
-//        activity.setId(dto.getId());
-//        activity.setName(dto.getName());
-//        activity.setDate(dto.getDate());
-//        activity.setStartTime(dto.getStartTime());
-//        activity.setEndTime(dto.getEndTime());
-//        return activity;
-//    }
+    @Test
+    void redirectIfNotAuthenticated() throws Exception {
+        mockMvc.perform(get("/trips/1/activities"))
+                .andExpect(status().isUnauthorized()); // проверяем 401
+    }
+
+    @Test
+    @WithMockUser(username = "user@mail.com", roles = {"USER"})
+    void pageLoads_success() throws Exception {
+
+        Trip mockTrip = new Trip();
+        mockTrip.setId(1L);
+        mockTrip.setCity("Paris");
+
+        when(tripServiceImpl.getTrip(1L, "user@mail.com")).thenReturn(mockTrip);
+
+        ActivityDTO activityDTO = new ActivityDTO();
+        activityDTO.setId(10L);
+        activityDTO.setName("Sauna");
+        activityDTO.setDate(java.time.LocalDate.of(2026, 12, 15));
+        activityDTO.setStartTime(java.time.LocalTime.of(18, 0));
+        activityDTO.setEndTime(java.time.LocalTime.of(19, 0));
+
+        when(activityService.getActivitiesByTripForUser(1L, "user@mail.com"))
+                .thenReturn(List.of(convertToActivity(activityDTO)));
+
+        mockMvc.perform(get("/trips/1/activities").with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("activities_list"))
+                .andExpect(model().attributeExists("trip"))
+                .andExpect(model().attributeExists("activities"));
+    }
+
+
+    private io.github.valeriikuzmych.travelplanner.entity.Activity convertToActivity(ActivityDTO dto) {
+        io.github.valeriikuzmych.travelplanner.entity.Activity activity =
+                new io.github.valeriikuzmych.travelplanner.entity.Activity();
+        activity.setId(dto.getId());
+        activity.setName(dto.getName());
+        activity.setDate(dto.getDate());
+        activity.setStartTime(dto.getStartTime());
+        activity.setEndTime(dto.getEndTime());
+        return activity;
+    }
 
 }

@@ -20,7 +20,7 @@ public class PDExportServiceTest {
     @Test
     void exportTripPlanToPdf_generatesValidPdf() throws Exception {
 
-        // --- prepare test DTO ---
+
         TripPlanDTO dto = new TripPlanDTO();
         dto.setTripId(1L);
         dto.setCity("Rome");

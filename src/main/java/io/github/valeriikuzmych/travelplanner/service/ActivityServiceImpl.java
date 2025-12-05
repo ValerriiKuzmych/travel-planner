@@ -3,9 +3,12 @@ package io.github.valeriikuzmych.travelplanner.service;
 import io.github.valeriikuzmych.travelplanner.dto.ActivityForm;
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
+import io.github.valeriikuzmych.travelplanner.exception.ResourceNotFoundException;
 import io.github.valeriikuzmych.travelplanner.repository.ActivityRepository;
 import io.github.valeriikuzmych.travelplanner.repository.TripRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 
 import java.time.LocalDate;
@@ -34,7 +37,8 @@ public class ActivityServiceImpl implements ActivityService {
 
 
         Trip trip = tripRepository.findById(form.getTripId())
-                .orElseThrow(() -> new IllegalArgumentException("Trip not found"));
+
+                .orElseThrow(() -> new ResourceNotFoundException("Trip not found"));
 
         ownershipValidator.assertUserOwnTrip(form.getTripId(), email);
 

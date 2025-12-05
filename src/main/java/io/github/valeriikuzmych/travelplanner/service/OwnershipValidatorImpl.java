@@ -2,6 +2,7 @@ package io.github.valeriikuzmych.travelplanner.service;
 
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
+import io.github.valeriikuzmych.travelplanner.exception.ResourceNotFoundException;
 import io.github.valeriikuzmych.travelplanner.repository.ActivityRepository;
 import io.github.valeriikuzmych.travelplanner.repository.TripRepository;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class OwnershipValidatorImpl implements OwnershipValidator {
     public void assertUserOwnTrip(Long tripId, String userEmail) {
 
         Trip trip = tripRepository.findById(tripId)
-                .orElseThrow(() -> new IllegalArgumentException("trip not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Trip not found"));
 
         if (!trip.getUser().getEmail().equalsIgnoreCase(userEmail)) {
 
