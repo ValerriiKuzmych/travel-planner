@@ -14,7 +14,7 @@ public class TripPlanDTO {
     private LocalDate endDate;
 
     Map<LocalDate, WeatherDayDTO> weather = new HashMap<>();
-    ;
+
     Map<LocalDate, List<ActivityDTO>> activities = new HashMap<>();
 
     public Long getTripId() {

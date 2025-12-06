@@ -1,0 +1,38 @@
+package io.github.valeriikuzmych.travelplanner.controller;
+
+
+import io.github.valeriikuzmych.travelplanner.dto.TripPlanDTO;
+import io.github.valeriikuzmych.travelplanner.service.TripPlannerService;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.security.Principal;
+
+@Controller
+@RequestMapping("/trips")
+public class UITripPlanController {
+
+    private final TripPlannerService tripPlannerService;
+
+    public UITripPlanController(TripPlannerService tripPlannerService) {
+
+        this.tripPlannerService = tripPlannerService;
+    }
+
+    @GetMapping("/{id}/plan")
+    public String showTripPlan(@PathVariable Long id, Principal principal,
+                               Model model) {
+
+        TripPlanDTO plan = tripPlannerService.getPlanForTrip(id, principal.getName());
+
+        model.addAttribute("plan", plan);
+
+        return "trip-plan";
+
+    }
+
+
+}

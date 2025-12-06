@@ -1,6 +1,7 @@
 package io.github.valeriikuzmych.travelplanner.service;
 
 import io.github.valeriikuzmych.travelplanner.dto.ActivityDTO;
+import io.github.valeriikuzmych.travelplanner.dto.ActivityResponseDTO;
 import io.github.valeriikuzmych.travelplanner.dto.TripPlanDTO;
 import io.github.valeriikuzmych.travelplanner.dto.WeatherDayDTO;
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
