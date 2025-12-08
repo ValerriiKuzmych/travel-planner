@@ -8,7 +8,7 @@
 
 <h2>Activities for trip: [[${trip.city}]]</h2>
 
-<a th:href="@{'/trips/' + ${trip.id} + '/activities/create'}">Create activity</a>
+<a th:href="@{/trips/{id}/activities/create(id=${trip.id})}">Create activity</a>
 
 
 <table>
@@ -39,6 +39,7 @@
     </tr>
 </table>
 
+<a th:href="@{/trips/{id}(id=${trip.id})}">Back to Trip</a>
 
 </body>
 </html>

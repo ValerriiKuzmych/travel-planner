@@ -36,6 +36,9 @@
 
 
         <td>
+            <a th:href="@{/trips/{id}(id=${trip.id})}">
+                <button>Details</button>
+            </a>
             <a th:href="@{/trips/{id}/edit(id=${trip.id})}">
                 <button>Edit</button>
             </a>

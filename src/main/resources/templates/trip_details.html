@@ -16,13 +16,11 @@
 </div>
 
 <div class="mb-3">
-    <a th:href="@{'/trips/' + ${trip.id} + '/edit'}" class="btn btn-primary">Edit</a>
-
-    <a th:href="@{'/trips/' + ${trip.id} + '/delete'}"
-       class="btn btn-danger"
-       onclick="return confirm('Delete this trip?')">Delete</a>
-
-    <a th:href="@{'/trips'}" class="btn btn-secondary">Back</a>
+    <a th:href="@{/trips/{id}/edit(id=${trip.id})}" class="btn btn-primary">Edit</a>
+    <form th:action="@{/trips/{id}/delete(id=${trip.id})}" method="post" style="display:inline;">
+        <button class="btn btn-danger" type="submit">Delete</button>
+    </form>
+    <a th:href="@{/trips}" class="btn btn-secondary">Back</a>
 </div>
 
 <hr>
@@ -45,14 +43,13 @@
             <strong th:text="act.name"></strong>
 
             <a class="btn btn-sm btn-outline-primary float-end"
-               th:href="@{'/activities/' + ${act.id} + '/edit'}">Edit</a>
+               th:href="@{/trips/{tripId}/activities/{actId}/edit(tripId=${trip.id},actId=${act.id})}">Edit</a>
         </li>
     </ul>
 </div>
 
-<a th:href="@{'/activities/new?tripId=' + ${trip.id}}" class="btn btn-success">
-    + Add Activity
-</a>
+<a class="btn btn-sm btn-outline-primary float-end"
+   th:href="@{/trips/{tripId}/activities/{actId}/edit(tripId=${trip.id},actId=${act.id})}">Edit</a>
 
 </body>
 </html>
