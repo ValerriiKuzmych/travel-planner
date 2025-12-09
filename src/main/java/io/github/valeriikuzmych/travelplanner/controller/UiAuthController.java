@@ -12,10 +12,34 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class UiAuthController {
 
-    @GetMapping("/login")
-    public String authPage() {
+    private final UserService userService;
 
+    public UiAuthController(UserService userService) {
+        this.userService = userService;
+    }
+
+    @GetMapping("/login")
+    public String authPage(Model model) {
+
+        model.addAttribute("user", new RegistrationRequest());
+        
         return "login";
+    }
+
+    @PostMapping
+    public String loginSubmit(@ModelAttribute("user") RegistrationRequest user, Model model) {
+
+        boolean success = userService.authenticate(user.getEmail(), user.getPassword());
+
+        if (success) {
+
+            return "redirect:/trips";
+
+        } else {
+            model.addAttribute("error", "Invalid email or password");
+
+            return "login";
+        }
     }
 
     @GetMapping("/register")
@@ -27,8 +51,8 @@ public class UiAuthController {
     }
 
     @PostMapping("/register")
-    public String registerSubmit(@ModelAttribute RegistrationRequest user,
-                                 UserService userService, Model model) {
+    public String registerSubmit(@ModelAttribute("user") RegistrationRequest user,
+                                 Model model) {
 
         try {
             userService.registerUser(user.getEmail(), user.getPassword());
