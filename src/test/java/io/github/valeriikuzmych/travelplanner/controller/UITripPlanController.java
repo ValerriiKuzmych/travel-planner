@@ -26,8 +26,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-@WebMvcTest(UITripPlanController.class)
-class UITripPlanControllerTest {
+@WebMvcTest(UiTripPlanController.class)
+class UiTripPlanControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

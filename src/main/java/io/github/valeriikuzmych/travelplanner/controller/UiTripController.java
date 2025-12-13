@@ -40,6 +40,13 @@ public class UiTripController {
         return "trips";
     }
 
+    @GetMapping("/create")
+    public String createTripForm(Model model) {
+
+        model.addAttribute("trip", new TripForm());
+        return "create_trip";
+    }
+
     @PostMapping("/create")
     public String createTrip(@ModelAttribute TripForm form,
                              Principal principal) {
@@ -49,7 +56,7 @@ public class UiTripController {
 
         tripService.createTrip(form, email);
 
-        return "redirect:/profile";
+        return "redirect:/trips";
     }
 
 

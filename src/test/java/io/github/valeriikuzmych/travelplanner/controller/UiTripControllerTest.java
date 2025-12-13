@@ -147,4 +147,15 @@ class UiTripControllerTest {
                 .andExpect(view().name("trip_details"))
                 .andExpect(model().attributeExists("trip"));
     }
+
+    @Test
+    void createTripFormShouldRender() throws Exception {
+
+        mockMvc.perform(get("/trips/create")
+                        .with(user("user@test.com"))
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("create_trip"))
+                .andExpect(model().attributeExists("trip"));
+    }
 }

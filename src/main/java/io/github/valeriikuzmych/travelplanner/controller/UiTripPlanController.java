@@ -13,11 +13,11 @@ import java.security.Principal;
 
 @Controller
 @RequestMapping("/trips")
-public class UITripPlanController {
+public class UiTripPlanController {
 
     private final TripPlannerService tripPlannerService;
 
-    public UITripPlanController(TripPlannerService tripPlannerService) {
+    public UiTripPlanController(TripPlannerService tripPlannerService) {
 
         this.tripPlannerService = tripPlannerService;
     }
