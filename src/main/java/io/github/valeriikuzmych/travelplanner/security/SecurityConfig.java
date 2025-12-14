@@ -90,6 +90,12 @@ public class SecurityConfig {
                                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
                             }
                         })
+                        .accessDeniedHandler(((request,
+                                               response,
+                                               accessDeniedException) -> {
+                            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
+
+                        }))
                 );
 
         return httpSecurity.build();

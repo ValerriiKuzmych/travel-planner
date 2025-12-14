@@ -5,6 +5,7 @@ import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.exception.ResourceNotFoundException;
 import io.github.valeriikuzmych.travelplanner.repository.ActivityRepository;
 import io.github.valeriikuzmych.travelplanner.repository.TripRepository;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,7 +31,7 @@ public class OwnershipValidatorImpl implements OwnershipValidator {
 
         if (!trip.getUser().getEmail().equalsIgnoreCase(userEmail)) {
 
-            throw new SecurityException("You do not own this trip");
+            throw new AccessDeniedException("You do not own this trip");
 
         }
 
@@ -44,7 +45,7 @@ public class OwnershipValidatorImpl implements OwnershipValidator {
 
         if (!activity.getTrip().getUser().getEmail().equalsIgnoreCase(userEmail)) {
 
-            throw new SecurityException("You do not own this activity");
+            throw new AccessDeniedException("You do not own this activity");
         }
 
     }

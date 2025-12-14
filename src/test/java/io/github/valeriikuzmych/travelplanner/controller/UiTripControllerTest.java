@@ -73,7 +73,7 @@ class UiTripControllerTest {
                         .param("startDate", "2025-01-01")
                         .param("endDate", "2025-01-05"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/profile"));
+                .andExpect(redirectedUrl("/trips"));
 
         verify(tripService).createTrip(any(TripForm.class), eq("user@test.com"));
     }
