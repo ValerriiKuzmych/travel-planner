@@ -8,7 +8,8 @@
 
 <h2>Edit activity</h2>
 
-<form method="post" th:object="${form}">
+<form th:action="@{/trips/{tripId}/activities/{id}/edit(tripId=${form.tripId}, id=${form.id})}" th:object="${form}"
+      method="post">
 
     <input type="hidden" th:field="*{id}"/>
     <input type="hidden" th:field="*{tripId}"/>
