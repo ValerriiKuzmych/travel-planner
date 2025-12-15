@@ -36,11 +36,11 @@
 
     <ul class="list-group mb-3">
         <li th:each="act : ${entry.value}" class="list-group-item">
-            <span th:text="act.startTime"></span>
+            <span th:text="${act.startTime}"></span>
             -
-            <span th:text="act.endTime"></span>
+            <span th:text="${act.endTime}"></span>
             :
-            <strong th:text="act.name"></strong>
+            <strong th:text="${act.name}"></strong>
 
             <a class="btn btn-sm btn-outline-primary float-end"
                th:href="@{/trips/{tripId}/activities/{actId}/edit(tripId=${trip.id},actId=${act.id})}">Edit</a>
