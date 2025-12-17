@@ -16,6 +16,7 @@
 </div>
 
 <div class="mb-3">
+    <a th:href="@{/trips/{id}/plan(id=${trip.id})}" class="btn btn-primary">Trip plan</a>
     <a th:href="@{/trips/{id}/edit(id=${trip.id})}" class="btn btn-primary">Edit</a>
     <form th:action="@{/trips/{id}/delete(id=${trip.id})}" method="post" style="display:inline;">
         <button class="btn btn-danger" type="submit">Delete</button>
