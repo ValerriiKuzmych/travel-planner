@@ -1,15 +1,12 @@
 package io.github.valeriikuzmych.travelplanner.service;
 
-import io.github.valeriikuzmych.travelplanner.dto.ActivityDTO;
-import io.github.valeriikuzmych.travelplanner.dto.ActivityResponseDTO;
-import io.github.valeriikuzmych.travelplanner.dto.TripPlanDTO;
-import io.github.valeriikuzmych.travelplanner.dto.WeatherDayDTO;
+import io.github.valeriikuzmych.travelplanner.dto.*;
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.repository.TripRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.*;
 import java.util.*;
 
 @Service
@@ -47,12 +44,16 @@ public class TripPlannerServiceImpl implements TripPlannerService {
         dto.setEndDate(trip.getEndDate());
 
 
-        Map<LocalDate, WeatherDayDTO> weatherMap = Collections.emptyMap();
+        Map<LocalDate, WeatherDayDTO> weatherMap = new HashMap<>();
 
         try {
             Map<String, Object> raw = weatherService.getWeather(trip.getCity());
-            weatherMap = convertWeather(raw);
-        } catch (Exception ignored) {
+
+            weatherMap = convertWeather(raw, trip.getStartDate(), trip.getEndDate());
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
 
         }
 
@@ -64,22 +65,35 @@ public class TripPlannerServiceImpl implements TripPlannerService {
     }
 
 
-    private Map<LocalDate, WeatherDayDTO> convertWeather(Map<String, Object> raw) {
+    private Map<LocalDate, WeatherDayDTO> convertWeather(Map<String, Object> raw,
+                                                         LocalDate startDate,
+                                                         LocalDate endDate) {
+
+        Map<LocalDate, WeatherDayDTO> result = new HashMap<>();
 
         if (raw == null) {
-            return new HashMap<>();
+            return result;
         }
 
         Object listObj = raw.get("list");
+        Object cityObj = raw.get("city");
 
-        if (!(listObj instanceof List<?>)) {
+        if (!(listObj instanceof List<?> rawList)) {
 
-            return new HashMap<>();
+            return result;
         }
 
-        List<?> rawList = (List<?>) listObj;
+        int timezoneOffsetSeconds = 0;
 
-        Map<LocalDate, WeatherDayDTO> result = new HashMap<>();
+        if (cityObj instanceof Map<?, ?> cityMap) {
+
+            Object tz = cityMap.get("timezone");
+
+            if (tz instanceof Number tzNumber) {
+
+                timezoneOffsetSeconds = tzNumber.intValue();
+            }
+        }
 
         for (Object element : rawList) {
 
@@ -88,54 +102,69 @@ public class TripPlannerServiceImpl implements TripPlannerService {
             }
 
 
-            Object dtObj = entry.get("dt_txt");
-
-            if (!(dtObj instanceof String dtTxt) || dtTxt.length() < 10) {
+            Object dtObj = entry.get("dt");
+            if (!(dtObj instanceof Number dtNumber)) {
                 continue;
             }
 
-            LocalDate date = LocalDate.parse(dtTxt.substring(0, 10));
+            long dtUtcSeconds = dtNumber.longValue();
 
+            LocalDateTime localDateTime =
+                    Instant.ofEpochSecond(dtUtcSeconds)
+                            .plusSeconds(timezoneOffsetSeconds)
+                            .atZone(ZoneOffset.UTC)
+                            .toLocalDateTime();
 
-            double temp = 0.0;
+            LocalDate date = localDateTime.toLocalDate();
+            LocalTime time = localDateTime.toLocalTime();
+
+            if (date.isBefore(startDate) || date.isAfter(endDate)) {
+
+                continue;
+
+            }
+
+            int hour = time.getHour();
+
+            if (hour != 7 && hour != 13 && hour != 19) {
+
+                continue;
+
+            }
 
             Object mainObj = entry.get("main");
-
-            if (mainObj instanceof Map<?, ?> mainMap) {
-
-                Object tempObj = mainMap.get("temp");
-
-                if (tempObj instanceof Number number) {
-
-                    temp = number.doubleValue();
-                }
-            }
-
-
-            String description = "unknown";
-
             Object weatherObj = entry.get("weather");
 
-            if (weatherObj instanceof List<?> weatherList && !weatherList.isEmpty()) {
+            if (!(mainObj instanceof Map<?, ?> mainMap)
+                    || !(weatherObj instanceof List<?> weatherList)
+                    || weatherList.isEmpty()) {
 
-                Object item0 = weatherList.get(0);
-
-                if (item0 instanceof Map<?, ?> wMap) {
-
-                    Object descObj = wMap.get("description");
-
-                    if (descObj instanceof String text) {
-
-                        description = text;
-                    }
-                }
+                continue;
             }
 
-            WeatherDayDTO dto = new WeatherDayDTO();
-            dto.setTemperature(temp);
-            dto.setDescription(description);
 
-            result.put(date, dto);
+            Object tempObj = mainMap.get("temp");
+
+            Object descObj = ((Map<?, ?>) weatherList.get(0)).get("description");
+
+
+            if (!(tempObj instanceof Number number)
+                    || !(descObj instanceof String description)) {
+                continue;
+            }
+
+            String displayTime = String.format("%02d:00", hour);
+
+            WeatherTimeDTO timeDTO = new WeatherTimeDTO(
+                    displayTime,
+                    number.doubleValue(),
+                    description
+            );
+
+            result
+                    .computeIfAbsent(date, d -> new WeatherDayDTO())
+                    .getTimes()
+                    .add(timeDTO);
         }
 
         return result;

@@ -24,17 +24,27 @@
 
     <h2 class="mb-3">Weather Forecast</h2>
 
-    <div class="row" th:each="weatherEntry : ${plan.weather}">
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 th:text="${weatherEntry.key}"></h5>
-                    <p>
-                        <strong>Temp:</strong>
-                        <span th:text="${weatherEntry.value.temperature} + '°C'"></span>
-                    </p>
-                    <p th:text="${weatherEntry.value.description}"></p>
-                </div>
+    <div th:if="${#maps.isEmpty(plan.weather)}"
+         class="alert alert-warning">
+        Weather forecast is available only for the next 5 days
+        and will appear closer to the start date.
+    </div>
+
+
+    <div class="mb-4" th:each="dayEntry : ${plan.weather}">
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <h5 th:text="${dayEntry.key}"></h5>
+
+                <ul class="list-group list-group-flush"
+                    th:each="w : ${dayEntry.value.times}">
+                    <li class="list-group-item">
+                        <strong th:text="${w.time}"></strong>
+                        —
+                        <span th:text="${#numbers.formatDecimal(w.temperature,1,1)} + ' °C'"></span>,
+                        <span th:text="${w.description}"></span>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
@@ -56,6 +66,9 @@
     </div>
     <a th:href="@{/trips/{id}(id=${plan.tripId})}">Back to Trip</a>
 </div>
+
+</body>
+</html>
 
 
 

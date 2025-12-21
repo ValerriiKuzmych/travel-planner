@@ -46,14 +46,14 @@ public class WeatherService {
 
         ResponseEntity<Map> forecastResponse = restTemplate.getForEntity(forecastRequest, Map.class);
 
-        if (forecastResponse.getStatusCode().is2xxSuccessful()) {
+        if (forecastResponse != null
+                && forecastResponse.getStatusCode().is2xxSuccessful()
+                && forecastResponse.getBody() != null) {
 
             return forecastResponse.getBody();
-        } else {
-
-            throw new RuntimeException("Failed to fetch forecast for " + city);
-
         }
+
+        throw new RuntimeException("Failed to fetch forecast for " + city);
     }
 
 }

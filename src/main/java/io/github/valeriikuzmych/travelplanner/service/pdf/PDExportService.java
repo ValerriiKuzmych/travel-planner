@@ -1,9 +1,6 @@
 package io.github.valeriikuzmych.travelplanner.service.pdf;
 
-import io.github.valeriikuzmych.travelplanner.dto.ActivityDTO;
-import io.github.valeriikuzmych.travelplanner.dto.ActivityResponseDTO;
-import io.github.valeriikuzmych.travelplanner.dto.TripPlanDTO;
-import io.github.valeriikuzmych.travelplanner.dto.WeatherDayDTO;
+import io.github.valeriikuzmych.travelplanner.dto.*;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -61,7 +58,9 @@ public class PDExportService implements IPDExportService {
             PDPage newPage = new PDPage();
             document.addPage(newPage);
 
-            PDPageContentStream newContentStream = new PDPageContentStream(document, newPage);
+            PDPageContentStream newContentStream = new PDPageContentStream(document, newPage,
+                    PDPageContentStream.AppendMode.APPEND,
+                    true);
 
             state.setPage(newPage);
             state.setContentStream(newContentStream);
@@ -98,24 +97,46 @@ public class PDExportService implements IPDExportService {
 
         state.setY(state.getY() - 25);
 
-        for (Map.Entry<LocalDate, WeatherDayDTO> entry : plan.getWeather().entrySet()) {
+        for (Map.Entry<LocalDate, WeatherDayDTO> entry
+                : plan.getWeather().entrySet()) {
 
             state = checkPage(document, state);
 
-            WeatherDayDTO weather = entry.getValue();
-
             cs = state.getContentStream();
             cs.beginText();
-            cs.setFont(PDType1Font.HELVETICA, 12);
+            cs.setFont(PDType1Font.HELVETICA_BOLD, 12);
             cs.newLineAtOffset(60, state.getY());
-            cs.showText(entry.getKey() + ": " + weather.getTemperature() + "°C — " + weather.getDescription());
+            cs.showText(entry.getKey().toString());
             cs.endText();
 
-            state.setY(state.getY() - 18);
+            state.setY(state.getY() - 16);
+
+            for (WeatherTimeDTO wt : entry.getValue().getTimes()) {
+
+                state = checkPage(document, state);
+                cs = state.getContentStream();
+
+                cs.beginText();
+                cs.setFont(PDType1Font.HELVETICA, 12);
+                cs.newLineAtOffset(80, state.getY());
+
+
+                cs.showText(
+                        wt.getTime()
+                                + " — "
+                                + wt.getTemperature()
+                                + " °C, "
+                                + wt.getDescription()
+                );
+                cs.endText();
+
+                state.setY(state.getY() - 14);
+            }
+
+            state.setY(state.getY() - 10);
         }
 
         return state.getY() - 10;
-
     }
 
     private int writeActivity(PDDocument document, PdfState state, TripPlanDTO plan) throws IOException {

@@ -34,15 +34,26 @@ class WeatherServiceTest {
     @Test
     void getWeather_success() {
         List<Map<String, Object>> geoResponse = List.of(Map.of("lat", 41.8919, "lon", 12.5113));
+
         when(restTemplate.getForEntity(anyString(), eq(List.class))).thenReturn(ResponseEntity.ok(geoResponse));
 
-        Map<String, Object> forecastResponse = Map.of("city", Map.of("name", "Rome"), "list", List.of(Map.of("dt_txt", "2025-10-14 12:00:00", "main", Map.of("temp", 22.3))));
-        when(restTemplate.getForEntity(anyString(), eq(Map.class))).thenReturn(ResponseEntity.ok(forecastResponse));
+        Map<String, Object> forecastBody = Map.of(
+                "list", List.of(
+                        Map.of(
+                                "dt_txt", "2025-10-14 07:00:00",
+                                "main", Map.of("temp", 22.3),
+                                "weather", List.of(Map.of("description", "clear sky"))
+                        )
+                )
+        );
+
+        when(restTemplate.getForEntity(anyString(), eq(Map.class)))
+                .thenReturn(ResponseEntity.ok(forecastBody));
 
         Map<String, Object> result = weatherService.getWeather("Rome");
 
         assertNotNull(result);
-        assertEquals("Rome", ((Map<?, ?>) result.get("city")).get("name"));
+        assertTrue(result.containsKey("list"));
         assertFalse(((List<?>) result.get("list")).isEmpty());
 
         verify(restTemplate, times(1)).getForEntity(anyString(), eq(List.class));

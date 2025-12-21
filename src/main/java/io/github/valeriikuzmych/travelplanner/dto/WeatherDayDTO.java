@@ -1,31 +1,17 @@
 package io.github.valeriikuzmych.travelplanner.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class WeatherDayDTO {
 
-    private Double temperature;
-    private String description;
+    private List<WeatherTimeDTO> times = new ArrayList<>();
 
-    public WeatherDayDTO() {
+    public List<WeatherTimeDTO> getTimes() {
+        return times;
     }
 
-    public WeatherDayDTO(String description, Double temperature) {
-        this.description = description;
-        this.temperature = temperature;
-    }
-
-    public Double getTemperature() {
-        return temperature;
-    }
-
-    public void setTemperature(Double temperature) {
-        this.temperature = temperature;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public void setTimes(List<WeatherTimeDTO> times) {
+        this.times = times;
     }
 }

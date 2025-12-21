@@ -3,6 +3,8 @@ package io.github.valeriikuzmych.travelplanner.controller;
 import io.github.valeriikuzmych.travelplanner.dto.ActivityDTO;
 import io.github.valeriikuzmych.travelplanner.dto.TripPlanDTO;
 import io.github.valeriikuzmych.travelplanner.dto.WeatherDayDTO;
+import io.github.valeriikuzmych.travelplanner.dto.WeatherTimeDTO;
+import io.github.valeriikuzmych.travelplanner.service.TripPlannerService;
 import io.github.valeriikuzmych.travelplanner.service.TripPlannerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +21,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasProperty;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 
@@ -33,7 +37,7 @@ class UiTripPlanControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private TripPlannerServiceImpl tripPlanService;
+    private TripPlannerService tripPlanService;
 
     private TripPlanDTO planDTO;
 
@@ -48,25 +52,32 @@ class UiTripPlanControllerTest {
 
 
         WeatherDayDTO weatherDay = new WeatherDayDTO();
-        weatherDay.setTemperature(15.5);
-        weatherDay.setDescription("clear sky");
+
+        weatherDay.getTimes().add(
+                new WeatherTimeDTO("07:00", 14.0, "rain")
+        );
+        weatherDay.getTimes().add(
+                new WeatherTimeDTO("13:00", 18.0, "sunny")
+        );
+        weatherDay.getTimes().add(
+                new WeatherTimeDTO("19:00", 16.0, "cloudy")
+        );
 
         Map<LocalDate, WeatherDayDTO> weatherMap = new HashMap<>();
-        weatherMap.put(LocalDate.of(2025, 3, 11), weatherDay);
 
+        weatherMap.put(LocalDate.of(2025, 3, 11), weatherDay);
         planDTO.setWeather(weatherMap);
 
-
         ActivityDTO act = new ActivityDTO();
+
         act.setId(100L);
         act.setName("Museum Tour");
         act.setDate(LocalDate.of(2025, 3, 11));
-        act.setStartTime(LocalTime.of(10, 00));
-
+        act.setStartTime(LocalTime.of(10, 0));
 
         Map<LocalDate, List<ActivityDTO>> activities = new HashMap<>();
-        activities.put(LocalDate.of(2025, 3, 11), List.of(act));
 
+        activities.put(LocalDate.of(2025, 3, 11), List.of(act));
         planDTO.setActivities(activities);
     }
 
@@ -81,10 +92,13 @@ class UiTripPlanControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("trip-plan"))
                 .andExpect(model().attributeExists("plan"))
-                .andExpect(model().attribute("plan", planDTO))
-                .andExpect(model().attribute("plan", planDTO))
-                .andExpect(model().attribute("plan", planDTO))
-                .andExpect(model().attribute("plan", planDTO));
+
+                .andExpect(model().attribute("plan",
+                        hasProperty("city", equalTo("Paris"))))
+                .andExpect(model().attribute("plan",
+                        hasProperty("weather")))
+                .andExpect(model().attribute("plan",
+                        hasProperty("activities")));
     }
 
     @Test
