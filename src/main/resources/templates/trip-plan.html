@@ -22,33 +22,24 @@
     </div>
 
 
-    <h2 class="mb-3">Weather Forecast</h2>
+    <h2 class="mt-5 mb-3">Weather Forecast</h2>
 
-    <div th:if="${#maps.isEmpty(plan.weather)}"
-         class="alert alert-warning">
-        Weather forecast is available only for the next 5 days
-        and will appear closer to the start date.
+    <div th:if="${plan.weather.isEmpty()}">
+        <p class="text-muted">
+            Weather forecast is available only for the next few days.
+        </p>
     </div>
 
-
-    <div class="mb-4" th:each="dayEntry : ${plan.weather}">
-        <div class="card shadow-sm mb-3">
-            <div class="card-body">
-                <h5 th:text="${dayEntry.key}"></h5>
-
-                <ul class="list-group list-group-flush"
-                    th:each="w : ${dayEntry.value.times}">
-                    <li class="list-group-item">
-                        <strong th:text="${w.time}"></strong>
-                        —
-                        <span th:text="${#numbers.formatDecimal(w.temperature,1,1)} + ' °C'"></span>,
-                        <span th:text="${w.description}"></span>
-                    </li>
-                </ul>
-            </div>
-        </div>
+    <div th:each="dayEntry : ${plan.weather}">
+        <h5 th:text="${dayEntry.key}"></h5>
+        <ul class="list-group mb-3">
+            <li class="list-group-item" th:each="t : ${dayEntry.value.times}">
+                <strong th:text="${t.time}"></strong>
+                — <span th:text="${t.temperature} + '°C'"></span>,
+                <span th:text="${t.description}"></span>
+            </li>
+        </ul>
     </div>
-
 
     <h2 class="mt-5 mb-3">Activities</h2>
 

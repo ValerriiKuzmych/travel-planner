@@ -7,7 +7,9 @@ import io.github.valeriikuzmych.travelplanner.repository.TripRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TripPlannerServiceImpl implements TripPlannerService {
@@ -18,8 +20,7 @@ public class TripPlannerServiceImpl implements TripPlannerService {
 
     private final OwnershipValidator validator;
 
-    public TripPlannerServiceImpl(TripRepository tripRepository, WeatherService weatherService,
-                                  OwnershipValidator validator) {
+    public TripPlannerServiceImpl(TripRepository tripRepository, WeatherService weatherService, OwnershipValidator validator) {
 
         this.tripRepository = tripRepository;
         this.weatherService = weatherService;
@@ -31,9 +32,7 @@ public class TripPlannerServiceImpl implements TripPlannerService {
 
         validator.assertUserOwnTrip(tripId, userEmail);
 
-        Trip trip = tripRepository.findById(tripId)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Trip with id " + tripId + " not found"));
+        Trip trip = tripRepository.findById(tripId).orElseThrow(() -> new IllegalArgumentException("Trip with id " + tripId + " not found"));
 
 
         TripPlanDTO dto = new TripPlanDTO();
@@ -43,132 +42,57 @@ public class TripPlannerServiceImpl implements TripPlannerService {
         dto.setStartDate(trip.getStartDate());
         dto.setEndDate(trip.getEndDate());
 
-
-        Map<LocalDate, WeatherDayDTO> weatherMap = new HashMap<>();
-
-        try {
-            Map<String, Object> raw = weatherService.getWeather(trip.getCity());
-
-            weatherMap = convertWeather(raw, trip.getStartDate(), trip.getEndDate());
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-
-        }
-
-        dto.setWeather(weatherMap);
+        Map<String, Object> raw = weatherService.getWeather(trip.getCity());
+        System.out.println("RAW WEATHER: " + raw);
+        dto.setWeather(convertWeather(raw));
 
         dto.setActivities(convertActivities(trip));
 
+        System.out.println("Weather size = " + dto.getWeather().size());
         return dto;
     }
 
 
-    private Map<LocalDate, WeatherDayDTO> convertWeather(Map<String, Object> raw,
-                                                         LocalDate startDate,
-                                                         LocalDate endDate) {
+    private Map<LocalDate, WeatherDayDTO> convertWeather(Map<String, Object> raw) {
+        Map<LocalDate, WeatherDayDTO> result = new LinkedHashMap<>();
 
-        Map<LocalDate, WeatherDayDTO> result = new HashMap<>();
-
-        if (raw == null) {
-            return result;
-        }
-
-        Object listObj = raw.get("list");
-        Object cityObj = raw.get("city");
-
-        if (!(listObj instanceof List<?> rawList)) {
-
+        if (raw == null || !(raw.get("list") instanceof List<?> list)) {
             return result;
         }
 
         int timezoneOffsetSeconds = 0;
-
-        if (cityObj instanceof Map<?, ?> cityMap) {
-
-            Object tz = cityMap.get("timezone");
-
-            if (tz instanceof Number tzNumber) {
-
-                timezoneOffsetSeconds = tzNumber.intValue();
-            }
+        if (raw.get("city") instanceof Map<?, ?> city && city.get("timezone") instanceof Number tz) {
+            timezoneOffsetSeconds = tz.intValue();
         }
 
-        for (Object element : rawList) {
+        for (Object item : list) {
+            if (!(item instanceof Map<?, ?> entry)) continue;
+            if (!(entry.get("dt") instanceof Number dt)) continue;
 
-            if (!(element instanceof Map<?, ?> entry)) {
-                continue;
-            }
+            Instant instant = Instant.ofEpochSecond(dt.longValue());
+            LocalDate date = instant.atZone(ZoneOffset.ofTotalSeconds(timezoneOffsetSeconds)).toLocalDate();
+            LocalTime time = instant.atZone(ZoneOffset.ofTotalSeconds(timezoneOffsetSeconds)).toLocalTime();
 
+            if (!(entry.get("main") instanceof Map<?, ?> main)) continue;
+            if (!(entry.get("weather") instanceof List<?> weatherList) || weatherList.isEmpty()) continue;
 
-            Object dtObj = entry.get("dt");
-            if (!(dtObj instanceof Number dtNumber)) {
-                continue;
-            }
-
-            long dtUtcSeconds = dtNumber.longValue();
-
-            LocalDateTime localDateTime =
-                    Instant.ofEpochSecond(dtUtcSeconds)
-                            .plusSeconds(timezoneOffsetSeconds)
-                            .atZone(ZoneOffset.UTC)
-                            .toLocalDateTime();
-
-            LocalDate date = localDateTime.toLocalDate();
-            LocalTime time = localDateTime.toLocalTime();
-
-            if (date.isBefore(startDate) || date.isAfter(endDate)) {
-
-                continue;
-
-            }
-
-            int hour = time.getHour();
-
-            if (hour != 7 && hour != 13 && hour != 19) {
-
-                continue;
-
-            }
-
-            Object mainObj = entry.get("main");
-            Object weatherObj = entry.get("weather");
-
-            if (!(mainObj instanceof Map<?, ?> mainMap)
-                    || !(weatherObj instanceof List<?> weatherList)
-                    || weatherList.isEmpty()) {
-
-                continue;
-            }
-
-
-            Object tempObj = mainMap.get("temp");
-
+            Object tempObj = main.get("temp");
             Object descObj = ((Map<?, ?>) weatherList.get(0)).get("description");
 
+            if (!(tempObj instanceof Number temp) || !(descObj instanceof String desc)) continue;
 
-            if (!(tempObj instanceof Number number)
-                    || !(descObj instanceof String description)) {
-                continue;
-            }
-
-            String displayTime = String.format("%02d:00", hour);
-
-            WeatherTimeDTO timeDTO = new WeatherTimeDTO(
-                    displayTime,
-                    number.doubleValue(),
-                    description
+            WeatherTimeDTO dto = new WeatherTimeDTO(
+                    time.toString(),
+                    Math.round(temp.doubleValue() * 10.0) / 10.0,
+                    (String) desc
             );
 
-            result
-                    .computeIfAbsent(date, d -> new WeatherDayDTO())
-                    .getTimes()
-                    .add(timeDTO);
+            result.computeIfAbsent(date, d -> new WeatherDayDTO()).getTimes().add(dto);
         }
 
         return result;
     }
+
 
     private Map<LocalDate, List<ActivityDTO>> convertActivities(Trip trip) {
 
@@ -188,8 +112,7 @@ public class TripPlannerServiceImpl implements TripPlannerService {
             dto.setStartTime(act.getStartTime());
 
 
-            result.computeIfAbsent(act.getDate(), d -> new ArrayList<>())
-                    .add(dto);
+            result.computeIfAbsent(act.getDate(), d -> new ArrayList<>()).add(dto);
 
 
         }

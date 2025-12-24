@@ -13,7 +13,7 @@ public class WeatherService {
 
     @Value("${weather.api.key}")
     private String apiKey;
-    @Value("${weather.api.url}")
+    @Value("${weather.forecast.url}")
     private String forecastUrl;
     @Value("${weather.geo.url}")
     private String geoUrl;
@@ -41,7 +41,7 @@ public class WeatherService {
         Double lat = (Double) location.get("lat");
         Double lon = (Double) location.get("lon");
 
-        String forecastRequest = String.format("%s?lat=%s&lon=%s&appid=%s", forecastUrl, lat, lon, apiKey);
+        String forecastRequest = String.format("%s?lat=%s&lon=%s&appid=%s&units=metric", forecastUrl, lat, lon, apiKey);
 
 
         ResponseEntity<Map> forecastResponse = restTemplate.getForEntity(forecastRequest, Map.class);
