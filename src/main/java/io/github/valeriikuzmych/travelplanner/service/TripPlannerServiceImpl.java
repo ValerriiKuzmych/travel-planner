@@ -54,6 +54,8 @@ public class TripPlannerServiceImpl implements TripPlannerService {
 
 
     private Map<LocalDate, WeatherDayDTO> convertWeather(Map<String, Object> raw) {
+
+
         Map<LocalDate, WeatherDayDTO> result = new LinkedHashMap<>();
 
         if (raw == null || !(raw.get("list") instanceof List<?> list)) {
@@ -61,6 +63,7 @@ public class TripPlannerServiceImpl implements TripPlannerService {
         }
 
         int timezoneOffsetSeconds = 0;
+        
         if (raw.get("city") instanceof Map<?, ?> city && city.get("timezone") instanceof Number tz) {
             timezoneOffsetSeconds = tz.intValue();
         }

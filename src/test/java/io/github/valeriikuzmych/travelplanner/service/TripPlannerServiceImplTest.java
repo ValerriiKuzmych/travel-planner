@@ -94,9 +94,12 @@ public class TripPlannerServiceImplTest {
 
         WeatherTimeDTO time = day.getTimes().get(0);
 
-       
+
         LocalTime expectedTime =
-                forecastInstant.atZone(ZoneOffset.UTC).toLocalTime();
+                Instant.ofEpochSecond(dtUtc)
+                        .atZone(ZoneOffset.UTC)
+                        .toLocalTime();
+
 
         assertEquals(expectedTime.toString(), time.getTime());
         assertEquals(20.5, time.getTemperature());

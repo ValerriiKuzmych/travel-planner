@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content})}">
+
+
+<div th:fragment="content">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>My Trips</h2>
+
+        <a th:href="@{/trips/create}"
+           class="btn btn-success">
+            + New Trip
+        </a>
+    </div>
+
+    <div th:if="${trips.isEmpty()}">
+        <p class="text-muted">No trips yet.</p>
+    </div>
+
+    <div class="list-group">
+        <a th:each="trip : ${trips}"
+           th:href="@{/trips/{id}(id=${trip.id})}"
+           class="list-group-item list-group-item-action">
+
+            <div class="fw-bold"
+                 th:text="${trip.city}">
+            </div>
+
+            <small class="text-muted">
+                <span th:text="${trip.startDate}"></span>
+                —
+                <span th:text="${trip.endDate}"></span>
+            </small>
+
+        </a>
+    </div>
+
+</div>
+</html>

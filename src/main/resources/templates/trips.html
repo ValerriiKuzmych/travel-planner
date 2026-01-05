@@ -1,60 +1,54 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>My Trips</title>
-</head>
-<body>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content})}">
 
-<h2> My Trips</h2>
+<div th:fragment="content">
 
-<a th:href="@{/trips/create}">
-    <button> Create Trip</button>
-</a>
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">My Trips</h2>
 
-<br/><br/>
-
-<table border="1" cellpadding="8">
-    <thead>
-    <tr>
-        <th>City</th>
-        <th>Start Date - End Date</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="trip : ${trips}">
-        <td th:text="${trip.city}"></td>
-        <td>
-
-            <span th:text="${trip.startDate}"></span>
-            -
-            <span th:text="${trip.endDate}"></span>
+        <a th:href="@{/trips/create}"
+           class="btn btn-success">
+            + New Trip
+        </a>
+    </div>
 
 
-        </td>
+    <div th:if="${trips.isEmpty()}">
+        <div class="alert alert-secondary">
+            You have no trips yet.
+        </div>
+    </div>
 
 
-        <td>
-            <a th:href="@{/trips/{id}(id=${trip.id})}">
-                <button>Details</button>
+    <div class="row g-3">
+
+        <div class="col-md-6 col-lg-4"
+             th:each="trip : ${trips}">
+
+            <a th:href="@{/trips/{id}(id=${trip.id})}"
+               class="text-decoration-none text-dark">
+
+                <div class="card shadow-sm h-100">
+
+                    <div class="card-body">
+                        <h5 class="card-title"
+                            th:text="${trip.city}">
+                        </h5>
+
+                        <p class="card-text text-muted mb-0">
+                            <span th:text="${trip.startDate}"></span>
+                            —
+                            <span th:text="${trip.endDate}"></span>
+                        </p>
+                    </div>
+
+                </div>
             </a>
-            <a th:href="@{/trips/{id}/edit(id=${trip.id})}">
-                <button>Edit</button>
-            </a>
-            <form th:action="@{/trips/{id}/delete(id=${trip.id})}"
-                  method="post"
-                  style="display:inline;">
-                <button type="submit">Delete</button>
-            </form>
-            <a th:href="@{/trips/{id}/plan/pdf(id=${trip.id})}">
-                <button>PDF</button>
-            </a>
-        </td>
-    </tr>
-    </tbody>
-</table>
 
+        </div>
+    </div>
 
-</body>
+</div>
 </html>

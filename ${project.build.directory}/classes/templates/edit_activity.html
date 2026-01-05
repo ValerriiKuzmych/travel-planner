@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit activity</title>
+</head>
+<body>
+
+<h2>Edit activity</h2>
+
+<form th:action="@{/trips/{tripId}/activities/{id}/edit(tripId=${form.tripId}, id=${form.id})}" th:object="${form}"
+      method="post">
+
+    <input type="hidden" th:field="*{id}"/>
+    <input type="hidden" th:field="*{tripId}"/>
+
+    Name: <input type="text" th:field="*{name}"/><br/>
+    Type: <input type="text" th:field="*{type}"/><br/>
+    Date: <input type="date" th:field="*{date}"/><br/>
+    Start time: <input type="time" th:field="*{startTime}"/><br/>
+    End time: <input type="time" th:field="*{endTime}"/><br/>
+
+    <button type="submit">Save</button>
+</form>
+
+<a th:href="@{/trips/{id}(id=${form.tripId})}">Back to Trip</a>
+
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Activity</title>
+</head>
+<body>
+
+<h2>Create activity</h2>
+
+<div th:if="${error}">
+    <p style="color:red" th:text="${error}"></p>
+</div>
+
+<form method="post"
+      th:action="@{/trips/{tripId}/activities/create(tripId=${form.tripId})}"
+      th:object="${form}">
+
+    <input type="hidden" th:field="*{tripId}"/>
+
+    Name: <input type="text" th:field="*{name}"/><br/>
+    Type: <input type="text" th:field="*{type}"/><br/>
+    Date: <input type="date" th:field="*{date}"/><br/>
+    Start time: <input type="time" th:field="*{startTime}"/><br/>
+    End time: <input type="time" th:field="*{endTime}"/><br/>
+
+    <button type="submit">Create</button>
+</form>
+
+<a th:href="@{/trips/{id}(id=${form.tripId})}">Back to Trip</a>
+
+</body>
+</html>

@@ -1,0 +1,10 @@
+CREATE TABLE activities (
+id BIGSERIAL PRIMARY KEY,
+trip_id BIGSERIAL NOT NULL,
+name VARCHAR(100) NOT NULL,
+type VARCHAR(50) NOT NULL,
+date DATE NOT NULL,
+start_time TIME NOT NULL,
+end_time TIME NOT NULL,
+CONSTRAINT fk_trip FOREIGN KEY (trip_id) REFERENCES trips(id)
+);

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Trip</title>
+</head>
+<body>
+
+<h1>Create Trip</h1>
+
+<form th:action="@{/trips/create}" th:object="${trip}" method="post">
+
+    <label>City:
+        <input type="text" th:field="*{city}">
+    </label>
+    <br>
+
+    <label>Start date:
+        <input type="date" th:field="*{startDate}">
+    </label>
+    <br>
+
+    <label>End date:
+        <input type="date" th:field="*{endDate}">
+    </label>
+    <br>
+
+    <button type="submit">Create</button>
+
+</form>
+
+<a th:href="@{/trips}">Back</a>
+
+</body>
+</html>
