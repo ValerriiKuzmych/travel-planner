@@ -1,55 +1,98 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Trip Details</title>
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-</head>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content})}">
 
-<body class="container mt-4">
+<div th:fragment="content">
 
-<h1 th:text="'Trip: ' + ${trip.city}"></h1>
 
-<div class="mb-3">
-    <p><strong>Start date:</strong> <span th:text="${trip.startDate}"></span></p>
-    <p><strong>End date:</strong> <span th:text="${trip.endDate}"></span></p>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0" th:text="${trip.city}"></h2>
+
+        <div class="d-flex gap-2">
+            <a th:href="@{/trips/{id}/plan(id=${trip.id})}"
+               class="btn btn-outline-primary">
+                Trip Plan
+            </a>
+
+            <a th:href="@{/trips/{id}/edit(id=${trip.id})}"
+               class="btn btn-outline-secondary">
+                Edit
+            </a>
+
+            <form th:action="@{/trips/{id}/delete(id=${trip.id})}"
+                  method="post">
+                <button class="btn btn-outline-danger"
+                        type="submit">
+                    Delete
+                </button>
+            </form>
+        </div>
+    </div>
+
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <p class="mb-1">
+                <strong>Start date:</strong>
+                <span th:text="${trip.startDate}"></span>
+            </p>
+            <p class="mb-0">
+                <strong>End date:</strong>
+                <span th:text="${trip.endDate}"></span>
+            </p>
+        </div>
+    </div>
+
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="mb-0">Activities</h4>
+
+        <a th:href="@{/trips/{tripId}/activities/create(tripId=${trip.id})}"
+           class="btn btn-success btn-sm">
+            + Add Activity
+        </a>
+    </div>
+
+
+    <div th:if="${trip.activitiesByDate.isEmpty()}">
+        <div class="alert alert-secondary">
+            No activities yet.
+        </div>
+    </div>
+
+    
+    <div th:each="entry : ${trip.activitiesByDate}"
+         class="mb-4">
+
+        <h6 class="text-muted mb-2"
+            th:text="${entry.key}">
+        </h6>
+
+        <div class="card shadow-sm">
+            <ul class="list-group list-group-flush">
+
+                <li th:each="act : ${entry.value}"
+                    class="list-group-item d-flex justify-content-between align-items-center">
+
+                    <div>
+                        <strong th:text="${act.name}"></strong>
+                        <div class="text-muted small">
+                            <span th:text="${act.startTime}"></span>
+                            —
+                            <span th:text="${act.endTime}"></span>
+                        </div>
+                    </div>
+
+                    <a class="btn btn-sm btn-outline-secondary"
+                       th:href="@{/trips/{tripId}/activities/{actId}/edit(tripId=${trip.id},actId=${act.id})}">
+                        Edit
+                    </a>
+
+                </li>
+
+            </ul>
+        </div>
+    </div>
+
 </div>
-
-<div class="mb-3">
-    <a th:href="@{/trips/{id}/plan(id=${trip.id})}" class="btn btn-primary">Trip plan</a>
-    <a th:href="@{/trips/{id}/edit(id=${trip.id})}" class="btn btn-primary">Edit</a>
-    <form th:action="@{/trips/{id}/delete(id=${trip.id})}" method="post" style="display:inline;">
-        <button class="btn btn-danger" type="submit">Delete</button>
-    </form>
-    <a th:href="@{/trips}" class="btn btn-secondary">Back</a>
-</div>
-
-<hr>
-
-<h2>Activities</h2>
-
-<div th:if="${trip.activitiesByDate.isEmpty()}">
-    <p>No activities yet</p>
-</div>
-
-<div th:each="entry : ${trip.activitiesByDate}">
-    <h4 th:text="${entry.key}"></h4>
-
-    <ul class="list-group mb-3">
-        <li th:each="act : ${entry.value}" class="list-group-item">
-            <span th:text="${act.startTime}"></span>
-            -
-            <span th:text="${act.endTime}"></span>
-            :
-            <strong th:text="${act.name}"></strong>
-
-            <a class="btn btn-sm btn-outline-primary float-end"
-               th:href="@{/trips/{tripId}/activities/{actId}/edit(tripId=${trip.id},actId=${act.id})}">Edit</a>
-        </li>
-    </ul>
-</div>
-
-<a th:href="@{/trips/{tripId}/activities/create(tripId=${trip.id})}">Create Activity</a>
-
-</body>
 </html>
