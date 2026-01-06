@@ -1,33 +1,64 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Create Activity</title>
-</head>
-<body>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content})}">
 
-<h2>Create activity</h2>
+<div th:fragment="content">
 
-<div th:if="${error}">
-    <p style="color:red" th:text="${error}"></p>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Create Activity</h2>
+
+        <a th:href="@{/trips/{id}(id=${form.tripId})}"
+           class="btn btn-outline-secondary">
+            Cancel
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <div th:if="${error}" class="alert alert-danger"
+                 th:text="${error}">
+            </div>
+
+            <form th:action="@{/trips/{tripId}/activities/create(tripId=${form.tripId})}"
+                  th:object="${form}"
+                  method="post">
+
+                <input type="hidden" th:field="*{tripId}"/>
+
+                <div class="mb-3">
+                    <label class="form-label">Name</label>
+                    <input class="form-control" th:field="*{name}">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Type</label>
+                    <input class="form-control" th:field="*{type}">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Date</label>
+                    <input type="date" class="form-control" th:field="*{date}">
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Start time</label>
+                        <input type="time" class="form-control" th:field="*{startTime}">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">End time</label>
+                        <input type="time" class="form-control" th:field="*{endTime}">
+                    </div>
+                </div>
+
+                <button class="btn btn-success" type="submit">
+                    Create
+                </button>
+
+            </form>
+        </div>
+    </div>
+
 </div>
-
-<form method="post"
-      th:action="@{/trips/{tripId}/activities/create(tripId=${form.tripId})}"
-      th:object="${form}">
-
-    <input type="hidden" th:field="*{tripId}"/>
-
-    Name: <input type="text" th:field="*{name}"/><br/>
-    Type: <input type="text" th:field="*{type}"/><br/>
-    Date: <input type="date" th:field="*{date}"/><br/>
-    Start time: <input type="time" th:field="*{startTime}"/><br/>
-    End time: <input type="time" th:field="*{endTime}"/><br/>
-
-    <button type="submit">Create</button>
-</form>
-
-<a th:href="@{/trips/{id}(id=${form.tripId})}">Back to Trip</a>
-
-</body>
 </html>
