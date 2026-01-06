@@ -1,36 +1,46 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Edit Trip</title>
-</head>
-<body>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content})}">
 
-<h1>Edit Trip</h1>
+<div th:fragment="content">
 
-<form th:action="@{/trips/{id}/edit(id=${form.id})}"
-      th:object="${form}"
-      method="post">
-    <label>City:
-        <input type="text" th:field="*{city}">
-    </label>
-    <br>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Edit Trip</h2>
 
-    <label>Start date:
-        <input type="date" th:field="*{startDate}">
-    </label>
-    <br>
+        <a th:href="@{/trips}"
+           class="btn btn-outline-secondary">
+            Cancel
+        </a>
+    </div>
 
-    <label>End date:
-        <input type="date" th:field="*{endDate}">
-    </label>
-    <br>
+    <div class="card shadow-sm">
+        <div class="card-body">
 
-    <button type="submit">Save</button>
+            <form th:action="@{/trips/create}"
+                  th:object="${trip}"
+                  method="post">
 
-</form>
+                <div class="mb-3">
+                    <label class="form-label">City</label>
+                    <input class="form-control" th:field="*{city}">
+                </div>
 
-<a th:href="@{/trips}">Back</a>
+                <div class="mb-3">
+                    <label class="form-label">Start date</label>
+                    <input type="date" class="form-control" th:field="*{startDate}">
+                </div>
 
-</body>
+                <div class="mb-3">
+                    <label class="form-label">End date</label>
+                    <input type="date" class="form-control" th:field="*{endDate}">
+                </div>
+
+                <button class="btn btn-success" type="submit">
+                    Save
+                </button>
+
+            </form>
+        </div>
+    </div>
+
+</div>
 </html>

@@ -1,45 +1,63 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Activities List</title>
-</head>
-<body>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content})}">
 
-<h2>Activities for trip: [[${trip.city}]]</h2>
+<div th:fragment="content">
 
-<a th:href="@{/trips/{id}/activities/create(id=${trip.id})}">Create activity</a>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0"
+            th:text="'Activities — ' + ${trip.city}">
+        </h2>
 
+        <a th:href="@{/trips/{id}/activities/create(id=${trip.id})}"
+           class="btn btn-success">
+            + Add Activity
+        </a>
+    </div>
 
-<table>
-    <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Date</th>
-        <th>Start</th>
-        <th>End</th>
-        <th>Actions</th>
-    </tr>
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+                </thead>
 
-    <tr th:each="a : ${activities}">
-        <td th:text="${a.name}"></td>
-        <td th:text="${a.type}"></td>
-        <td th:text="${a.date}"></td>
-        <td th:text="${a.startTime}"></td>
-        <td th:text="${a.endTime}"></td>
+                <tbody>
+                <tr th:each="a : ${activities}">
+                    <td th:text="${a.name}"></td>
+                    <td th:text="${a.type}"></td>
+                    <td th:text="${a.date}"></td>
+                    <td th:text="${a.startTime}"></td>
+                    <td th:text="${a.endTime}"></td>
 
-        <td>
-            <a th:href="@{'/trips/' + ${trip.id} + '/activities/' + ${a.id} + '/edit'}">Edit</a>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-secondary"
+                           th:href="@{'/trips/' + ${trip.id} + '/activities/' + ${a.id} + '/edit'}">
+                            Edit
+                        </a>
 
-            <form th:action="@{'/trips/' + ${trip.id} + '/activities/' + ${a.id} + '/delete'}"
-                  method="post" style="display:inline;">
-                <button type="submit">Delete</button>
-            </form>
-        </td>
-    </tr>
-</table>
+                        <form th:action="@{'/trips/' + ${trip.id} + '/activities/' + ${a.id} + '/delete'}"
+                              method="post"
+                              class="d-inline">
+                            <button class="btn btn-sm btn-outline-danger"
+                                    type="submit">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
 
-<a th:href="@{/trips/{id}(id=${trip.id})}">Back to Trip</a>
+            </table>
+        </div>
+    </div>
 
-</body>
+</div>
 </html>

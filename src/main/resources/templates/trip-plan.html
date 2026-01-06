@@ -4,16 +4,21 @@
 
 <div th:fragment="content">
 
-    
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0"
-            th:text="'Trip Plan — ' + ${plan.city}">
-        </h2>
+        <h2 class="mb-0" th:text="'Trip Plan — ' + ${plan.city}"></h2>
 
-        <a th:href="@{/trips/{id}(id=${plan.tripId})}"
-           class="btn btn-outline-secondary">
-            Back to Trip
-        </a>
+        <div>
+            <a th:href="@{/trips/{id}/plan/pdf(id=${plan.tripId})}"
+               class="btn btn-outline-primary me-2"
+               target="_blank">
+                Export PDF
+            </a>
+
+            <a th:href="@{/trips/{id}(id=${plan.tripId})}"
+               class="btn btn-outline-secondary">
+                Back to Trip
+            </a>
+        </div>
     </div>
 
 

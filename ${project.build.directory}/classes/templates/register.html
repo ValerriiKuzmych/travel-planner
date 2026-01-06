@@ -1,34 +1,41 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Register</title>
-</head>
-<body>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout-auth :: layout(~{::content})}">
+<div th:fragment="content">
 
-<h2>Register</h2>
+    <div class="card shadow-sm" style="max-width: 400px; width: 100%;">
+        <div class="card-body">
 
-<div th:if="${error}">
-    <p style="color:red" th:text="${error}"></p>
+            <h4 class="mb-3">Register</h4>
+
+            <div th:if="${error}"
+                 class="alert alert-danger"
+                 th:text="${error}">
+            </div>
+
+            <form th:action="@{/register}" method="post" th:object="${user}">
+
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="text" class="form-control" th:field="*{email}">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" th:field="*{password}">
+                </div>
+
+                <button class="btn btn-success w-100" type="submit">
+                    Create Account
+                </button>
+
+            </form>
+
+            <p class="text-center mt-3 mb-0">
+                <a th:href="@{/login}">Already have an account? Login</a>
+            </p>
+
+        </div>
+    </div>
+
 </div>
-
-
-<form method="post" th:action="@{/register}" th:object="${user}">
-
-    <label>Email:</label><br/>
-    <input type="text" th:field="*{email}"/>
-    <br/><br/>
-
-    <label>Password:</label><br/>
-    <input type="password" th:field="*{password}"/>
-    <br/><br/>
-
-    <button type="submit">Create Account</button>
-</form>
-
-<p>Already have an account?
-    <a th:href="@{/login}">Login here</a>
-</p>
-
-</body>
 </html>

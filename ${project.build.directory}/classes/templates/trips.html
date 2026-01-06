@@ -2,11 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout :: layout(~{::content})}">
 
-
 <div th:fragment="content">
 
+    
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>My Trips</h2>
+        <h2 class="mb-0">My Trips</h2>
 
         <a th:href="@{/trips/create}"
            class="btn btn-success">
@@ -14,26 +14,40 @@
         </a>
     </div>
 
+
     <div th:if="${trips.isEmpty()}">
-        <p class="text-muted">No trips yet.</p>
+        <div class="alert alert-secondary">
+            You have no trips yet.
+        </div>
     </div>
 
-    <div class="list-group">
-        <a th:each="trip : ${trips}"
-           th:href="@{/trips/{id}(id=${trip.id})}"
-           class="list-group-item list-group-item-action">
 
-            <div class="fw-bold"
-                 th:text="${trip.city}">
-            </div>
+    <div class="row g-3">
 
-            <small class="text-muted">
-                <span th:text="${trip.startDate}"></span>
-                —
-                <span th:text="${trip.endDate}"></span>
-            </small>
+        <div class="col-md-6 col-lg-4"
+             th:each="trip : ${trips}">
 
-        </a>
+            <a th:href="@{/trips/{id}(id=${trip.id})}"
+               class="text-decoration-none text-dark">
+
+                <div class="card shadow-sm h-100">
+
+                    <div class="card-body">
+                        <h5 class="card-title"
+                            th:text="${trip.city}">
+                        </h5>
+
+                        <p class="card-text text-muted mb-0">
+                            <span th:text="${trip.startDate}"></span>
+                            —
+                            <span th:text="${trip.endDate}"></span>
+                        </p>
+                    </div>
+
+                </div>
+            </a>
+
+        </div>
     </div>
 
 </div>
