@@ -22,7 +22,7 @@ public class UiAuthController {
     public String authPage(Model model) {
 
         model.addAttribute("user", new RegistrationRequest());
-        
+
         return "login";
     }
 
@@ -55,7 +55,7 @@ public class UiAuthController {
                                  Model model) {
 
         try {
-            userService.registerUser(user.getEmail(), user.getPassword());
+            userService.registerUser(user);
 
             return "redirect:/login?registered";
 

@@ -36,7 +36,7 @@ public class AuthControllerTest {
 
         mockMvc.perform(post("/auth/registration").with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"email\":\"t3@t.com\",\"password\":\"pass\"}"))
+                        .content("{\"email\":\"t3@t.com\",\"password\":\"pass\",\"confirmPassword\":\"pass\"}"))
                 .andExpect(status().isOk());
 
         assertTrue(userRepository.existsByEmail("t3@t.com"));
