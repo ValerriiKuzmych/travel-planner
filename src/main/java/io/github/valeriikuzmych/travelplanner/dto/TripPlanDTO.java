@@ -9,9 +9,13 @@ import java.util.Objects;
 public class TripPlanDTO {
 
     private Long tripId;
+
     private String city;
+
     private LocalDate startDate;
     private LocalDate endDate;
+
+    private boolean weatherLimited;
 
     Map<LocalDate, WeatherDayDTO> weather = new HashMap<>();
 
@@ -65,14 +69,22 @@ public class TripPlanDTO {
         this.activities = activities;
     }
 
+    public boolean isWeatherLimited() {
+        return weatherLimited;
+    }
+
+    public void setWeatherLimited(boolean weatherLimited) {
+        this.weatherLimited = weatherLimited;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof TripPlanDTO that)) return false;
-        return Objects.equals(tripId, that.tripId) && Objects.equals(city, that.city) && Objects.equals(startDate, that.startDate) && Objects.equals(endDate, that.endDate) && Objects.equals(weather, that.weather) && Objects.equals(activities, that.activities);
+        if (!(o instanceof TripPlanDTO dto)) return false;
+        return weatherLimited == dto.weatherLimited && Objects.equals(tripId, dto.tripId) && Objects.equals(city, dto.city) && Objects.equals(startDate, dto.startDate) && Objects.equals(endDate, dto.endDate) && Objects.equals(weather, dto.weather) && Objects.equals(activities, dto.activities);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(tripId, city, startDate, endDate, weather, activities);
+        return Objects.hash(tripId, city, startDate, endDate, weatherLimited, weather, activities);
     }
 }

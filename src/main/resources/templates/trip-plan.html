@@ -39,7 +39,7 @@
     <div class="mb-5">
         <h4 class="mb-3">Weather Forecast</h4>
 
-        <div th:if="${plan.weather.isEmpty()}">
+        <div th:if="${plan.weatherLimited}">
             <div class="alert alert-secondary">
                 Weather forecast is available only for the next few days.
             </div>

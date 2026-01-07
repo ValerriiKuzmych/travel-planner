@@ -32,7 +32,8 @@ public class TripPlannerServiceImpl implements TripPlannerService {
 
         validator.assertUserOwnTrip(tripId, userEmail);
 
-        Trip trip = tripRepository.findById(tripId).orElseThrow(() -> new IllegalArgumentException("Trip with id " + tripId + " not found"));
+        Trip trip = tripRepository.findById(tripId)
+                .orElseThrow(() -> new IllegalArgumentException("Trip with id " + tripId + " not found"));
 
 
         TripPlanDTO dto = new TripPlanDTO();
@@ -43,12 +44,29 @@ public class TripPlannerServiceImpl implements TripPlannerService {
         dto.setEndDate(trip.getEndDate());
 
         Map<String, Object> raw = weatherService.getWeather(trip.getCity());
-        System.out.println("RAW WEATHER: " + raw);
-        dto.setWeather(convertWeather(raw));
+
+        Map<LocalDate, WeatherDayDTO> convertedWeather = convertWeather(raw);
+
+        int offset = 0;
+        if (raw.get("city") instanceof Map<?, ?> city && city.get("timezone") instanceof Number tz) {
+            offset = tz.intValue();
+        }
+        ZoneId cityZone = ZoneOffset.ofTotalSeconds(offset);
+
+        Map<LocalDate, WeatherDayDTO> filteredWeather =
+                filterWeatherForTrip(
+                        convertedWeather,
+                        trip.getStartDate(),
+                        trip.getEndDate(),
+                        cityZone,
+                        dto
+                );
+
+        dto.setWeather(filteredWeather);
 
         dto.setActivities(convertActivities(trip));
 
-        System.out.println("Weather size = " + dto.getWeather().size());
+
         return dto;
     }
 
@@ -63,7 +81,7 @@ public class TripPlannerServiceImpl implements TripPlannerService {
         }
 
         int timezoneOffsetSeconds = 0;
-        
+
         if (raw.get("city") instanceof Map<?, ?> city && city.get("timezone") instanceof Number tz) {
             timezoneOffsetSeconds = tz.intValue();
         }
@@ -118,6 +136,55 @@ public class TripPlannerServiceImpl implements TripPlannerService {
             result.computeIfAbsent(act.getDate(), d -> new ArrayList<>()).add(dto);
 
 
+        }
+
+        return result;
+    }
+
+    private Map<LocalDate, WeatherDayDTO> filterWeatherForTrip(
+            Map<LocalDate, WeatherDayDTO> rawWeather,
+            LocalDate tripStart,
+            LocalDate tripEnd,
+            ZoneId cityZone,
+            TripPlanDTO dto
+    ) {
+        if (rawWeather.isEmpty()) {
+            dto.setWeatherLimited(true);
+            return Collections.emptyMap();
+        }
+
+        LocalDate today = LocalDate.now(cityZone);
+
+
+        LocalDate displayFrom =
+                today.isAfter(tripStart) ? today : tripStart;
+
+
+        LocalDate apiLastDate =
+                rawWeather.keySet().stream()
+                        .max(LocalDate::compareTo)
+                        .orElse(null);
+
+        if (apiLastDate == null || apiLastDate.isBefore(displayFrom)) {
+            dto.setWeatherLimited(true);
+            return Collections.emptyMap();
+        }
+
+
+        LocalDate displayTo =
+                apiLastDate.isBefore(tripEnd) ? apiLastDate : tripEnd;
+
+
+        dto.setWeatherLimited(apiLastDate.isBefore(tripEnd));
+
+        Map<LocalDate, WeatherDayDTO> result = new LinkedHashMap<>();
+
+        for (Map.Entry<LocalDate, WeatherDayDTO> entry : rawWeather.entrySet()) {
+            LocalDate date = entry.getKey();
+
+            if (!date.isBefore(displayFrom) && !date.isAfter(displayTo)) {
+                result.put(date, entry.getValue());
+            }
         }
 
         return result;
