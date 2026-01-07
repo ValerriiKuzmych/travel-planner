@@ -19,7 +19,7 @@
                  th:text="${error}">
             </div>
 
-            <form th:action="@{/trips/{tripId}/activities/create(tripId=${form.tripId})}"
+            <form th:action="@{/trips/{tripId}/activities/{id}/edit(tripId=${form.tripId}, id=${form.id})}"
                   th:object="${form}"
                   method="post">
 

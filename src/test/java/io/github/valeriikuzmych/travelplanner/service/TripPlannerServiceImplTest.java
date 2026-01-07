@@ -15,6 +15,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.time.*;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -111,5 +112,120 @@ public class TripPlannerServiceImplTest {
         when(tripRepository.findById(99L)).thenReturn(Optional.empty());
         assertThrows(IllegalArgumentException.class,
                 () -> tripPlannerServiceImpl.getPlanForTrip(99L, "user@a.com"));
+    }
+
+    @Test
+    void getPlanForTrip_weatherLimited_whenForecastDoesNotCoverWholeTrip() {
+
+        LocalDate today = LocalDate.now(ZoneOffset.UTC);
+
+        trip.setStartDate(today.minusDays(1));
+        trip.setEndDate(today.plusDays(5));
+
+        when(tripRepository.findById(1L)).thenReturn(Optional.of(trip));
+        doNothing().when(validator).assertUserOwnTrip(1L, "mail@test.com");
+
+
+        List<Map<String, Object>> forecastList = new ArrayList<>();
+
+        for (int i = 0; i < 2; i++) {
+            Instant instant = today.plusDays(i).atStartOfDay().toInstant(ZoneOffset.UTC);
+
+            forecastList.add(Map.of(
+                    "dt", instant.getEpochSecond(),
+                    "main", Map.of("temp", 18.0 + i),
+                    "weather", List.of(Map.of("description", "cloudy"))
+            ));
+        }
+
+        Map<String, Object> weatherRaw = Map.of(
+                "city", Map.of("timezone", 0),
+                "list", forecastList
+        );
+
+        when(weatherService.getWeather("Rome")).thenReturn(weatherRaw);
+
+        TripPlanDTO dto =
+                tripPlannerServiceImpl.getPlanForTrip(1L, "mail@test.com");
+
+        assertFalse(dto.getWeather().isEmpty());
+        assertTrue(dto.isWeatherLimited(), "Forecast should be marked as limited");
+
+
+        LocalDate lastWeatherDate =
+                dto.getWeather().keySet().stream().max(LocalDate::compareTo).orElseThrow();
+
+        assertTrue(lastWeatherDate.isBefore(trip.getEndDate()));
+    }
+
+    @Test
+    void getPlanForTrip_weatherNotLimited_whenForecastCoversWholeTrip() {
+
+        LocalDate today = LocalDate.now(ZoneOffset.UTC);
+
+        trip.setStartDate(today);
+        trip.setEndDate(today.plusDays(2));
+
+        when(tripRepository.findById(1L)).thenReturn(Optional.of(trip));
+        doNothing().when(validator).assertUserOwnTrip(1L, "mail@test.com");
+
+        List<Map<String, Object>> forecastList = new ArrayList<>();
+
+        for (int i = 0; i <= 2; i++) {
+            Instant instant = today.plusDays(i).atStartOfDay().toInstant(ZoneOffset.UTC);
+
+            forecastList.add(Map.of(
+                    "dt", instant.getEpochSecond(),
+                    "main", Map.of("temp", 22.0),
+                    "weather", List.of(Map.of("description", "sunny"))
+            ));
+        }
+
+        Map<String, Object> weatherRaw = Map.of(
+                "city", Map.of("timezone", 0),
+                "list", forecastList
+        );
+
+        when(weatherService.getWeather("Rome")).thenReturn(weatherRaw);
+
+        TripPlanDTO dto =
+                tripPlannerServiceImpl.getPlanForTrip(1L, "mail@test.com");
+
+        assertFalse(dto.getWeather().isEmpty());
+        assertFalse(dto.isWeatherLimited(), "Forecast fully covers the trip");
+    }
+
+    @Test
+    void getPlanForTrip_weatherEmpty_whenForecastIsInPast() {
+
+        LocalDate today = LocalDate.now(ZoneOffset.UTC);
+
+        trip.setStartDate(today.plusDays(1));
+        trip.setEndDate(today.plusDays(3));
+
+        when(tripRepository.findById(1L)).thenReturn(Optional.of(trip));
+        doNothing().when(validator).assertUserOwnTrip(1L, "mail@test.com");
+
+        Instant pastInstant =
+                today.minusDays(2).atStartOfDay().toInstant(ZoneOffset.UTC);
+
+        Map<String, Object> weatherRaw = Map.of(
+                "city", Map.of("timezone", 0),
+                "list", List.of(
+                        Map.of(
+                                "dt", pastInstant.getEpochSecond(),
+                                "main", Map.of("temp", 10.0),
+                                "weather", List.of(Map.of("description", "rain"))
+                        )
+                )
+        );
+
+        when(weatherService.getWeather("Rome")).thenReturn(weatherRaw);
+
+        TripPlanDTO dto =
+                tripPlannerServiceImpl.getPlanForTrip(1L, "mail@test.com");
+
+        assertTrue(dto.getWeather().isEmpty());
+        assertTrue(dto.isWeatherLimited());
     }
 }
