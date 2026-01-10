@@ -42,6 +42,7 @@ public class TripPlannerServiceImpl implements TripPlannerService {
         dto.setCity(trip.getCity());
         dto.setStartDate(trip.getStartDate());
         dto.setEndDate(trip.getEndDate());
+        dto.setTripDates(generateTripDates(dto));
 
         Map<String, Object> raw = weatherService.getWeather(trip.getCity());
 
@@ -188,5 +189,15 @@ public class TripPlannerServiceImpl implements TripPlannerService {
         }
 
         return result;
+    }
+
+    private List<LocalDate> generateTripDates(TripPlanDTO plan) {
+        List<LocalDate> dates = new ArrayList<>();
+        LocalDate date = plan.getStartDate();
+        while (!date.isAfter(plan.getEndDate())) {
+            dates.add(date);
+            date = date.plusDays(1);
+        }
+        return dates;
     }
 }

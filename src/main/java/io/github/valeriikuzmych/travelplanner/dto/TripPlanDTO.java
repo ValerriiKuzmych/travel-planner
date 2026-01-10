@@ -15,6 +15,8 @@ public class TripPlanDTO {
     private LocalDate startDate;
     private LocalDate endDate;
 
+    private List<LocalDate> tripDates;
+
     private boolean weatherLimited;
 
     Map<LocalDate, WeatherDayDTO> weather = new HashMap<>();
@@ -77,14 +79,35 @@ public class TripPlanDTO {
         this.weatherLimited = weatherLimited;
     }
 
+    public List<LocalDate> getTripDates() {
+        return tripDates;
+    }
+
+    public void setTripDates(List<LocalDate> tripDates) {
+        this.tripDates = tripDates;
+    }
+
+    public List<LocalDate> getWeatherDatesSorted() {
+        return weather.keySet().stream()
+                .sorted()
+                .toList();
+    }
+
+    public LocalDate getLastWeatherDate() {
+        if (weather == null || weather.isEmpty()) return null;
+        return weather.keySet().stream()
+                .max(LocalDate::compareTo)
+                .orElse(null);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof TripPlanDTO dto)) return false;
-        return weatherLimited == dto.weatherLimited && Objects.equals(tripId, dto.tripId) && Objects.equals(city, dto.city) && Objects.equals(startDate, dto.startDate) && Objects.equals(endDate, dto.endDate) && Objects.equals(weather, dto.weather) && Objects.equals(activities, dto.activities);
+        return weatherLimited == dto.weatherLimited && Objects.equals(tripId, dto.tripId) && Objects.equals(city, dto.city) && Objects.equals(startDate, dto.startDate) && Objects.equals(endDate, dto.endDate) && Objects.equals(tripDates, dto.tripDates) && Objects.equals(weather, dto.weather) && Objects.equals(activities, dto.activities);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(tripId, city, startDate, endDate, weatherLimited, weather, activities);
+        return Objects.hash(tripId, city, startDate, endDate, tripDates, weatherLimited, weather, activities);
     }
 }
