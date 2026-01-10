@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
 
-    
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>Travel Planner</title>
@@ -23,9 +23,17 @@
     <div class="container">
 
 
-        <a class="navbar-brand" th:href="@{/trips}">
-            Travel Planner
-        </a>
+        <span class="navbar-brand mb-0 h1">
+        Travel Planner
+    </span>
+
+
+        <div th:if="${showBackButton}">
+            <a th:href="@{/trips}"
+               class="btn btn-outline-secondary btn-sm">
+                ← My trips
+            </a>
+        </div>
 
 
         <div class="ms-auto d-flex align-items-center gap-3">
