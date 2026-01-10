@@ -49,6 +49,7 @@ public class TripServiceImpl implements TripService {
     @Override
     public Trip createTrip(TripForm form, String email) {
 
+
         validateDates(form.getStartDate(), form.getEndDate());
 
         User user = userRepository.findByEmail(email)

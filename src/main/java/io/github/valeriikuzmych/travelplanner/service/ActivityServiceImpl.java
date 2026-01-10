@@ -42,6 +42,7 @@ public class ActivityServiceImpl implements ActivityService {
 
         ownershipValidator.assertUserOwnTrip(form.getTripId(), email);
 
+
         Activity activity = convertActivityFormToActivity(form);
 
         activityRepository.save(activity);
@@ -117,6 +118,10 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     private void validateDates(LocalDate date, LocalTime start, LocalTime end, Trip trip) {
+
+        if (date == null || start == null || end == null) {
+            throw new IllegalArgumentException("Date and time must not be empty");
+        }
 
         if (date.isBefore(trip.getStartDate()) || date.isAfter(trip.getEndDate())) {
             throw new IllegalArgumentException("Activity date must be within trip dates");
