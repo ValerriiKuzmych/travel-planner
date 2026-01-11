@@ -1,4 +1,4 @@
-package io.github.valeriikuzmych.travelplanner.dto;
+package io.github.valeriikuzmych.travelplanner.dto.activity;
 
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
 
@@ -30,7 +30,7 @@ public class ActivityForm {
         f.setDate(a.getDate());
         f.setStartTime(a.getStartTime());
         f.setEndTime(a.getEndTime());
-        
+
         return f;
 
     }

@@ -1,9 +1,11 @@
 package io.github.valeriikuzmych.travelplanner.service;
 
-import io.github.valeriikuzmych.travelplanner.dto.ActivityDTO;
+import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityDTO;
 import io.github.valeriikuzmych.travelplanner.dto.TripPlanDTO;
-import io.github.valeriikuzmych.travelplanner.dto.WeatherDayDTO;
-import io.github.valeriikuzmych.travelplanner.dto.WeatherTimeDTO;
+import io.github.valeriikuzmych.travelplanner.dto.weather.DayPeriod;
+import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherDayDTO;
+import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherPeriodDTO;
+import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherTimeDTO;
 import io.github.valeriikuzmych.travelplanner.service.pdf.PDExportService;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -31,9 +33,21 @@ public class PDExportServiceTest {
 
         WeatherDayDTO day = new WeatherDayDTO();
 
-        day.getTimes().add(new WeatherTimeDTO("07:00", 16.0, "rain"));
-        day.getTimes().add(new WeatherTimeDTO("13:00", 20.0, "sunny"));
-        day.getTimes().add(new WeatherTimeDTO("19:00", 18.0, "cloudy"));
+        day.getPeriods().add(
+                new WeatherPeriodDTO(
+                        DayPeriod.MORNING,
+                        16.0,
+                        "rain"
+                )
+        );
+
+        day.getPeriods().add(
+                new WeatherPeriodDTO(
+                        DayPeriod.DAY,
+                        20.0,
+                        "sunny"
+                )
+        );
 
         dto.setWeather(
                 Map.of(LocalDate.of(2025, 10, 10), day)
@@ -70,7 +84,7 @@ public class PDExportServiceTest {
             assertThat(text).contains("Trip Plan: Rome");
             assertThat(text).contains("Weather Forecast");
             assertThat(text).contains("2025-10-10");
-            assertThat(text).contains("07:00");
+            assertThat(text).contains("Morning");
             assertThat(text).contains("sunny");
             assertThat(text).contains("Colosseum Tour");
             assertThat(text).contains("Vatican Museum");

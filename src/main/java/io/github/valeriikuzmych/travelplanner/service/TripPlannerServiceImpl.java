@@ -1,15 +1,18 @@
 package io.github.valeriikuzmych.travelplanner.service;
 
 import io.github.valeriikuzmych.travelplanner.dto.*;
+import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityDTO;
+import io.github.valeriikuzmych.travelplanner.dto.weather.DayPeriod;
+import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherDayDTO;
+import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherPeriodDTO;
+import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherTimeDTO;
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.repository.TripRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class TripPlannerServiceImpl implements TripPlannerService {
@@ -87,6 +90,8 @@ public class TripPlannerServiceImpl implements TripPlannerService {
             timezoneOffsetSeconds = tz.intValue();
         }
 
+        Map<LocalDate, Map<DayPeriod, List<WeatherTimeDTO>>> buffer = new LinkedHashMap<>();
+
         for (Object item : list) {
             if (!(item instanceof Map<?, ?> entry)) continue;
             if (!(entry.get("dt") instanceof Number dt)) continue;
@@ -103,14 +108,47 @@ public class TripPlannerServiceImpl implements TripPlannerService {
 
             if (!(tempObj instanceof Number temp) || !(descObj instanceof String desc)) continue;
 
-            WeatherTimeDTO dto = new WeatherTimeDTO(
+            WeatherTimeDTO timeDTO = new WeatherTimeDTO(
                     time.toString(),
                     Math.round(temp.doubleValue() * 10.0) / 10.0,
                     (String) desc
             );
 
-            result.computeIfAbsent(date, d -> new WeatherDayDTO()).getTimes().add(dto);
+            DayPeriod period = DayPeriod.from(time);
+
+            buffer
+                    .computeIfAbsent(date, d -> new EnumMap<>(DayPeriod.class))
+                    .computeIfAbsent(period, p -> new ArrayList<>())
+                    .add(timeDTO);
         }
+
+        for (var dateEntry : buffer.entrySet()) {
+
+            WeatherDayDTO dayDTO = new WeatherDayDTO();
+
+            for (var periodEntry : dateEntry.getValue().entrySet()) {
+
+                List<WeatherTimeDTO> times = periodEntry.getValue();
+
+                double avgTemp = times.stream()
+                        .mapToDouble(WeatherTimeDTO::getTemperature)
+                        .average()
+                        .orElse(0);
+
+                String description = times.get(0).getDescription();
+
+                dayDTO.getPeriods().add(
+                        new WeatherPeriodDTO(
+                                periodEntry.getKey(),
+                                Math.round(avgTemp * 10.0) / 10.0,
+                                description
+                        )
+                );
+            }
+
+            result.put(dateEntry.getKey(), dayDTO);
+        }
+
 
         return result;
     }

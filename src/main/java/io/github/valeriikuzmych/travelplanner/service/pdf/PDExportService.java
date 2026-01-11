@@ -1,6 +1,10 @@
 package io.github.valeriikuzmych.travelplanner.service.pdf;
 
 import io.github.valeriikuzmych.travelplanner.dto.*;
+import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityDTO;
+import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherDayDTO;
+import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherPeriodDTO;
+import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherTimeDTO;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -111,7 +115,7 @@ public class PDExportService implements IPDExportService {
 
             state.setY(state.getY() - 16);
 
-            for (WeatherTimeDTO wt : entry.getValue().getTimes()) {
+            for (WeatherPeriodDTO period : entry.getValue().getPeriods()) {
 
                 state = checkPage(document, state);
                 cs = state.getContentStream();
@@ -122,12 +126,13 @@ public class PDExportService implements IPDExportService {
 
 
                 cs.showText(
-                        wt.getTime()
+                        period.getPeriod().getLabel()
                                 + " — "
-                                + wt.getTemperature()
+                                + period.getTemperature()
                                 + " °C, "
-                                + wt.getDescription()
+                                + period.getDescription()
                 );
+
                 cs.endText();
 
                 state.setY(state.getY() - 14);

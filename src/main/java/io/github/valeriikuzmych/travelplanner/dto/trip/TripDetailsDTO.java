@@ -1,4 +1,6 @@
-package io.github.valeriikuzmych.travelplanner.dto;
+package io.github.valeriikuzmych.travelplanner.dto.trip;
+
+import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityDTO;
 
 import java.time.LocalDate;
 import java.util.HashMap;

@@ -1,7 +1,7 @@
 package io.github.valeriikuzmych.travelplanner.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.valeriikuzmych.travelplanner.dto.ActivityForm;
+import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityForm;
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.entity.User;
@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -187,6 +186,6 @@ public class ActivityControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("Start time cannot be after end time"));
     }
-    
+
 
 }

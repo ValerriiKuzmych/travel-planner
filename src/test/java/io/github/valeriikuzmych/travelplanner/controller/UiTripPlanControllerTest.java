@@ -1,11 +1,12 @@
 package io.github.valeriikuzmych.travelplanner.controller;
 
-import io.github.valeriikuzmych.travelplanner.dto.ActivityDTO;
+import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityDTO;
 import io.github.valeriikuzmych.travelplanner.dto.TripPlanDTO;
-import io.github.valeriikuzmych.travelplanner.dto.WeatherDayDTO;
-import io.github.valeriikuzmych.travelplanner.dto.WeatherTimeDTO;
+import io.github.valeriikuzmych.travelplanner.dto.weather.DayPeriod;
+import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherDayDTO;
+import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherPeriodDTO;
+import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherTimeDTO;
 import io.github.valeriikuzmych.travelplanner.service.TripPlannerService;
-import io.github.valeriikuzmych.travelplanner.service.TripPlannerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -53,14 +54,20 @@ class UiTripPlanControllerTest {
 
         WeatherDayDTO weatherDay = new WeatherDayDTO();
 
-        weatherDay.getTimes().add(
-                new WeatherTimeDTO("07:00", 14.0, "rain")
+        weatherDay.getPeriods().add(
+                new WeatherPeriodDTO(
+                        DayPeriod.MORNING,
+                        14.0,
+                        "rain"
+                )
         );
-        weatherDay.getTimes().add(
-                new WeatherTimeDTO("13:00", 18.0, "sunny")
-        );
-        weatherDay.getTimes().add(
-                new WeatherTimeDTO("19:00", 16.0, "cloudy")
+
+        weatherDay.getPeriods().add(
+                new WeatherPeriodDTO(
+                        DayPeriod.DAY,
+                        18.0,
+                        "sunny"
+                )
         );
 
         Map<LocalDate, WeatherDayDTO> weatherMap = new HashMap<>();

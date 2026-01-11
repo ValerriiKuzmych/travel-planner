@@ -1,6 +1,6 @@
 package io.github.valeriikuzmych.travelplanner.service;
 
-import io.github.valeriikuzmych.travelplanner.dto.ActivityForm;
+import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityForm;
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
 
 import java.util.List;

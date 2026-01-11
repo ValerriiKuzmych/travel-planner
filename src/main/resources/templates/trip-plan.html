@@ -69,12 +69,17 @@
                                 No forecast available
                             </div>
 
-                            <ul th:if="${plan.weather.containsKey(date)}" class="list-unstyled mb-0">
-                                <li th:each="t : ${plan.weather.get(date).times}" class="small mb-1">
-                                    <strong th:text="${t.time}"></strong>
+                            <ul class="list-unstyled mb-0"
+                                th:if="${plan.weather.containsKey(date)}">
+
+                                <li th:each="p : ${plan.weather.get(date).periods}"
+                                    class="small mb-1">
+
+                                    <strong th:text="${p.period.label}"></strong>
                                     —
-                                    <span th:text="${t.temperature} + '°C'"></span>,
-                                    <span th:text="${t.description}"></span>
+                                    <span th:text="${p.temperature} + '°C'"></span>,
+                                    <span th:text="${p.description}"></span>
+
                                 </li>
                             </ul>
 

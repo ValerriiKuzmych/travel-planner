@@ -1,12 +1,10 @@
 package io.github.valeriikuzmych.travelplanner.controller;
 
-import io.github.valeriikuzmych.travelplanner.dto.TripBasicDTO;
-import io.github.valeriikuzmych.travelplanner.dto.TripDetailsDTO;
-import io.github.valeriikuzmych.travelplanner.dto.TripForm;
+import io.github.valeriikuzmych.travelplanner.dto.trip.TripBasicDTO;
+import io.github.valeriikuzmych.travelplanner.dto.trip.TripDetailsDTO;
+import io.github.valeriikuzmych.travelplanner.dto.trip.TripForm;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
-import io.github.valeriikuzmych.travelplanner.repository.UserRepository;
 import io.github.valeriikuzmych.travelplanner.service.TripService;
-import io.github.valeriikuzmych.travelplanner.service.TripServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

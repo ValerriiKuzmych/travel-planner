@@ -1,5 +1,8 @@
 package io.github.valeriikuzmych.travelplanner.dto;
 
+import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityDTO;
+import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherDayDTO;
+
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;

@@ -1,7 +1,7 @@
 package io.github.valeriikuzmych.travelplanner.controller;
 
-import io.github.valeriikuzmych.travelplanner.dto.ActivityForm;
-import io.github.valeriikuzmych.travelplanner.dto.ActivityResponseDTO;
+import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityForm;
+import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityResponseDTO;
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
 import io.github.valeriikuzmych.travelplanner.service.ActivityService;
 import io.github.valeriikuzmych.travelplanner.service.OwnershipValidator;

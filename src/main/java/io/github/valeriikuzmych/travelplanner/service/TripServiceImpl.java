@@ -1,15 +1,17 @@
 package io.github.valeriikuzmych.travelplanner.service;
 
 import io.github.valeriikuzmych.travelplanner.dto.*;
+import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityDTO;
+import io.github.valeriikuzmych.travelplanner.dto.trip.TripBasicDTO;
+import io.github.valeriikuzmych.travelplanner.dto.trip.TripDetailsDTO;
+import io.github.valeriikuzmych.travelplanner.dto.trip.TripForm;
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.entity.User;
 import io.github.valeriikuzmych.travelplanner.exception.ResourceNotFoundException;
 import io.github.valeriikuzmych.travelplanner.repository.TripRepository;
 import io.github.valeriikuzmych.travelplanner.repository.UserRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.*;

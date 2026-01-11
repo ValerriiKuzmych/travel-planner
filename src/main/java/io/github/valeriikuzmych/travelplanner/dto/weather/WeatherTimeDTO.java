@@ -1,4 +1,4 @@
-package io.github.valeriikuzmych.travelplanner.dto;
+package io.github.valeriikuzmych.travelplanner.dto.weather;
 
 public class WeatherTimeDTO {
 

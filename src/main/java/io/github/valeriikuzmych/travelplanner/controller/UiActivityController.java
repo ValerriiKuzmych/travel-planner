@@ -1,6 +1,6 @@
 package io.github.valeriikuzmych.travelplanner.controller;
 
-import io.github.valeriikuzmych.travelplanner.dto.ActivityForm;
+import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityForm;
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.service.ActivityService;

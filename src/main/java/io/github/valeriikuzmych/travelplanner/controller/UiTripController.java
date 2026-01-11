@@ -1,9 +1,9 @@
 package io.github.valeriikuzmych.travelplanner.controller;
 
 
-import io.github.valeriikuzmych.travelplanner.dto.TripBasicDTO;
-import io.github.valeriikuzmych.travelplanner.dto.TripDetailsDTO;
-import io.github.valeriikuzmych.travelplanner.dto.TripForm;
+import io.github.valeriikuzmych.travelplanner.dto.trip.TripBasicDTO;
+import io.github.valeriikuzmych.travelplanner.dto.trip.TripDetailsDTO;
+import io.github.valeriikuzmych.travelplanner.dto.trip.TripForm;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.service.OwnershipValidator;
 import io.github.valeriikuzmych.travelplanner.service.TripService;

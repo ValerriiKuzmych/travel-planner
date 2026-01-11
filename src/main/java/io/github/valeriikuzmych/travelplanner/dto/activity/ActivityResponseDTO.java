@@ -1,4 +1,4 @@
-package io.github.valeriikuzmych.travelplanner.dto;
+package io.github.valeriikuzmych.travelplanner.dto.activity;
 
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
 
