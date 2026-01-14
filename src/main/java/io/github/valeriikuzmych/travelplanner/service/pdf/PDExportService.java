@@ -21,6 +21,19 @@ import java.util.Map;
 public class PDExportService implements IPDExportService {
 
 
+    private static final int PAGE_WIDTH = 595;
+    private static final int PAGE_HEIGHT = 842;
+
+    private static final int MARGIN = 40;
+
+
+    private static final int COLUMNS = 3;
+    private static final int CARD_WIDTH = 165;
+    private static final int CARD_HEIGHT = 200;
+    private static final int CARD_GAP = 15;
+
+    private static final int START_Y = PAGE_HEIGHT - MARGIN;
+
     @Override
     public byte[] exportTripPlanToPdf(TripPlanDTO plan) throws IOException {
 
@@ -29,170 +42,169 @@ public class PDExportService implements IPDExportService {
             PDPage page = new PDPage();
             document.addPage(page);
 
-            PDPageContentStream contentStream = new PDPageContentStream(document, page);
+            PDPageContentStream cs = new PDPageContentStream(document, page);
+            PdfState state = new PdfState(page, cs, START_Y);
 
-            PdfState state = new PdfState(page, contentStream, 750);
+            writeHeader(state, plan);
 
-            state.setY(writeTitle(state, plan));
+            int col = 0;
+            int rowY = state.getY();
 
-            state.setY(writeWeather(document, state, plan));
+            for (LocalDate date : plan.getTripDates()) {
 
-            state.setY(writeActivity(document, state, plan));
+                WeatherDayDTO weather = plan.getWeather().get(date);
+                List<ActivityDTO> activities = plan.getActivities().get(date);
+
+                if (weather == null && activities == null) {
+                    continue;
+                }
 
 
-            state.getContentStream().close();
+                if (col == COLUMNS) {
+                    col = 0;
+                    rowY -= CARD_HEIGHT + CARD_GAP;
+                }
+
+
+                if (rowY < MARGIN + CARD_HEIGHT) {
+                    cs.close();
+                    page = new PDPage();
+                    document.addPage(page);
+                    cs = new PDPageContentStream(document, page);
+                    state.setPage(page);
+                    state.setContentStream(cs);
+                    rowY = START_Y;
+                }
+
+
+                int x = MARGIN + col * (CARD_WIDTH + CARD_GAP);
+
+                drawDayCard(cs, x, rowY, date, weather, activities);
+
+                col++;
+            }
+
+            cs.close();
 
             try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-
                 document.save(baos);
-
                 return baos.toByteArray();
-
             }
         }
-
     }
 
-    private PdfState checkPage(PDDocument document, PdfState state) throws IOException {
 
-        if (state.getY() < 100) {
-
-            state.getContentStream().close();
-
-            PDPage newPage = new PDPage();
-            document.addPage(newPage);
-
-            PDPageContentStream newContentStream = new PDPageContentStream(document, newPage,
-                    PDPageContentStream.AppendMode.APPEND,
-                    true);
-
-            state.setPage(newPage);
-            state.setContentStream(newContentStream);
-            state.setY(750);
-
-        }
-
-        return state;
-    }
-
-    private int writeTitle(PdfState state, TripPlanDTO plan) throws IOException {
+    private void writeHeader(PdfState state, TripPlanDTO plan) throws IOException {
 
         var cs = state.getContentStream();
 
+
         cs.beginText();
-        cs.setFont(PDType1Font.HELVETICA_BOLD, 18);
-        cs.newLineAtOffset(50, state.getY());
-        cs.showText("Trip Plan: " + plan.getCity());
+        cs.setFont(PDType1Font.HELVETICA_BOLD, 22);
+        cs.newLineAtOffset(MARGIN, state.getY());
+        cs.showText("Tour: " + plan.getCity());
         cs.endText();
 
-        return state.getY() - 40;
+        state.setY(state.getY() - 30);
 
+
+        String dateRange =
+                formatDayMonth(plan.getStartDate())
+                        + " – "
+                        + formatDayMonth(plan.getEndDate())
+                        + " "
+                        + plan.getEndDate().getYear();
+
+        cs.beginText();
+        cs.setFont(PDType1Font.HELVETICA, 12);
+        cs.newLineAtOffset(MARGIN, state.getY());
+        cs.showText(dateRange);
+        cs.endText();
+
+        state.setY(state.getY() - 40);
     }
 
-    private int writeWeather(PDDocument document, PdfState state, TripPlanDTO plan) throws IOException {
 
-        var cs = state.getContentStream();
+    private void drawDayCard(
+            PDPageContentStream cs,
+            int x,
+            int y,
+            LocalDate date,
+            WeatherDayDTO weather,
+            List<ActivityDTO> activities
+    ) throws IOException {
+
+
+        cs.setNonStrokingColor(245, 245, 245);
+        cs.addRect(x, y - CARD_HEIGHT, CARD_WIDTH, CARD_HEIGHT);
+        cs.fill();
+        cs.setNonStrokingColor(0, 0, 0);
+
+        int cursorY = y - 15;
+
 
         cs.beginText();
-        cs.setFont(PDType1Font.HELVETICA_BOLD, 14);
-        cs.newLineAtOffset(50, state.getY());
-        cs.showText("Weather Forecast:");
+        cs.setFont(PDType1Font.HELVETICA_BOLD, 12);
+        cs.newLineAtOffset(x + 10, cursorY);
+        cs.showText(
+                date.getDayOfWeek().name().substring(0, 3)
+                        + " · "
+                        + formatDayMonth(date)
+        );
         cs.endText();
 
-        state.setY(state.getY() - 25);
+        cursorY -= 18;
 
-        for (Map.Entry<LocalDate, WeatherDayDTO> entry
-                : plan.getWeather().entrySet()) {
 
-            state = checkPage(document, state);
-
-            cs = state.getContentStream();
-            cs.beginText();
-            cs.setFont(PDType1Font.HELVETICA_BOLD, 12);
-            cs.newLineAtOffset(60, state.getY());
-            cs.showText(entry.getKey().toString());
-            cs.endText();
-
-            state.setY(state.getY() - 16);
-
-            for (WeatherPeriodDTO period : entry.getValue().getPeriods()) {
-
-                state = checkPage(document, state);
-                cs = state.getContentStream();
+        if (weather != null) {
+            for (WeatherPeriodDTO p : weather.getPeriods()) {
 
                 cs.beginText();
-                cs.setFont(PDType1Font.HELVETICA, 12);
-                cs.newLineAtOffset(80, state.getY());
-
-
+                cs.setFont(PDType1Font.HELVETICA, 9);
+                cs.newLineAtOffset(x + 10, cursorY);
                 cs.showText(
-                        period.getPeriod().getLabel()
-                                + " — "
-                                + period.getTemperature()
-                                + " °C, "
-                                + period.getDescription()
+                        p.getPeriod().getLabel()
+                                + ": "
+                                + p.getTemperature()
+                                + "° · "
+                                + p.getDescription()
                 );
-
                 cs.endText();
 
-                state.setY(state.getY() - 14);
+                cursorY -= 11;
             }
-
-            state.setY(state.getY() - 10);
         }
 
-        return state.getY() - 10;
-    }
-
-    private int writeActivity(PDDocument document, PdfState state, TripPlanDTO plan) throws IOException {
-
-        var cs = state.getContentStream();
-
-        cs.beginText();
-        cs.setFont(PDType1Font.HELVETICA_BOLD, 14);
-        cs.newLineAtOffset(50, state.getY());
-        cs.showText("Activities:");
-        cs.endText();
-
-        state.setY(state.getY() - 25);
+        cursorY -= 6;
 
 
-        for (Map.Entry<LocalDate, List<ActivityDTO>> entry : plan.getActivities().entrySet()) {
+        if (activities != null) {
+            int count = 0;
 
-            state = checkPage(document, state);
+            for (ActivityDTO a : activities) {
+                if (count == 4) break;
 
-            cs = state.getContentStream();
-            cs.beginText();
-            cs.setFont(PDType1Font.HELVETICA_BOLD, 12);
-            cs.newLineAtOffset(60, state.getY());
-            cs.showText(entry.getKey().toString() + ":");
-            cs.endText();
-
-            state.setY(state.getY() - 16);
-
-            for (ActivityDTO act : entry.getValue()) {
-
-                cs = state.getContentStream();
                 cs.beginText();
-                cs.setFont(PDType1Font.HELVETICA, 12);
-                cs.newLineAtOffset(80, state.getY());
-                cs.showText(act.getStartTime() + " — " + act.getName());
+                cs.setFont(PDType1Font.HELVETICA, 9);
+                cs.newLineAtOffset(x + 10, cursorY);
+                cs.showText(a.getStartTime() + " " + a.getName());
                 cs.endText();
 
-                state.setY(state.getY() - 14);
-
-
+                cursorY -= 11;
+                count++;
             }
-
-            state.setY(state.getY() - 10);
-
-
         }
-
-        return state.getY();
-
-
     }
+
+    private String formatDayMonth(LocalDate date) {
+        return String.format(
+                "%02d %s",
+                date.getDayOfMonth(),
+                date.getMonth().name().substring(0, 3)
+        );
+    }
+
+
 }
 
 
