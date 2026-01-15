@@ -1,10 +1,9 @@
 package io.github.valeriikuzmych.travelplanner.service.pdf;
 
-import io.github.valeriikuzmych.travelplanner.dto.*;
+import io.github.valeriikuzmych.travelplanner.dto.TripPlanDTO;
 import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityDTO;
 import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherDayDTO;
 import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherPeriodDTO;
-import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherTimeDTO;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -15,24 +14,19 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class PDExportService implements IPDExportService {
 
-
-    private static final int PAGE_WIDTH = 595;
     private static final int PAGE_HEIGHT = 842;
-
     private static final int MARGIN = 40;
-
 
     private static final int COLUMNS = 3;
     private static final int CARD_WIDTH = 165;
     private static final int CARD_HEIGHT = 200;
     private static final int CARD_GAP = 15;
 
-    private static final int START_Y = PAGE_HEIGHT - MARGIN;
+    private static final int START_Y = PAGE_HEIGHT - 80;
 
     @Override
     public byte[] exportTripPlanToPdf(TripPlanDTO plan) throws IOException {
@@ -55,16 +49,11 @@ public class PDExportService implements IPDExportService {
                 WeatherDayDTO weather = plan.getWeather().get(date);
                 List<ActivityDTO> activities = plan.getActivities().get(date);
 
-                if (weather == null && activities == null) {
-                    continue;
-                }
-
 
                 if (col == COLUMNS) {
                     col = 0;
                     rowY -= CARD_HEIGHT + CARD_GAP;
                 }
-
 
                 if (rowY < MARGIN + CARD_HEIGHT) {
                     cs.close();
@@ -75,7 +64,6 @@ public class PDExportService implements IPDExportService {
                     state.setContentStream(cs);
                     rowY = START_Y;
                 }
-
 
                 int x = MARGIN + col * (CARD_WIDTH + CARD_GAP);
 
@@ -93,7 +81,6 @@ public class PDExportService implements IPDExportService {
         }
     }
 
-
     private void writeHeader(PdfState state, TripPlanDTO plan) throws IOException {
 
         var cs = state.getContentStream();
@@ -102,10 +89,10 @@ public class PDExportService implements IPDExportService {
         cs.beginText();
         cs.setFont(PDType1Font.HELVETICA_BOLD, 22);
         cs.newLineAtOffset(MARGIN, state.getY());
-        cs.showText("Tour: " + plan.getCity());
+        cs.showText("Trip: " + plan.getCity());
         cs.endText();
 
-        state.setY(state.getY() - 30);
+        state.setY(state.getY() - 28);
 
 
         String dateRange =
@@ -121,9 +108,8 @@ public class PDExportService implements IPDExportService {
         cs.showText(dateRange);
         cs.endText();
 
-        state.setY(state.getY() - 40);
+        state.setY(state.getY() - 35);
     }
-
 
     private void drawDayCard(
             PDPageContentStream cs,
@@ -133,7 +119,6 @@ public class PDExportService implements IPDExportService {
             WeatherDayDTO weather,
             List<ActivityDTO> activities
     ) throws IOException {
-
 
         cs.setNonStrokingColor(245, 245, 245);
         cs.addRect(x, y - CARD_HEIGHT, CARD_WIDTH, CARD_HEIGHT);
@@ -158,7 +143,6 @@ public class PDExportService implements IPDExportService {
 
         if (weather != null) {
             for (WeatherPeriodDTO p : weather.getPeriods()) {
-
                 cs.beginText();
                 cs.setFont(PDType1Font.HELVETICA, 9);
                 cs.newLineAtOffset(x + 10, cursorY);
@@ -170,7 +154,6 @@ public class PDExportService implements IPDExportService {
                                 + p.getDescription()
                 );
                 cs.endText();
-
                 cursorY -= 11;
             }
         }
@@ -180,7 +163,6 @@ public class PDExportService implements IPDExportService {
 
         if (activities != null) {
             int count = 0;
-
             for (ActivityDTO a : activities) {
                 if (count == 4) break;
 
@@ -203,8 +185,4 @@ public class PDExportService implements IPDExportService {
                 date.getMonth().name().substring(0, 3)
         );
     }
-
-
 }
-
-
