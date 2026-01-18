@@ -5,8 +5,16 @@
 
 <div th:fragment="content">
 
+    <!-- HEADER -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0" th:text="'Trip Plan — ' + ${plan.city}"></h2>
+        <div>
+            <h2 class="mb-1" th:text="${plan.city}"></h2>
+            <div class="text-muted">
+                <span th:text="${plan.startDate}"></span>
+                —
+                <span th:text="${plan.endDate}"></span>
+            </div>
+        </div>
 
         <div>
             <a th:href="@{/trips/{id}/plan/pdf(id=${plan.tripId})}"
@@ -17,102 +25,84 @@
 
             <a th:href="@{/trips/{id}(id=${plan.tripId})}"
                class="btn btn-outline-secondary">
-                Back to Trip
+                Back
             </a>
         </div>
     </div>
 
 
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <p class="mb-1">
-                <strong>Start date:</strong>
-                <span th:text="${plan.startDate}"></span>
-            </p>
-            <p class="mb-0">
-                <strong>End date:</strong>
-                <span th:text="${plan.endDate}"></span>
-            </p>
-        </div>
-    </div>
+    <div class="row g-3">
+
+        <div class="col-sm-6 col-lg-4"
+             th:each="date : ${plan.tripDates}">
+
+            <div class="card h-100 shadow-sm">
 
 
-    <div class="mb-5">
-
-        <h4 class="mb-3">Trip Plan — Daily Overview</h4>
-
-
-        <div th:each="date : ${plan.tripDates}"
-             th:if="${plan.weather.containsKey(date) or plan.activities.containsKey(date)}"
-             class="mb-4">
-
-            <div class="card shadow-sm">
-
-
-                <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                    <div>
-                        <strong th:text="${#temporals.format(date, 'EEEE')}"></strong>
-
-                        <span th:text="${#temporals.format(date, 'dd MMM yyyy')}"></span>
+                <div class="card-header bg-info-subtle border-bottom">
+                    <strong th:text="${#temporals.format(date, 'EEEE')}"></strong>
+                    <div class="small text-muted"
+                         th:text="${#temporals.format(date, 'dd MMM')}">
                     </div>
                 </div>
 
+
                 <div class="card-body">
-                    <div class="row">
 
 
-                        <div class="col-md-4 mb-3 mb-md-0">
+                    <div class="mb-3">
+                        <h6 class="text-muted mb-2">Weather</h6>
 
-                            <h6 class="text-muted mb-2">Weather</h6>
-
-                            <div th:if="${!plan.weather.containsKey(date)}" class="text-muted small">
-                                No forecast available
-                            </div>
-
-                            <ul class="list-unstyled mb-0"
-                                th:if="${plan.weather.containsKey(date)}">
-
-                                <li th:each="p : ${plan.weather.get(date).periods}"
-                                    class="small mb-1">
-
-                                    <strong th:text="${p.period.label}"></strong>
-                                    —
-                                    <span th:text="${p.temperature} + '°C'"></span>,
-                                    <span th:text="${p.description}"></span>
-
-                                </li>
-                            </ul>
-
-                            <div th:if="${plan.weatherLimited and date.equals(plan.lastWeatherDate)}"
-                                 class="text-muted small mt-1">
-                                Forecast available only for the next few days
-                            </div>
+                        <div th:if="${!plan.weather.containsKey(date)}"
+                             class="text-muted small">
+                            No forecast available
                         </div>
 
-                        <div class="col-md-8">
+                        <ul class="list-unstyled mb-0"
+                            th:if="${plan.weather.containsKey(date)}">
 
-                            <h6 class="text-muted mb-2">Activities</h6>
+                            <li th:each="p : ${plan.weather.get(date).periods}"
+                                class="small mb-1">
 
-                            <div th:if="${!plan.activities.containsKey(date)}" class="text-muted small">
-                                No activities planned
-                            </div>
+                                <strong th:text="${p.period.label}"></strong>
+                                —
+                                <span th:text="${p.temperature} + '°C'"></span>,
+                                <span th:text="${p.description}"></span>
+                            </li>
+                        </ul>
 
-                            <ul th:if="${plan.activities.containsKey(date)}" class="list-group list-group-flush">
-                                <li class="list-group-item px-0" th:each="a : ${plan.activities.get(date)}">
-                                    <strong th:text="${a.startTime}"></strong>
-                                    —
-                                    <span th:text="${a.name}"></span>
-                                </li>
-                            </ul>
-
+                        <div th:if="${plan.weatherLimited and date.equals(plan.lastWeatherDate)}"
+                             class="text-muted small mt-1">
+                            Forecast available only for the next few days
                         </div>
-
                     </div>
+
+
+                    <div>
+                        <h6 class="text-muted mb-2">Activities</h6>
+
+                        <div th:if="${!plan.activities.containsKey(date)}"
+                             class="text-muted small">
+                            No activities planned
+                        </div>
+
+                        <ul th:if="${plan.activities.containsKey(date)}"
+                            class="list-unstyled mb-0">
+
+                            <li th:each="a : ${plan.activities.get(date)}"
+                                class="small mb-1">
+
+                                <strong th:text="${a.startTime}"></strong>
+                                —
+                                <span th:text="${a.name}"></span>
+                            </li>
+                        </ul>
+                    </div>
+
                 </div>
             </div>
 
         </div>
-
     </div>
 
 </div>
