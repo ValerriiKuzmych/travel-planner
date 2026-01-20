@@ -19,19 +19,30 @@
                   th:object="${trip}"
                   method="post">
 
-                <div class="mb-3">
-                    <label class="form-label">City</label>
-                    <input class="form-control" th:field="*{city}">
+
+                <div class="row mb-3 align-items-end">
+                    <div class="col-md-6">
+                        <label class="form-label">City</label>
+                        <input class="form-control"
+                               th:field="*{city}">
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Start date</label>
-                    <input type="date" class="form-control" th:field="*{startDate}">
-                </div>
 
-                <div class="mb-3">
-                    <label class="form-label">End date</label>
-                    <input type="date" class="form-control" th:field="*{endDate}">
+                <div class="row mb-3 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted">Start date</label>
+                        <input type="date"
+                               class="form-control"
+                               th:field="*{startDate}">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted">End date</label>
+                        <input type="date"
+                               class="form-control"
+                               th:field="*{endDate}">
+                    </div>
                 </div>
 
                 <button class="btn btn-success" type="submit">
@@ -41,6 +52,7 @@
             </form>
         </div>
     </div>
+
 
 </div>
 </html>
