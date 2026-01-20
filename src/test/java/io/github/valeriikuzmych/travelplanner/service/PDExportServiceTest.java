@@ -10,6 +10,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
 
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -95,5 +96,6 @@ public class PDExportServiceTest {
             assertThat(text).contains("Vatican Museum");
         }
     }
+
 }
 

@@ -8,18 +8,20 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.List;
 
 @Service
 public class PDExportService implements IPDExportService {
 
-  
+
     private static final int PAGE_WIDTH = 595;
     private static final int PAGE_HEIGHT = 842;
 
@@ -40,13 +42,15 @@ public class PDExportService implements IPDExportService {
 
         try (PDDocument document = new PDDocument()) {
 
+            PDType0Font fontRegular = loadFont(document, "/fonts/NotoSans-Regular.ttf");
+            PDType0Font fontBold = loadFont(document, "/fonts/NotoSans-Bold.ttf");
+
             PDPage page = new PDPage(PDRectangle.A4);
             document.addPage(page);
 
             PDPageContentStream cs = new PDPageContentStream(document, page);
 
-
-            drawHeader(cs, plan);
+            drawHeader(cs, plan, fontBold, fontRegular);
 
             int col = 0;
             int rowY = CONTENT_START_Y;
@@ -60,12 +64,13 @@ public class PDExportService implements IPDExportService {
 
                 if (rowY - CARD_HEIGHT < CONTENT_BOTTOM_Y) {
                     cs.close();
+
                     page = new PDPage(PDRectangle.A4);
                     document.addPage(page);
                     cs = new PDPageContentStream(document, page);
 
                     col = 0;
-                    rowY = PAGE_HEIGHT - MARGIN;
+                    rowY = CONTENT_START_Y;
                 }
 
                 int x = MARGIN + col * (CARD_WIDTH + CARD_GAP);
@@ -76,7 +81,9 @@ public class PDExportService implements IPDExportService {
                         rowY,
                         date,
                         plan.getWeather().get(date),
-                        plan.getActivities().get(date)
+                        plan.getActivities().get(date),
+                        fontBold,
+                        fontRegular
                 );
 
                 col++;
@@ -92,12 +99,17 @@ public class PDExportService implements IPDExportService {
     }
 
 
-    private void drawHeader(PDPageContentStream cs, TripPlanDTO plan) throws IOException {
+    private void drawHeader(
+            PDPageContentStream cs,
+            TripPlanDTO plan,
+            PDType0Font fontBold,
+            PDType0Font fontRegular
+    ) throws IOException {
 
         int y = PAGE_HEIGHT - MARGIN - 30;
 
         cs.beginText();
-        cs.setFont(PDType1Font.HELVETICA_BOLD, 22);
+        cs.setFont(fontBold, 22);
         cs.newLineAtOffset(MARGIN, y);
         cs.showText("Trip: " + plan.getCity());
         cs.endText();
@@ -112,7 +124,7 @@ public class PDExportService implements IPDExportService {
                         plan.getEndDate().getYear();
 
         cs.beginText();
-        cs.setFont(PDType1Font.HELVETICA, 12);
+        cs.setFont(fontRegular, 12);
         cs.newLineAtOffset(MARGIN, y);
         cs.showText(range);
         cs.endText();
@@ -130,7 +142,9 @@ public class PDExportService implements IPDExportService {
             int y,
             LocalDate date,
             WeatherDayDTO weather,
-            List<ActivityDTO> activities
+            List<ActivityDTO> activities,
+            PDType0Font fontBold,
+            PDType0Font fontRegular
     ) throws IOException {
 
         cs.setNonStrokingColor(245, 245, 245);
@@ -141,7 +155,7 @@ public class PDExportService implements IPDExportService {
         int cursorY = y - 18;
 
         cs.beginText();
-        cs.setFont(PDType1Font.HELVETICA_BOLD, 12);
+        cs.setFont(fontBold, 12);
         cs.newLineAtOffset(x + 10, cursorY);
         cs.showText(
                 date.getDayOfWeek().name().substring(0, 3) +
@@ -155,7 +169,7 @@ public class PDExportService implements IPDExportService {
         if (weather != null) {
             for (WeatherPeriodDTO p : weather.getPeriods()) {
                 cs.beginText();
-                cs.setFont(PDType1Font.HELVETICA, 9);
+                cs.setFont(fontRegular, 9);
                 cs.newLineAtOffset(x + 10, cursorY);
                 cs.showText(
                         p.getPeriod().getLabel() +
@@ -177,7 +191,7 @@ public class PDExportService implements IPDExportService {
                 if (count == 4) break;
 
                 cs.beginText();
-                cs.setFont(PDType1Font.HELVETICA, 9);
+                cs.setFont(fontRegular, 9);
                 cs.newLineAtOffset(x + 10, cursorY);
                 cs.showText(a.getStartTime() + " " + a.getName());
                 cs.endText();
@@ -210,6 +224,15 @@ public class PDExportService implements IPDExportService {
     }
 
 
+    private PDType0Font loadFont(PDDocument document, String path) throws IOException {
+        try (InputStream is = getClass().getResourceAsStream(path)) {
+            if (is == null) {
+                throw new IllegalStateException("Font not found: " + path);
+            }
+            return PDType0Font.load(document, is, true);
+        }
+    }
+
     private String formatDayMonth(LocalDate date) {
         return String.format(
                 "%02d %s",
@@ -217,4 +240,5 @@ public class PDExportService implements IPDExportService {
                 date.getMonth().name().substring(0, 3)
         );
     }
+
 }
