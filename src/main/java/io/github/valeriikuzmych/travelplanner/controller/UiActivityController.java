@@ -77,7 +77,8 @@ public class UiActivityController {
 
             activityService.createActivity(form, email);
 
-            return "redirect:/trips/" + form.getTripId() + "/activities";
+            return "redirect:/trips/" + form.getTripId();
+
 
         } catch (Exception e) {
 
@@ -116,7 +117,8 @@ public class UiActivityController {
 
             activityService.updateActivity(id, form, email);
 
-            return "redirect:/trips/" + form.getTripId() + "/activities";
+            return "redirect:/trips/" + form.getTripId();
+
 
         } catch (Exception e) {
 
@@ -135,7 +137,8 @@ public class UiActivityController {
 
         activityService.deleteActivity(id, email);
 
-        return "redirect:/trips/" + tripId + "/activities";
+        return "redirect:/trips/" + tripId;
+
     }
 
 
