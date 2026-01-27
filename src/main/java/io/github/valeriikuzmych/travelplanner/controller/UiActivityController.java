@@ -100,6 +100,7 @@ public class UiActivityController {
 
         ActivityForm form = ActivityForm.fromEntity(activity);
 
+
         model.addAttribute("form", form);
 
         return "edit_activity";

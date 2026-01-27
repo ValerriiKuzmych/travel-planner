@@ -65,7 +65,8 @@
                         <label class="form-label">Date</label>
                         <input type="date"
                                class="form-control"
-                               th:field="*{date}">
+                               th:value="${#temporals.format(form.date, 'yyyy-MM-dd')}"
+                               name="date"/>
                     </div>
                 </div>
 
