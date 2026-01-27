@@ -190,6 +190,7 @@ public class TripServiceImpl implements TripService {
 
         dto.setId(activity.getId());
         dto.setName(activity.getName());
+        dto.setNote(activity.getNote());
         dto.setDate(activity.getDate());
         dto.setStartTime(activity.getStartTime());
         dto.setEndTime(activity.getEndTime());

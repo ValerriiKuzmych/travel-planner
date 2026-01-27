@@ -49,7 +49,7 @@ class ActivityServiceImplTest {
         activity.setId(10L);
         activity.setTrip(trip);
         activity.setName("Sauna");
-        activity.setType("Relax");
+        activity.setNote("Relax");
         activity.setDate(LocalDate.of(2026, 12, 15));
         activity.setStartTime(LocalTime.of(18, 0));
         activity.setEndTime(LocalTime.of(19, 0));
@@ -60,7 +60,7 @@ class ActivityServiceImplTest {
         ActivityForm form = new ActivityForm();
         form.setTripId(1L);
         form.setName("Sauna");
-        form.setType("Relax");
+        form.setNote("Relax");
         form.setDate(LocalDate.of(2026, 12, 15));
         form.setStartTime(LocalTime.of(18, 0));
         form.setEndTime(LocalTime.of(19, 0));
@@ -85,7 +85,7 @@ class ActivityServiceImplTest {
         ActivityForm form = new ActivityForm();
         form.setTripId(1L);
         form.setName("Sauna");
-        form.setType("Relax");
+        form.setNote("Relax");
         form.setDate(LocalDate.of(2026, 12, 15));
         form.setStartTime(LocalTime.of(19, 0));
         form.setEndTime(LocalTime.of(18, 0));
@@ -105,7 +105,7 @@ class ActivityServiceImplTest {
     void updateActivity_success() {
         ActivityForm form = new ActivityForm();
         form.setName("Updated");
-        form.setType("UpdatedType");
+        form.setNote("UpdatedType");
         form.setDate(LocalDate.of(2026, 12, 13));
         form.setStartTime(LocalTime.of(20, 0));
         form.setEndTime(LocalTime.of(21, 0));

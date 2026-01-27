@@ -1,6 +1,7 @@
 package io.github.valeriikuzmych.travelplanner.dto.activity;
 
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
+import org.antlr.v4.runtime.misc.NotNull;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -9,13 +10,17 @@ import java.util.Objects;
 public class ActivityForm {
 
     private Long id;
+
     private Long tripId;
 
     private String name;
-    private String type;
+    private String note;
+
     private LocalDate date;
+
     private LocalTime startTime;
     private LocalTime endTime;
+
 
     public ActivityForm() {
     }
@@ -26,7 +31,7 @@ public class ActivityForm {
         f.setId(a.getId());
         f.setTripId(a.getTrip().getId());
         f.setName(a.getName());
-        f.setType(a.getType());
+        f.setNote(a.getNote());
         f.setDate(a.getDate());
         f.setStartTime(a.getStartTime());
         f.setEndTime(a.getEndTime());
@@ -59,12 +64,12 @@ public class ActivityForm {
         this.name = name;
     }
 
-    public String getType() {
-        return type;
+    public String getNote() {
+        return note;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setNote(String note) {
+        this.note = note;
     }
 
     public LocalDate getDate() {
@@ -94,16 +99,24 @@ public class ActivityForm {
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof ActivityForm that)) return false;
-        return Objects.equals(id, that.id) && Objects.equals(tripId, that.tripId) && Objects.equals(name, that.name) && Objects.equals(type, that.type) && Objects.equals(date, that.date) && Objects.equals(startTime, that.startTime) && Objects.equals(endTime, that.endTime);
+        return Objects.equals(id, that.id) && Objects.equals(tripId, that.tripId) && Objects.equals(name, that.name) && Objects.equals(note, that.note) && Objects.equals(date, that.date) && Objects.equals(startTime, that.startTime) && Objects.equals(endTime, that.endTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, tripId, name, type, date, startTime, endTime);
+        return Objects.hash(id, tripId, name, note, date, startTime, endTime);
     }
 
     @Override
     public String toString() {
-        return "ActivityForm{" + "id=" + id + ", tripId=" + tripId + ", name='" + name + '\'' + ", type='" + type + '\'' + ", date=" + date + ", startTime=" + startTime + ", endTime=" + endTime + '}';
+        return "ActivityForm{" +
+                "id=" + id +
+                ", tripId=" + tripId +
+                ", name='" + name + '\'' +
+                ", note='" + note + '\'' +
+                ", date=" + date +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                '}';
     }
 }

@@ -10,7 +10,7 @@ public class ActivityResponseDTO {
     private Long id;
     private Long tripId;
     private String name;
-    private String type;
+    private String note;
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
@@ -25,7 +25,7 @@ public class ActivityResponseDTO {
         dto.setId(a.getId());
         dto.setTripId(a.getTrip().getId());
         dto.setName(a.getName());
-        dto.setType(a.getType());
+        dto.setNote(a.getNote());
         dto.setDate(a.getDate());
         dto.setStartTime(a.getStartTime());
         dto.setEndTime(a.getEndTime());
@@ -57,12 +57,12 @@ public class ActivityResponseDTO {
         this.name = name;
     }
 
-    public String getType() {
-        return type;
+    public String getNote() {
+        return note;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setNote(String note) {
+        this.note = note;
     }
 
     public LocalDate getDate() {

@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -158,13 +159,14 @@ public class PDExportService implements IPDExportService {
         cs.setFont(fontBold, 12);
         cs.newLineAtOffset(x + 10, cursorY);
         cs.showText(
-                date.getDayOfWeek().name().substring(0, 3) +
-                        " · " +
+                date.getDayOfWeek().name().substring(0, 3)
+                        + " · " +
                         formatDayMonth(date)
         );
         cs.endText();
 
         cursorY -= 18;
+
 
         if (weather != null) {
             for (WeatherPeriodDTO p : weather.getPeriods()) {
@@ -172,38 +174,59 @@ public class PDExportService implements IPDExportService {
                 cs.setFont(fontRegular, 9);
                 cs.newLineAtOffset(x + 10, cursorY);
                 cs.showText(
-                        p.getPeriod().getLabel() +
-                                ": " +
-                                p.getTemperature() +
-                                "° · " +
-                                p.getDescription()
+                        p.getPeriod().getLabel()
+                                + ": "
+                                + p.getTemperature()
+                                + "° · "
+                                + p.getDescription()
                 );
                 cs.endText();
+
                 cursorY -= 11;
             }
         }
 
         cursorY -= 6;
 
+
         if (activities != null) {
-            int count = 0;
             for (ActivityDTO a : activities) {
-                if (count == 4) break;
 
-                cs.beginText();
-                cs.setFont(fontRegular, 9);
-                cs.newLineAtOffset(x + 10, cursorY);
-                cs.showText(a.getStartTime() + " " + a.getName());
-                cs.endText();
+                int titleLines =
+                        drawWrappedText(
+                                cs,
+                                a.getStartTime() + " " + a.getName(),
+                                x + 10,
+                                cursorY,
+                                CARD_WIDTH - 20,
+                                fontRegular,
+                                9,
+                                11
+                        );
 
-                cursorY -= 11;
-                count++;
+                cursorY -= titleLines * 11 + 4;
+
+                if (a.getNote() != null && !a.getNote().isBlank()) {
+
+                    int noteLines =
+                            drawWrappedText(
+                                    cs,
+                                    a.getNote(),
+                                    x + 14,
+                                    cursorY,
+                                    CARD_WIDTH - 28,
+                                    fontRegular,
+                                    8,
+                                    10
+                            );
+
+                    cursorY -= noteLines * 10 + 6;
+                }
             }
         }
 
         drawNoteLines(cs, x, cursorY - 4, y - CARD_HEIGHT + 14);
     }
-
 
     private void drawNoteLines(PDPageContentStream cs, int x, int fromY, int toY) throws IOException {
 
@@ -239,6 +262,77 @@ public class PDExportService implements IPDExportService {
                 date.getDayOfMonth(),
                 date.getMonth().name().substring(0, 3)
         );
+    }
+
+    private int drawWrappedText(
+            PDPageContentStream cs,
+            String text,
+            float x,
+            float startY,
+            float maxWidth,
+            PDType0Font font,
+            float fontSize,
+            float lineHeight
+    ) throws IOException {
+
+        List<String> lines = new ArrayList<>();
+        StringBuilder currentLine = new StringBuilder();
+
+        for (String word : text.split(" ")) {
+
+            float wordWidth =
+                    font.getStringWidth(word) / 1000 * fontSize;
+
+            if (wordWidth > maxWidth) {
+
+                for (char c : word.toCharArray()) {
+                    String test = currentLine.toString() + c;
+                    float testWidth =
+                            font.getStringWidth(test) / 1000 * fontSize;
+
+                    if (testWidth > maxWidth) {
+                        lines.add(currentLine.toString());
+                        currentLine = new StringBuilder(String.valueOf(c));
+                    } else {
+                        currentLine.append(c);
+                    }
+                }
+                continue;
+            }
+
+            String testLine =
+                    currentLine.isEmpty()
+                            ? word
+                            : currentLine + " " + word;
+
+            float testWidth =
+                    font.getStringWidth(testLine) / 1000 * fontSize;
+
+            if (testWidth > maxWidth) {
+                lines.add(currentLine.toString());
+                currentLine = new StringBuilder(word);
+            } else {
+                currentLine = new StringBuilder(testLine);
+            }
+        }
+
+        if (!currentLine.isEmpty()) {
+            lines.add(currentLine.toString());
+        }
+
+        float y = startY;
+
+        for (String line : lines) {
+            cs.beginText();
+            cs.setFont(font, fontSize);
+            cs.newLineAtOffset(x, y);
+            cs.showText(line);
+            cs.endText();
+
+            y -= lineHeight;
+        }
+
+        return lines.size();
     }
 
 }

@@ -60,7 +60,7 @@
         </div>
     </div>
 
-    
+
     <div th:each="entry : ${trip.activitiesByDate}"
          class="mb-4">
 
@@ -74,14 +74,20 @@
                 <li th:each="act : ${entry.value}"
                     class="list-group-item d-flex justify-content-between align-items-center">
 
-                    <div>
-                        <strong th:text="${act.name}"></strong>
-                        <div class="text-muted small">
-                            <span th:text="${act.startTime}"></span>
-                            —
-                            <span th:text="${act.endTime}"></span>
-                        </div>
+                    <strong th:text="${act.name}"></strong>
+
+                    <div class="text-muted small">
+                        <span th:text="${act.startTime}"></span>
+                        —
+                        <span th:text="${act.endTime}"></span>
                     </div>
+
+
+                    <div class="small text-muted mt-1"
+                         th:if="${act.note}"
+                         th:text="${act.note}">
+                    </div>
+
 
                     <a class="btn btn-sm btn-outline-secondary"
                        th:href="@{/trips/{tripId}/activities/{actId}/edit(tripId=${trip.id},actId=${act.id})}">

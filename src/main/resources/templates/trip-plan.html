@@ -90,11 +90,16 @@
                             class="list-unstyled mb-0">
 
                             <li th:each="a : ${plan.activities.get(date)}"
-                                class="small mb-1">
+                                class="small mb-2">
 
                                 <strong th:text="${a.startTime}"></strong>
                                 —
                                 <span th:text="${a.name}"></span>
+                                
+                                <div class="text-muted small"
+                                     th:if="${a.note}"
+                                     th:text="${a.note}">
+                                </div>
                             </li>
                         </ul>
                     </div>

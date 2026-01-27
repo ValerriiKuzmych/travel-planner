@@ -26,19 +26,35 @@
 
                 <input type="hidden" th:field="*{tripId}"/>
 
-                
+
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label class="form-label">Name</label>
-                        <input class="form-control" th:field="*{name}">
+                        <label class="form-label">
+                            Name
+                            <span class="text-muted small">(max 50)</span>
+                        </label>
+
+
+                        <input class="form-control"
+                               th:field="*{name}"
+                               maxlength="50">
                     </div>
                 </div>
 
 
                 <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label class="form-label">Type</label>
-                        <input class="form-control" th:field="*{type}">
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            Note
+                            <span class="text-muted small">(optional, max 120)</span>
+                        </label>
+
+                        <textarea class="form-control"
+                                  th:field="*{note}"
+                                  maxlength="120"
+                                  rows="3"
+                                  placeholder="Short note visible in cards and PDF">
+        </textarea>
                     </div>
                 </div>
 

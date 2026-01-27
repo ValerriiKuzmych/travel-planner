@@ -87,7 +87,7 @@ public class ActivityServiceImpl implements ActivityService {
         validateDates(form.getDate(), form.getStartTime(), form.getEndTime(), existing.getTrip());
 
         existing.setName(form.getName());
-        existing.setType(form.getType());
+        existing.setNote(form.getNote());
         existing.setDate(form.getDate());
         existing.setStartTime(form.getStartTime());
         existing.setEndTime(form.getEndTime());
@@ -139,7 +139,7 @@ public class ActivityServiceImpl implements ActivityService {
         Activity activity = new Activity();
         activity.setTrip(trip);
         activity.setName(form.getName());
-        activity.setType(form.getType());
+        activity.setNote(form.getNote());
         activity.setDate(form.getDate());
         activity.setStartTime(form.getStartTime());
         activity.setEndTime(form.getEndTime());

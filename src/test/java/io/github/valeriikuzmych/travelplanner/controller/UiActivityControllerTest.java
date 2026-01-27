@@ -54,6 +54,7 @@ public class UiActivityControllerTest {
         ActivityDTO activityDTO = new ActivityDTO();
         activityDTO.setId(10L);
         activityDTO.setName("Sauna");
+        activityDTO.setNote("Relax after walking");
         activityDTO.setDate(java.time.LocalDate.of(2026, 12, 15));
         activityDTO.setStartTime(java.time.LocalTime.of(18, 0));
         activityDTO.setEndTime(java.time.LocalTime.of(19, 0));

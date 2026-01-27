@@ -168,6 +168,7 @@ public class TripPlannerServiceImpl implements TripPlannerService {
 
             dto.setId(act.getId());
             dto.setName(act.getName());
+            dto.setNote(act.getNote());
             dto.setDate(act.getDate());
             dto.setStartTime(act.getStartTime());
 

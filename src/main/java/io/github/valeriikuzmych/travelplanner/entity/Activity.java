@@ -21,12 +21,11 @@ public class Activity {
             foreignKey = @ForeignKey(name = "fk_trip"))
     private Trip trip;
 
-
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String name;
 
-    @Column(nullable = false)
-    private String type;
+    @Column(length = 120)
+    private String note;
 
     @Column(nullable = false)
     private LocalDate date;
@@ -61,12 +60,12 @@ public class Activity {
         this.name = name;
     }
 
-    public String getType() {
-        return type;
+    public String getNote() {
+        return note;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setNote(String note) {
+        this.note = note;
     }
 
     public LocalTime getStartTime() {
@@ -96,12 +95,12 @@ public class Activity {
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Activity activity)) return false;
-        return Objects.equals(id, activity.id) && Objects.equals(trip, activity.trip) && Objects.equals(name, activity.name) && Objects.equals(type, activity.type) && Objects.equals(startTime, activity.startTime) && Objects.equals(endTime, activity.endTime);
+        return Objects.equals(id, activity.id) && Objects.equals(trip, activity.trip) && Objects.equals(name, activity.name) && Objects.equals(note, activity.note) && Objects.equals(date, activity.date) && Objects.equals(startTime, activity.startTime) && Objects.equals(endTime, activity.endTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, trip, name, type, startTime, endTime);
+        return Objects.hash(id, trip, name, note, date, startTime, endTime);
     }
 
     @Override
@@ -110,7 +109,7 @@ public class Activity {
                 "id=" + id +
                 ", trip=" + trip +
                 ", name='" + name + '\'' +
-                ", type='" + type + '\'' +
+                ", note='" + note + '\'' +
                 ", date=" + date +
                 ", startTime=" + startTime +
                 ", endTime=" + endTime +
