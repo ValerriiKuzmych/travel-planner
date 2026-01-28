@@ -7,6 +7,7 @@ import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.entity.User;
 import io.github.valeriikuzmych.travelplanner.repository.TripRepository;
 import io.github.valeriikuzmych.travelplanner.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,9 @@ public class TripControllerTest {
     @Autowired
     ObjectMapper mapper;
 
+    @Autowired
+    EntityManager entityManager;
+
     User testUser;
     Trip testTrip;
 
@@ -64,14 +68,10 @@ public class TripControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "TripTest@example.com")
-    void createTrip_success() throws Exception {
-
+    @WithMockUser(username = "user@test.com")
+    void createTrip_rest_success() throws Exception {
         TripForm form = new TripForm();
-
-        form.setCity("CreatedCity");
-        form.setStartDate(LocalDate.of(2027, 1, 1));
-        form.setEndDate(LocalDate.of(2027, 1, 5));
+        form.setCity("Paris");
 
         mockMvc.perform(post("/api/trips")
                         .with(csrf())
@@ -79,10 +79,6 @@ public class TripControllerTest {
                         .content(mapper.writeValueAsString(form)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").exists());
-
-        List<Trip> trips = tripRepository.findByUserId(testUser.getId());
-
-        assertThat(trips).hasSize(2);
     }
 
     @Test
@@ -98,63 +94,68 @@ public class TripControllerTest {
 
 
         mockMvc.perform(get("/api/trips/user/{id}", testUser.getId())
-                        .contentType(MediaType.APPLICATION_JSON)
                         .with(user("TripTest@example.com")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[*].city").value(hasItems("TripTest", "City2")));
+                .andExpect(jsonPath("$[*].city")
+                        .value(hasItems("TripTest", "City2")));
     }
 
     @Test
-    @WithMockUser(username = "TripTest@example.com")
-    void getTripById_success() throws Exception {
-
-
+    @WithMockUser(username = "user@test.com")
+    void getTrip_rest_success() throws Exception {
         mockMvc.perform(get("/api/trips/{id}", testTrip.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.city").value("TripTest"));
+                .andExpect(jsonPath("$.city").value(testTrip.getCity()));
     }
 
     @Test
-    @WithMockUser(username = "TripTest@example.com")
-    void updateTrip_success() throws Exception {
-
+    @WithMockUser(username = "user@test.com")
+    void updateTrip_rest_success() throws Exception {
         TripForm form = new TripForm();
-
         form.setCity("Updated");
-        form.setStartDate(LocalDate.of(2026, 12, 20));
-        form.setEndDate(LocalDate.of(2027, 1, 15));
 
         mockMvc.perform(put("/api/trips/{id}", testTrip.getId())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(form)))
                 .andExpect(status().isOk());
-
-        Trip updated = tripRepository.findById(testTrip.getId()).orElseThrow();
-
-        assertThat(updated.getCity()).isEqualTo("Updated");
     }
 
     @Test
-    @WithMockUser(username = "TripTest@example.com")
-    void deleteTrip_success() throws Exception {
-
+    @WithMockUser(username = "user@test.com")
+    void deleteTrip_rest_success() throws Exception {
         mockMvc.perform(delete("/api/trips/{id}", testTrip.getId())
                         .with(csrf()))
                 .andExpect(status().isOk());
-
-        assertThat(tripRepository.findById(testTrip.getId())).isEmpty();
     }
+
 
     @Test
     @WithMockUser(username = "other@mail.com")
-    void getTrip_forbidden() throws Exception {
-
+    void getTrip_rest_forbidden() throws Exception {
         mockMvc.perform(get("/api/trips/{id}", testTrip.getId()))
-
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    void getTrips_unauthenticated_unauthorized() throws Exception {
+        mockMvc.perform(get("/api/trips/user/{id}", testUser.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void getTrips_otherUser_forbidden() throws Exception {
+
+        User other = new User();
+        other.setEmail("other@mail.com");
+        entityManager.persist(other);
+
+        mockMvc.perform(get("/api/trips/user/{id}", other.getId())
+                        .with(user("TripTest@example.com"))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
 
 }

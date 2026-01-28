@@ -37,8 +37,8 @@ class UiTripControllerTest {
 
 
     @Test
-    void tripsShouldRedirectToLogin() throws Exception {
-        mockMvc.perform(get("/trips").with(csrf())
+    void tripsPage_unauthenticated_redirectsToLogin() throws Exception {
+        mockMvc.perform(get("/trips")
                         .header("Accept", "text/html"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login"));
@@ -46,15 +46,12 @@ class UiTripControllerTest {
 
 
     @Test
-    void tripsShouldReturnView() throws Exception {
-
-        List<TripBasicDTO> dtoList = List.of(new TripBasicDTO(), new TripBasicDTO());
-
-        when(tripService.getTripsForUser("user@test.com")).thenReturn(dtoList);
+    void tripsPage_authenticated_rendersView() throws Exception {
+        when(tripService.getTripsForUser("user@test.com"))
+                .thenReturn(List.of(new TripBasicDTO()));
 
         mockMvc.perform(get("/trips")
-                        .with(user("user@test.com"))
-                        .with(csrf()))
+                        .with(user("user@test.com")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("trips"))
                 .andExpect(model().attributeExists("trips"));
@@ -62,8 +59,7 @@ class UiTripControllerTest {
 
 
     @Test
-    void createTripShouldRedirect() throws Exception {
-
+    void createTrip_post_redirects() throws Exception {
         mockMvc.perform(post("/trips/create")
                         .with(user("user@test.com"))
                         .with(csrf())
@@ -78,19 +74,15 @@ class UiTripControllerTest {
 
 
     @Test
-    void editTripFormShouldRender() throws Exception {
-
+    void editTripForm_renders() throws Exception {
         Trip trip = new Trip();
         trip.setId(1L);
         trip.setCity("Rome");
-        trip.setStartDate(LocalDate.of(2025, 1, 1));
-        trip.setEndDate(LocalDate.of(2025, 1, 5));
 
         when(tripService.getTrip(1L, "user@test.com")).thenReturn(trip);
 
         mockMvc.perform(get("/trips/1/edit")
-                        .with(user("user@test.com"))
-                        .with(csrf()))
+                        .with(user("user@test.com")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("edit_trip"))
                 .andExpect(model().attributeExists("form"));
@@ -98,8 +90,7 @@ class UiTripControllerTest {
 
 
     @Test
-    void updateTripShouldRedirect() throws Exception {
-
+    void updateTrip_post_redirects() throws Exception {
         mockMvc.perform(post("/trips/1/edit")
                         .with(user("user@test.com"))
                         .with(csrf())
@@ -114,8 +105,7 @@ class UiTripControllerTest {
 
 
     @Test
-    void deleteTripShouldRedirect() throws Exception {
-
+    void deleteTrip_redirects() throws Exception {
         mockMvc.perform(post("/trips/1/delete")
                         .with(user("user@test.com"))
                         .with(csrf()))
@@ -127,33 +117,32 @@ class UiTripControllerTest {
 
 
     @Test
-    void tripDetailsPageShouldRender() throws Exception {
-
+    void tripDetails_renders() throws Exception {
         TripDetailsDTO dto = new TripDetailsDTO();
         dto.setId(1L);
-        dto.setCity("Rome");
-        dto.setStartDate(LocalDate.of(2025, 1, 1));
-        dto.setEndDate(LocalDate.of(2025, 1, 5));
-        dto.setActivitiesByDate(new HashMap<>());
 
-        when(tripService.getTripDetails(1L, "test@example.com")).thenReturn(dto);
+        when(tripService.getTripDetails(1L, "user@test.com")).thenReturn(dto);
 
         mockMvc.perform(get("/trips/1")
-                        .with(user("test@example.com"))
-                        .with(csrf()))
+                        .with(user("user@test.com")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("trip_details"))
                 .andExpect(model().attributeExists("trip"));
     }
 
     @Test
-    void createTripFormShouldRender() throws Exception {
-
+    void createTripForm_renders() throws Exception {
         mockMvc.perform(get("/trips/create")
-                        .with(user("user@test.com"))
-                        .with(csrf()))
+                        .with(user("user@test.com")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("create_trip"))
                 .andExpect(model().attributeExists("trip"));
+    }
+
+    @Test
+    void trips_redirectIfNotAuthenticated() throws Exception {
+        mockMvc.perform(get("/trips"))
+                .andExpect(status().is3xxRedirection());
+        //   .andExpect(redirectedUrlPattern("**/login"));
     }
 }

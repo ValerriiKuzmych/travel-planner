@@ -112,6 +112,10 @@ public class ActivityServiceImpl implements ActivityService {
 
         ownershipValidator.assertUserOwnActivity(id, email);
 
+        if (!activityRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Activity not found");
+        }
+
         activityRepository.deleteById(id);
     }
 

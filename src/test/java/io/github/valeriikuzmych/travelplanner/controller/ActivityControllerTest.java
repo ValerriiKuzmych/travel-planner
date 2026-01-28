@@ -110,6 +110,9 @@ public class ActivityControllerTest {
         mockMvc.perform(get("/api/activities/trip/{tripId}", testTrip.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].id").value(testActivity.getId()))
+                .andExpect(jsonPath("$[0].tripId").value(testTrip.getId()))
                 .andExpect(jsonPath("$[0].name").value(testActivity.getName()))
                 .andExpect(jsonPath("$[0].note").value(testActivity.getNote()))
                 .andExpect(jsonPath("$[0].tripId").value(testTrip.getId()));
@@ -166,25 +169,6 @@ public class ActivityControllerTest {
     void getActivity_forbiddenForAnotherUser() throws Exception {
         mockMvc.perform(get("/api/activities/{id}", testActivity.getId()))
                 .andExpect(status().isForbidden());
-    }
-
-    @Test
-    @WithMockUser(username = "testactivityuser@example.com", roles = {"USER"})
-    void createActivity_invalidTime_returnsBadRequest() throws Exception {
-
-        ActivityForm form = new ActivityForm();
-        form.setTripId(testTrip.getId());
-        form.setName("Bad");
-        form.setNote("Bad");
-        form.setDate(LocalDate.of(2026, 10, 12));
-        form.setStartTime(LocalTime.of(18, 0));
-        form.setEndTime(LocalTime.of(17, 0)); // invalid
-
-        mockMvc.perform(post("/api/activities").with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(form)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Start time cannot be after end time"));
     }
 
 

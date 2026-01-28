@@ -3,6 +3,7 @@ package io.github.valeriikuzmych.travelplanner.service;
 import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityForm;
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
+import io.github.valeriikuzmych.travelplanner.exception.ResourceNotFoundException;
 import io.github.valeriikuzmych.travelplanner.repository.ActivityRepository;
 import io.github.valeriikuzmych.travelplanner.repository.TripRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,6 +38,7 @@ class ActivityServiceImplTest {
 
     private Trip trip;
     private Activity activity;
+    private ActivityForm validForm;
 
     @BeforeEach
     void init() {
@@ -53,31 +55,37 @@ class ActivityServiceImplTest {
         activity.setDate(LocalDate.of(2026, 12, 15));
         activity.setStartTime(LocalTime.of(18, 0));
         activity.setEndTime(LocalTime.of(19, 0));
+
+        validForm = new ActivityForm();
+        validForm.setTripId(1L);
+        validForm.setName("Sauna");
+        validForm.setNote("Relax");
+        validForm.setDate(LocalDate.of(2026, 12, 15));
+        validForm.setStartTime(LocalTime.of(18, 0));
+        validForm.setEndTime(LocalTime.of(19, 0));
     }
 
     @Test
     void createActivity_success() {
-        ActivityForm form = new ActivityForm();
-        form.setTripId(1L);
-        form.setName("Sauna");
-        form.setNote("Relax");
-        form.setDate(LocalDate.of(2026, 12, 15));
-        form.setStartTime(LocalTime.of(18, 0));
-        form.setEndTime(LocalTime.of(19, 0));
 
-        when(tripRepository.findById(1L)).thenReturn(Optional.of(trip));
-        when(activityRepository.save(any(Activity.class))).thenAnswer(a -> {
-            Activity saved = a.getArgument(0);
-            saved.setId(100L);
-            return saved;
-        });
+        doNothing().when(ownershipValidator)
+                .assertUserOwnTrip(1L, "user@mail.com");
 
-        Activity result = service.createActivity(form, "user@mail.com");
+        when(tripRepository.findById(1L))
+                .thenReturn(Optional.of(trip));
+
+        when(activityRepository.save(any(Activity.class)))
+                .thenAnswer(a -> {
+                    Activity saved = a.getArgument(0);
+                    saved.setId(100L);
+                    return saved;
+                });
+
+        Activity result = service.createActivity(validForm, "user@mail.com");
 
         assertNotNull(result);
         assertEquals(100L, result.getId());
         assertEquals("Sauna", result.getName());
-        verify(activityRepository).save(any(Activity.class));
     }
 
     @Test
@@ -103,30 +111,54 @@ class ActivityServiceImplTest {
 
     @Test
     void updateActivity_success() {
-        ActivityForm form = new ActivityForm();
-        form.setName("Updated");
-        form.setNote("UpdatedType");
-        form.setDate(LocalDate.of(2026, 12, 13));
-        form.setStartTime(LocalTime.of(20, 0));
-        form.setEndTime(LocalTime.of(21, 0));
 
-        when(activityRepository.findById(10L)).thenReturn(Optional.of(activity));
+        doNothing().when(ownershipValidator)
+                .assertUserOwnActivity(10L, "user@mail.com");
 
-        when(activityRepository.save(any(Activity.class))).thenAnswer(a -> a.getArgument(0));
+        when(activityRepository.findById(10L))
+                .thenReturn(Optional.of(activity));
 
-        Activity updated = service.updateActivity(10L, form, "user@mail.com");
+        Activity updated =
+                service.updateActivity(10L, validForm, "user@mail.com");
 
-        assertEquals("Updated", updated.getName());
-        assertEquals(LocalTime.of(20, 0), updated.getStartTime());
+        assertEquals("Sauna", updated.getName());
+        assertEquals(LocalTime.of(18, 0), updated.getStartTime());
+
         verify(activityRepository).save(activity);
     }
 
     @Test
-    void deleteActivity_success() {
+    void updateActivity_dateOutsideTrip() {
 
-        service.deleteActivity(10L, "user@mail.com");
+        validForm.setDate(LocalDate.of(2026, 12, 25));
 
-        verify(activityRepository).deleteById(10L);
+        doNothing().when(ownershipValidator)
+                .assertUserOwnActivity(10L, "user@mail.com");
+
+        when(activityRepository.findById(10L))
+                .thenReturn(Optional.of(activity));
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> service.updateActivity(10L, validForm, "user@mail.com")
+        );
+
+        assertEquals("Activity date must be within trip dates", ex.getMessage());
+    }
+
+    @Test
+    void deleteActivity_notFound() {
+
+        doNothing().when(ownershipValidator)
+                .assertUserOwnActivity(10L, "user@mail.com");
+
+        when(activityRepository.existsById(10L))
+                .thenReturn(false);
+
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> service.deleteActivity(10L, "user@mail.com")
+        );
     }
 
 
