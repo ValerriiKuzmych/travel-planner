@@ -26,21 +26,6 @@ public class UiAuthController {
         return "login";
     }
 
-    @PostMapping
-    public String loginSubmit(@ModelAttribute("user") RegistrationRequest user, Model model) {
-
-        boolean success = userService.authenticate(user.getEmail(), user.getPassword());
-
-        if (success) {
-
-            return "redirect:/trips";
-
-        } else {
-            model.addAttribute("error", "Invalid email or password");
-
-            return "login";
-        }
-    }
 
     @GetMapping("/register")
     public String registerPage(Model model) {
