@@ -64,7 +64,8 @@ public class AuthController {
 
         userService.registerUser(registrationRequest);
 
-        return ResponseEntity.ok("User registered successfully.");
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body("User registered successfully");
 
     }
 
