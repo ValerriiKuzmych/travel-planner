@@ -1,8 +1,10 @@
 package io.github.valeriikuzmych.travelplanner.service;
 
+import io.github.valeriikuzmych.travelplanner.dto.trip.TripBasicDTO;
 import io.github.valeriikuzmych.travelplanner.dto.trip.TripForm;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.entity.User;
+import io.github.valeriikuzmych.travelplanner.exception.ResourceNotFoundException;
 import io.github.valeriikuzmych.travelplanner.repository.TripRepository;
 import io.github.valeriikuzmych.travelplanner.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -12,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -114,6 +117,50 @@ public class TripServiceImplTest {
 
         verify(ownershipValidator, times(1)).assertUserOwnTrip(id, "mail@mail.com");
         verify(tripRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    void updateTrip_invalidDates_throwsException() {
+        TripForm form = new TripForm();
+        form.setCity("Paris");
+        form.setStartDate(LocalDate.of(2027, 1, 10));
+        form.setEndDate(LocalDate.of(2027, 1, 1));
+        
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> tripServiceImpl.updateTrip(1L, form, "mail@mail.com")
+        );
+
+        assertEquals("Start date cannot be after end date", ex.getMessage());
+        verify(tripRepository, never()).save(any());
+    }
+
+    @Test
+    void getTrip_notFound_throwsResourceNotFoundException() {
+        when(tripRepository.findById(1L)).thenReturn(Optional.empty());
+
+        ResourceNotFoundException ex = assertThrows(
+                ResourceNotFoundException.class,
+                () -> tripServiceImpl.getTrip(1L, "mail@mail.com")
+        );
+
+        assertEquals("Trip not found", ex.getMessage());
+    }
+
+    @Test
+    void getTripsForUser_success() {
+        User user = new User();
+        user.setId(1L);
+        when(userRepository.findByEmail("user@mail.com")).thenReturn(Optional.of(user));
+
+        Trip trip = new Trip();
+        trip.setId(10L);
+        trip.setCity("Rome");
+        when(tripRepository.findByUserId(1L)).thenReturn(List.of(trip));
+
+        List<TripBasicDTO> trips = tripServiceImpl.getTripsForUser("user@mail.com");
+        assertEquals(1, trips.size());
+        assertEquals("Rome", trips.get(0).getCity());
     }
 
 }

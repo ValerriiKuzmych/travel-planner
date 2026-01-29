@@ -45,8 +45,6 @@ public class TripControllerTest {
     @Autowired
     ObjectMapper mapper;
 
-    @Autowired
-    EntityManager entityManager;
 
     User testUser;
     Trip testTrip;
@@ -68,10 +66,13 @@ public class TripControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user@test.com")
+    @WithMockUser(username = "TripTest@example.com")
     void createTrip_rest_success() throws Exception {
+
         TripForm form = new TripForm();
         form.setCity("Paris");
+        form.setStartDate(LocalDate.of(2026, 11, 10));
+        form.setEndDate(LocalDate.of(2026, 11, 15));
 
         mockMvc.perform(post("/api/trips")
                         .with(csrf())
@@ -102,7 +103,7 @@ public class TripControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user@test.com")
+    @WithMockUser(username = "TripTest@example.com")
     void getTrip_rest_success() throws Exception {
         mockMvc.perform(get("/api/trips/{id}", testTrip.getId()))
                 .andExpect(status().isOk())
@@ -110,10 +111,12 @@ public class TripControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user@test.com")
+    @WithMockUser(username = "TripTest@example.com")
     void updateTrip_rest_success() throws Exception {
         TripForm form = new TripForm();
         form.setCity("Updated");
+        form.setStartDate(LocalDate.of(2026, 10, 10));
+        form.setEndDate(LocalDate.of(2026, 10, 15));
 
         mockMvc.perform(put("/api/trips/{id}", testTrip.getId())
                         .with(csrf())
@@ -123,7 +126,7 @@ public class TripControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user@test.com")
+    @WithMockUser(username = "TripTest@example.com")
     void deleteTrip_rest_success() throws Exception {
         mockMvc.perform(delete("/api/trips/{id}", testTrip.getId())
                         .with(csrf()))
@@ -150,7 +153,10 @@ public class TripControllerTest {
 
         User other = new User();
         other.setEmail("other@mail.com");
-        entityManager.persist(other);
+        other.setPassword("pass");
+        other.setRole("USER");
+
+        userRepository.save(other);
 
         mockMvc.perform(get("/api/trips/user/{id}", other.getId())
                         .with(user("TripTest@example.com"))

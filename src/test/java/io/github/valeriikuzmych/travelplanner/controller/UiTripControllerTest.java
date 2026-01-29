@@ -141,8 +141,9 @@ class UiTripControllerTest {
 
     @Test
     void trips_redirectIfNotAuthenticated() throws Exception {
-        mockMvc.perform(get("/trips"))
-                .andExpect(status().is3xxRedirection());
-        //   .andExpect(redirectedUrlPattern("**/login"));
+        mockMvc.perform(get("/trips")
+                        .header("Accept", "text/html"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login"));
     }
 }

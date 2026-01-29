@@ -3,9 +3,14 @@ package io.github.valeriikuzmych.travelplanner.controller;
 import io.github.valeriikuzmych.travelplanner.dto.trip.TripBasicDTO;
 import io.github.valeriikuzmych.travelplanner.dto.trip.TripForm;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
+import io.github.valeriikuzmych.travelplanner.entity.User;
+import io.github.valeriikuzmych.travelplanner.exception.ResourceNotFoundException;
+import io.github.valeriikuzmych.travelplanner.repository.UserRepository;
 import io.github.valeriikuzmych.travelplanner.service.TripService;
+import io.github.valeriikuzmych.travelplanner.service.UserService;
 import io.github.valeriikuzmych.travelplanner.service.WeatherService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -19,11 +24,14 @@ public class TripController {
 
     private final TripService tripService;
 
+    private final UserRepository userRepository;
+
     private final WeatherService weatherService;
 
 
-    public TripController(TripService tripService, WeatherService weatherService) {
+    public TripController(TripService tripService, WeatherService weatherService, UserRepository userRepository) {
 
+        this.userRepository = userRepository;
         this.tripService = tripService;
         this.weatherService = weatherService;
 
@@ -50,6 +58,16 @@ public class TripController {
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<TripBasicDTO>> getTripsByUser(@PathVariable Long userId, Principal principal) {
+
+        User requestedUser = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+
+        if (!requestedUser.getEmail().equals(principal.getName())) {
+
+            throw new AccessDeniedException("Forbidden");
+            
+        }
 
         List<TripBasicDTO> trips = tripService.getTripsForUser(principal.getName());
 
