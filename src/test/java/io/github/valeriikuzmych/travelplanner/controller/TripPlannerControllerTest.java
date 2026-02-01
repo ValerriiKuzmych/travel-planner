@@ -52,4 +52,12 @@ public class TripPlannerControllerTest {
         verify(tripPlannerService, times(1))
                 .getPlanForTrip(1L, "john@example.com");
     }
+
+    @Test
+    void getTripPlan_requiresAuthentication() throws Exception {
+        
+        mockMvc.perform(get("/api/trips/1/plan"))
+                .andExpect(status().isUnauthorized());
+    }
+
 }

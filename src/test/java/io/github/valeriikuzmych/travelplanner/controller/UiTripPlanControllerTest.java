@@ -116,7 +116,8 @@ class UiTripPlanControllerTest {
                 .thenThrow(new IllegalArgumentException("Trip not found"));
 
         mockMvc.perform(get("/trips/9999/plan"))
-                .andExpect(status().isBadRequest()); // thrown by controller
+                .andExpect(status().isOk())
+                .andExpect(view().name("error"));
     }
 
 }
