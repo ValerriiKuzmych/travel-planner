@@ -60,9 +60,14 @@ public class TripServiceImpl implements TripService {
     @Override
     public Trip getTrip(Long id, String email) {
 
+
         validator.assertUserOwnTrip(id, email);
 
-        return tripRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Trip not found"));
+        Trip trip = tripRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Trip not found"));
+
+
+        return trip;
 
     }
 

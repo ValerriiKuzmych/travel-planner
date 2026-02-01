@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -125,7 +126,7 @@ public class TripServiceImplTest {
         form.setCity("Paris");
         form.setStartDate(LocalDate.of(2027, 1, 10));
         form.setEndDate(LocalDate.of(2027, 1, 1));
-        
+
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
                 () -> tripServiceImpl.updateTrip(1L, form, "mail@mail.com")
@@ -137,7 +138,9 @@ public class TripServiceImplTest {
 
     @Test
     void getTrip_notFound_throwsResourceNotFoundException() {
+
         when(tripRepository.findById(1L)).thenReturn(Optional.empty());
+
 
         ResourceNotFoundException ex = assertThrows(
                 ResourceNotFoundException.class,
@@ -145,6 +148,19 @@ public class TripServiceImplTest {
         );
 
         assertEquals("Trip not found", ex.getMessage());
+
+    }
+
+    @Test
+    void getTrip_notOwned_throwsSecurityException() {
+        doThrow(new AccessDeniedException("Forbidden"))
+                .when(ownershipValidator)
+                .assertUserOwnTrip(1L, "mail@mail.com");
+
+        assertThrows(
+                AccessDeniedException.class,
+                () -> tripServiceImpl.getTrip(1L, "mail@mail.com")
+        );
     }
 
     @Test
