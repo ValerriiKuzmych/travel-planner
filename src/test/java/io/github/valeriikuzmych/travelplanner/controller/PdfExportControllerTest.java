@@ -48,4 +48,11 @@ public class PdfExportControllerTest {
                 .andExpect(header().string("Content-Disposition", "attachment; filename=trip-plan-1.pdf"));
     }
 
+    @Test
+    void exportPdf_requiresAuthentication() throws Exception {
+
+        mockMvc.perform(get("/trips/1/plan/pdf"))
+                .andExpect(status().isUnauthorized());
+    }
+
 }
