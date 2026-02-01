@@ -1,16 +1,14 @@
-package io.github.valeriikuzmych.travelplanner.service;
+package io.github.valeriikuzmych.travelplanner.service.pdf;
 
 import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityDTO;
 import io.github.valeriikuzmych.travelplanner.dto.TripPlanDTO;
 import io.github.valeriikuzmych.travelplanner.dto.weather.DayPeriod;
 import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherDayDTO;
 import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherPeriodDTO;
-import io.github.valeriikuzmych.travelplanner.service.pdf.PDExportService;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
 
-import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;

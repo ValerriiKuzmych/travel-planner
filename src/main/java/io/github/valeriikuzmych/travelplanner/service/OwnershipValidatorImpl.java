@@ -41,7 +41,7 @@ public class OwnershipValidatorImpl implements OwnershipValidator {
     public void assertUserOwnActivity(Long activityId, String userEmail) {
 
         Activity activity = activityRepository.findById(activityId)
-                .orElseThrow(() -> new IllegalArgumentException("activity not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("activity not found"));
 
         if (!activity.getTrip().getUser().getEmail().equalsIgnoreCase(userEmail)) {
 

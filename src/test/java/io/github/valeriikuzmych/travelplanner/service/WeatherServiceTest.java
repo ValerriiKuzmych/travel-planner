@@ -74,3 +74,4 @@ class WeatherServiceTest {
                 .getForEntity(contains("/forecast"), eq(Map.class));
     }
 }
+
