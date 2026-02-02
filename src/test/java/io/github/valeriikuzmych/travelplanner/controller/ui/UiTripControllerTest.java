@@ -1,4 +1,4 @@
-package io.github.valeriikuzmych.travelplanner.controller;
+package io.github.valeriikuzmych.travelplanner.controller.ui;
 
 import io.github.valeriikuzmych.travelplanner.dto.trip.TripBasicDTO;
 import io.github.valeriikuzmych.travelplanner.dto.trip.TripDetailsDTO;
@@ -12,8 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;

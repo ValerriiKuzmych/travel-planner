@@ -34,28 +34,18 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
 
-        UsernamePasswordAuthenticationToken token =
+        Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getEmail(),
                         loginRequest.getPassword()
-                );
+                )
+        );
 
-        try {
+        SecurityContextHolder.getContext().setAuthentication(auth);
 
-            Authentication auth = authenticationManager.authenticate(token);
-
-            SecurityContextHolder.getContext().setAuthentication(auth);
-
-            return ResponseEntity.ok("Login successful");
-
-        } catch (AuthenticationException ex) {
-
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body("Invalid email or password");
-        }
+        return ResponseEntity.ok("Login successful");
     }
 
 

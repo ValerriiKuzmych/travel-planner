@@ -1,6 +1,5 @@
-package io.github.valeriikuzmych.travelplanner.controller;
+package io.github.valeriikuzmych.travelplanner.controller.ui;
 
-import io.github.valeriikuzmych.travelplanner.controller.ui.UiTripPlanController;
 import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityDTO;
 import io.github.valeriikuzmych.travelplanner.dto.TripPlanDTO;
 import io.github.valeriikuzmych.travelplanner.dto.weather.DayPeriod;

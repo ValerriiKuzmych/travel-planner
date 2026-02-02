@@ -35,13 +35,19 @@ public class PdfExportController {
 
         TripPlanDTO dto = tripPlannerService.getPlanForTrip(id, principal.getName());
 
-        byte[] pdf = pdfExportService.exportTripPlanToPdf(dto);
+        try {
 
-        return ResponseEntity.ok()
-                .header("Content-Type", "application/pdf")
-                .header("Content-Disposition",
-                        "attachment; filename=trip-plan-" + id + ".pdf")
-                .body(pdf);
+            byte[] pdf = pdfExportService.exportTripPlanToPdf(dto);
+
+            return ResponseEntity.ok()
+                    .header("Content-Type", "application/pdf")
+                    .header("Content-Disposition", "attachment; filename=trip-plan-" + id + ".pdf")
+                    .body(pdf);
+            
+        } catch (IOException e) {
+
+            throw new IllegalStateException("Failed to generate PDF");
+        }
 
     }
 

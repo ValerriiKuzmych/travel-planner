@@ -1,4 +1,4 @@
-package io.github.valeriikuzmych.travelplanner.controller;
+package io.github.valeriikuzmych.travelplanner.controller.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityForm;
@@ -169,6 +169,13 @@ public class ActivityControllerTest {
     void getActivity_forbiddenForAnotherUser() throws Exception {
         mockMvc.perform(get("/api/activities/{id}", testActivity.getId()))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "testactivityuser@example.com")
+    void getActivity_notFound() throws Exception {
+        mockMvc.perform(get("/api/activities/999"))
+                .andExpect(status().isNotFound());
     }
 
 

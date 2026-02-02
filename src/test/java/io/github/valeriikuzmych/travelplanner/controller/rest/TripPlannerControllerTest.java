@@ -1,4 +1,4 @@
-package io.github.valeriikuzmych.travelplanner.controller;
+package io.github.valeriikuzmych.travelplanner.controller.rest;
 
 import io.github.valeriikuzmych.travelplanner.dto.TripPlanDTO;
 import io.github.valeriikuzmych.travelplanner.service.TripPlannerService;
@@ -12,7 +12,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.Map;
 
 import static org.mockito.Mockito.*;
@@ -55,7 +54,7 @@ public class TripPlannerControllerTest {
 
     @Test
     void getTripPlan_requiresAuthentication() throws Exception {
-        
+
         mockMvc.perform(get("/api/trips/1/plan"))
                 .andExpect(status().isUnauthorized());
     }
