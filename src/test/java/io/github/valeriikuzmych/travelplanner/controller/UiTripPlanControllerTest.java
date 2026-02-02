@@ -1,11 +1,11 @@
 package io.github.valeriikuzmych.travelplanner.controller;
 
+import io.github.valeriikuzmych.travelplanner.controller.ui.UiTripPlanController;
 import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityDTO;
 import io.github.valeriikuzmych.travelplanner.dto.TripPlanDTO;
 import io.github.valeriikuzmych.travelplanner.dto.weather.DayPeriod;
 import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherDayDTO;
 import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherPeriodDTO;
-import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherTimeDTO;
 import io.github.valeriikuzmych.travelplanner.service.TripPlannerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

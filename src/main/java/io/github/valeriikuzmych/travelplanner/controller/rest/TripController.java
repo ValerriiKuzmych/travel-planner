@@ -1,4 +1,4 @@
-package io.github.valeriikuzmych.travelplanner.controller;
+package io.github.valeriikuzmych.travelplanner.controller.rest;
 
 import io.github.valeriikuzmych.travelplanner.dto.trip.TripBasicDTO;
 import io.github.valeriikuzmych.travelplanner.dto.trip.TripForm;
@@ -7,7 +7,6 @@ import io.github.valeriikuzmych.travelplanner.entity.User;
 import io.github.valeriikuzmych.travelplanner.exception.ResourceNotFoundException;
 import io.github.valeriikuzmych.travelplanner.repository.UserRepository;
 import io.github.valeriikuzmych.travelplanner.service.TripService;
-import io.github.valeriikuzmych.travelplanner.service.UserService;
 import io.github.valeriikuzmych.travelplanner.service.WeatherService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -66,7 +65,7 @@ public class TripController {
         if (!requestedUser.getEmail().equals(principal.getName())) {
 
             throw new AccessDeniedException("Forbidden");
-            
+
         }
 
         List<TripBasicDTO> trips = tripService.getTripsForUser(principal.getName());

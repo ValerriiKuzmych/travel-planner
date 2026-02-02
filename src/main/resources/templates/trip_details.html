@@ -20,9 +20,12 @@
             </a>
 
             <form th:action="@{/trips/{id}/delete(id=${trip.id})}"
-                  method="post">
-                <button class="btn btn-outline-danger"
-                        type="submit">
+                  method="post"
+                  th:csrf>
+
+                <button type="submit"
+                        class="btn btn-sm btn-outline-danger"
+                        onclick="return confirm('Are you sure you want to delete this trip?')">
                     Delete
                 </button>
             </form>
@@ -89,10 +92,25 @@
                     </div>
 
 
-                    <a class="btn btn-sm btn-outline-secondary"
-                       th:href="@{/trips/{tripId}/activities/{actId}/edit(tripId=${trip.id},actId=${act.id})}">
-                        Edit
-                    </a>
+                    <div class="d-flex gap-2 align-items-center">
+
+                        <a class="btn btn-sm btn-outline-secondary"
+                           th:href="@{/trips/{tripId}/activities/{actId}/edit(tripId=${trip.id}, actId=${act.id})}">
+                            Edit
+                        </a>
+
+                        <form th:action="@{/trips/{tripId}/activities/{actId}/delete(tripId=${trip.id}, actId=${act.id})}"
+                              method="post"
+                              th:csrf>
+
+                            <button type="submit"
+                                    class="btn btn-sm btn-outline-danger"
+                                    onclick="return confirm('Are you sure you want to delete this activity?')">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+
 
                 </li>
 

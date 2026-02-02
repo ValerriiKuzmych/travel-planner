@@ -1,4 +1,4 @@
-package io.github.valeriikuzmych.travelplanner.controller;
+package io.github.valeriikuzmych.travelplanner.controller.ui;
 
 
 import jakarta.servlet.http.HttpServletRequest;

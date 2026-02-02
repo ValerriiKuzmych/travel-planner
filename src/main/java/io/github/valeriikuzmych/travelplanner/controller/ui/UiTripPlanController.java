@@ -1,4 +1,4 @@
-package io.github.valeriikuzmych.travelplanner.controller;
+package io.github.valeriikuzmych.travelplanner.controller.ui;
 
 
 import io.github.valeriikuzmych.travelplanner.dto.TripPlanDTO;
