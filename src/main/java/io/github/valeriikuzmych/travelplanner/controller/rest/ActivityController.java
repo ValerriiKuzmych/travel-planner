@@ -17,12 +17,11 @@ import java.util.List;
 public class ActivityController {
 
     private final ActivityService activityService;
-    private final OwnershipValidator ownershipValidator;
 
-    public ActivityController(ActivityService activityService,
-                              OwnershipValidator ownershipValidator) {
+    public ActivityController(ActivityService activityService) {
+
         this.activityService = activityService;
-        this.ownershipValidator = ownershipValidator;
+
     }
 
 
@@ -30,9 +29,7 @@ public class ActivityController {
     public ResponseEntity<ActivityResponseDTO> create(@RequestBody ActivityForm form,
                                                       Principal principal) {
 
-        String email = principal.getName();
-
-        Activity created = activityService.createActivity(form, email);
+        Activity created = activityService.createActivity(form, principal.getName());
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -43,9 +40,7 @@ public class ActivityController {
     public ResponseEntity<ActivityResponseDTO> getActivity(@PathVariable Long id,
                                                            Principal principal) {
 
-        String email = principal.getName();
-
-        Activity activity = activityService.getActivityForUser(id, email);
+        Activity activity = activityService.getActivityForUser(id, principal.getName());
 
         return ResponseEntity.ok(ActivityResponseDTO.fromEntity(activity));
     }
@@ -55,10 +50,8 @@ public class ActivityController {
     public ResponseEntity<List<ActivityResponseDTO>> getByTrip(@PathVariable Long tripId,
                                                                Principal principal) {
 
-        String email = principal.getName();
-
         List<Activity> activities =
-                activityService.getActivitiesByTripForUser(tripId, email);
+                activityService.getActivitiesByTripForUser(tripId, principal.getName());
 
         List<ActivityResponseDTO> dtos = activities.stream()
                 .map(ActivityResponseDTO::fromEntity)
@@ -73,9 +66,8 @@ public class ActivityController {
                                                               @RequestBody ActivityForm form,
                                                               Principal principal) {
 
-        String email = principal.getName();
 
-        Activity updated = activityService.updateActivity(id, form, email);
+        Activity updated = activityService.updateActivity(id, form, principal.getName());
 
         return ResponseEntity.ok(ActivityResponseDTO.fromEntity(updated));
     }
@@ -84,9 +76,7 @@ public class ActivityController {
     public ResponseEntity<Void> delete(@PathVariable Long id,
                                        Principal principal) {
 
-        String email = principal.getName();
-
-        activityService.deleteActivity(id, email);
+        activityService.deleteActivity(id, principal.getName());
 
         return ResponseEntity.noContent().build();
     }

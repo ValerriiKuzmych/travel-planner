@@ -68,11 +68,14 @@ class ActivityServiceImplTest {
     @Test
     void createActivity_success() {
 
-        doNothing().when(ownershipValidator)
-                .assertUserOwnTrip(1L, "user@mail.com");
 
         when(tripRepository.findById(1L))
                 .thenReturn(Optional.of(trip));
+
+
+        doNothing().when(ownershipValidator)
+                .assertUserOwnTrip(trip, "user@mail.com");
+
 
         when(activityRepository.save(any(Activity.class)))
                 .thenAnswer(a -> {
@@ -112,11 +115,11 @@ class ActivityServiceImplTest {
     @Test
     void updateActivity_success() {
 
-        doNothing().when(ownershipValidator)
-                .assertUserOwnActivity(10L, "user@mail.com");
-
         when(activityRepository.findById(10L))
                 .thenReturn(Optional.of(activity));
+
+        doNothing().when(ownershipValidator)
+                .assertUserOwnActivity(activity, "user@mail.com");
 
         Activity updated =
                 service.updateActivity(10L, validForm, "user@mail.com");
@@ -133,7 +136,7 @@ class ActivityServiceImplTest {
         validForm.setDate(LocalDate.of(2026, 12, 25));
 
         doNothing().when(ownershipValidator)
-                .assertUserOwnActivity(10L, "user@mail.com");
+                .assertUserOwnActivity(activity, "user@mail.com");
 
         when(activityRepository.findById(10L))
                 .thenReturn(Optional.of(activity));
@@ -148,17 +151,15 @@ class ActivityServiceImplTest {
 
     @Test
     void deleteActivity_notFound() {
+        when(activityRepository.findById(10L)).thenReturn(Optional.empty());
 
-        doNothing().when(ownershipValidator)
-                .assertUserOwnActivity(10L, "user@mail.com");
-
-        when(activityRepository.existsById(10L))
-                .thenReturn(false);
-
-        assertThrows(
+        ResourceNotFoundException ex = assertThrows(
                 ResourceNotFoundException.class,
                 () -> service.deleteActivity(10L, "user@mail.com")
         );
+
+        assertEquals("Activity not found", ex.getMessage());
+        verify(activityRepository, never()).delete(any());
     }
 
 

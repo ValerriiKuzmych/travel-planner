@@ -33,10 +33,11 @@ public class TripPlannerServiceImpl implements TripPlannerService {
     @Override
     public TripPlanDTO getPlanForTrip(Long tripId, String userEmail) {
 
-        validator.assertUserOwnTrip(tripId, userEmail);
 
         Trip trip = tripRepository.findById(tripId)
                 .orElseThrow(() -> new IllegalArgumentException("Trip with id " + tripId + " not found"));
+
+        validator.assertUserOwnTrip(trip, userEmail);
 
 
         TripPlanDTO dto = new TripPlanDTO();

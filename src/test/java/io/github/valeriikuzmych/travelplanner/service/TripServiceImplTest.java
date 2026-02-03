@@ -7,6 +7,7 @@ import io.github.valeriikuzmych.travelplanner.entity.User;
 import io.github.valeriikuzmych.travelplanner.exception.ResourceNotFoundException;
 import io.github.valeriikuzmych.travelplanner.repository.TripRepository;
 import io.github.valeriikuzmych.travelplanner.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -36,6 +37,17 @@ public class TripServiceImplTest {
     @InjectMocks
     private TripServiceImpl tripServiceImpl;
 
+
+    private Trip trip;
+
+    @BeforeEach
+    void init() {
+
+        trip = new Trip();
+        trip.setId(1L);
+        trip.setStartDate(LocalDate.of(2026, 12, 10));
+        trip.setEndDate(LocalDate.of(2026, 12, 20));
+    }
 
     @Test
     void createTrip_success() {
@@ -103,21 +115,28 @@ public class TripServiceImplTest {
         Trip updated = tripServiceImpl.updateTrip(1L, form, "mail@mail.com");
 
         assertEquals("Paris", updated.getCity());
-        verify(ownershipValidator, times(1)).assertUserOwnTrip(1L, "mail@mail.com");
+        verify(ownershipValidator, times(1)).assertUserOwnTrip(existing, "mail@mail.com");
         verify(tripRepository, times(1)).save(existing);
     }
 
     @Test
     void deleteTrip_success() {
 
-        Long id = 1L;
 
-        doNothing().when(ownershipValidator).assertUserOwnTrip(id, "mail@mail.com");
+        Trip tripFromRepo = new Trip();
+        User owner = new User();
+        owner.setEmail("mail@mail.com");
+        tripFromRepo.setUser(owner);
+        tripFromRepo.setId(1L);
 
-        tripServiceImpl.deleteTrip(id, "mail@mail.com");
+        when(tripRepository.findById(1L)).thenReturn(Optional.of(tripFromRepo));
+        doNothing().when(ownershipValidator).assertUserOwnTrip(tripFromRepo, "mail@mail.com");
 
-        verify(ownershipValidator, times(1)).assertUserOwnTrip(id, "mail@mail.com");
-        verify(tripRepository, times(1)).deleteById(id);
+        tripServiceImpl.deleteTrip(1L, "mail@mail.com");
+
+        verify(ownershipValidator, times(1)).assertUserOwnTrip(tripFromRepo, "mail@mail.com");
+        verify(tripRepository, times(1)).delete(tripFromRepo);
+
     }
 
     @Test
@@ -153,9 +172,17 @@ public class TripServiceImplTest {
 
     @Test
     void getTrip_notOwned_throwsSecurityException() {
+
+        Trip tripFromRepo = new Trip();
+        User owner = new User();
+        owner.setEmail("owner@mail.com");
+        tripFromRepo.setUser(owner);
+
+        when(tripRepository.findById(1L)).thenReturn(Optional.of(tripFromRepo));
+
         doThrow(new AccessDeniedException("Forbidden"))
                 .when(ownershipValidator)
-                .assertUserOwnTrip(1L, "mail@mail.com");
+                .assertUserOwnTrip(tripFromRepo, "mail@mail.com");
 
         assertThrows(
                 AccessDeniedException.class,

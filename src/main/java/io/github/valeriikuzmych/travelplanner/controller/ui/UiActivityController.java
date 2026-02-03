@@ -20,14 +20,12 @@ public class UiActivityController {
 
     private final ActivityService activityService;
     private final TripService tripService;
-    private final OwnershipValidator ownershipValidator;
 
     public UiActivityController(ActivityService activityService,
-                                TripService tripService,
-                                OwnershipValidator ownershipValidator) {
+                                TripService tripService) {
+
         this.activityService = activityService;
         this.tripService = tripService;
-        this.ownershipValidator = ownershipValidator;
     }
 
 
@@ -38,11 +36,10 @@ public class UiActivityController {
 
         Trip trip = tripService.getTrip(tripId, email);
 
-        List<Activity> activityLilst =
-                activityService.getActivitiesByTripForUser(tripId, email);
 
         model.addAttribute("trip", trip);
-        model.addAttribute("activities", activityLilst);
+        model.addAttribute("activities",
+                activityService.getActivitiesByTripForUser(tripId, email));
 
         return "activities_list";
 
@@ -54,12 +51,10 @@ public class UiActivityController {
                                      Model model,
                                      Principal principal) {
 
-        String email = principal.getName();
 
-        ownershipValidator.assertUserOwnTrip(tripId, email);
+        tripService.getTrip(tripId, principal.getName());
 
         ActivityForm form = new ActivityForm();
-
         form.setTripId(tripId);
 
         model.addAttribute("form", form);
@@ -71,21 +66,9 @@ public class UiActivityController {
     public String createActivity(@ModelAttribute("form") ActivityForm form,
                                  Model model, Principal principal) {
 
-        String email = principal.getName();
+        activityService.createActivity(form, principal.getName());
 
-        try {
-
-            activityService.createActivity(form, email);
-
-            return "redirect:/trips/" + form.getTripId();
-
-
-        } catch (Exception e) {
-
-            model.addAttribute("error", e.getMessage());
-
-            return "create_activity";
-        }
+        return "redirect:/trips/" + form.getTripId();
     }
 
     @GetMapping("/{id}/edit")
@@ -94,14 +77,11 @@ public class UiActivityController {
                                    @PathVariable Long id, Model model,
                                    Principal principal) {
 
-        String email = principal.getName();
 
-        Activity activity = activityService.getActivityForUser(id, email);
-
-        ActivityForm form = ActivityForm.fromEntity(activity);
+        Activity activity = activityService.getActivityForUser(id, principal.getName());
 
 
-        model.addAttribute("form", form);
+        model.addAttribute("form", ActivityForm.fromEntity(activity));
 
         return "edit_activity";
 
@@ -112,21 +92,9 @@ public class UiActivityController {
                                @ModelAttribute("form") ActivityForm form,
                                Model model, Principal principal) {
 
-        String email = principal.getName();
+        activityService.updateActivity(id, form, principal.getName());
 
-        try {
-
-            activityService.updateActivity(id, form, email);
-
-            return "redirect:/trips/" + form.getTripId();
-
-
-        } catch (Exception e) {
-
-            model.addAttribute("error", e.getMessage());
-
-            return "edit_activity";
-        }
+        return "redirect:/trips/" + form.getTripId();
     }
 
     @PostMapping("/{id}/delete")
@@ -134,9 +102,7 @@ public class UiActivityController {
                                  @PathVariable Long id,
                                  Principal principal) {
 
-        String email = principal.getName();
-
-        activityService.deleteActivity(id, email);
+        activityService.deleteActivity(id, principal.getName());
 
         return "redirect:/trips/" + tripId;
 

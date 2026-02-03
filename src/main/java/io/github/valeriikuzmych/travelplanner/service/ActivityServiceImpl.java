@@ -35,13 +35,11 @@ public class ActivityServiceImpl implements ActivityService {
 
 
         Trip trip = tripRepository.findById(form.getTripId())
-
                 .orElseThrow(() -> new ResourceNotFoundException("Trip not found"));
 
-        ownershipValidator.assertUserOwnTrip(form.getTripId(), email);
+        ownershipValidator.assertUserOwnTrip(trip, email);
 
-
-        Activity activity = convertActivityFormToActivity(form);
+        Activity activity = convertActivityFormToActivity(form, trip);
 
         activityRepository.save(activity);
 
@@ -53,17 +51,10 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public Activity getActivityForUser(Long id, String email) {
 
-        ownershipValidator.assertUserOwnActivity(id, email);
+        Activity activity = activityRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Activity not found"));
 
-        Optional<Activity> optionalActivity = activityRepository.findById(id);
-
-        if (optionalActivity.isEmpty()) {
-
-            throw new IllegalArgumentException("Activity not found");
-
-        }
-
-        Activity activity = optionalActivity.get();
+        ownershipValidator.assertUserOwnActivity(activity, email);
 
         return activity;
     }
@@ -72,19 +63,12 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public Activity updateActivity(Long id, ActivityForm form, String email) {
 
-        ownershipValidator.assertUserOwnActivity(id, email);
+        Activity existing = getActivityForUser(id, email);
 
-        Optional<Activity> optionalActivity = activityRepository.findById(id);
-
-        if (optionalActivity.isEmpty()) {
-
-            throw new IllegalArgumentException("Activity not found");
-
-        }
-
-        Activity existing = optionalActivity.get();
-
-        validateDates(form.getDate(), form.getStartTime(), form.getEndTime(), existing.getTrip());
+        validateDates(form.getDate(),
+                form.getStartTime(),
+                form.getEndTime(),
+                existing.getTrip());
 
         existing.setName(form.getName());
         existing.setNote(form.getNote());
@@ -101,7 +85,10 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public List<Activity> getActivitiesByTripForUser(Long tripId, String email) {
 
-        ownershipValidator.assertUserOwnTrip(tripId, email);
+        Trip trip = tripRepository.findById(tripId)
+                .orElseThrow(() -> new ResourceNotFoundException("Trip not found"));
+
+        ownershipValidator.assertUserOwnTrip(trip, email);
 
         return activityRepository.findByTripId(tripId);
     }
@@ -110,13 +97,9 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public void deleteActivity(Long id, String email) {
 
-        ownershipValidator.assertUserOwnActivity(id, email);
+        Activity activity = getActivityForUser(id, email);
 
-        if (!activityRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Activity not found");
-        }
-
-        activityRepository.deleteById(id);
+        activityRepository.delete(activity);
     }
 
     private void validateDates(LocalDate date, LocalTime start, LocalTime end, Trip trip) {
@@ -134,13 +117,12 @@ public class ActivityServiceImpl implements ActivityService {
         }
     }
 
-    private Activity convertActivityFormToActivity(ActivityForm form) {
-
-        Trip trip = tripRepository.findById(form.getTripId()).orElseThrow(() -> new IllegalArgumentException("Trip not found"));
+    private Activity convertActivityFormToActivity(ActivityForm form, Trip trip) {
 
         validateDates(form.getDate(), form.getStartTime(), form.getEndTime(), trip);
 
         Activity activity = new Activity();
+
         activity.setTrip(trip);
         activity.setName(form.getName());
         activity.setNote(form.getNote());

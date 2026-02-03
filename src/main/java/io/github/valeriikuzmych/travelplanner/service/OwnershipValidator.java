@@ -1,9 +1,12 @@
 package io.github.valeriikuzmych.travelplanner.service;
 
+import io.github.valeriikuzmych.travelplanner.entity.Activity;
+import io.github.valeriikuzmych.travelplanner.entity.Trip;
+
 public interface OwnershipValidator {
 
-    void assertUserOwnTrip(Long tripId, String userEmail);
+    void assertUserOwnTrip(Trip trip, String userEmail);
 
-    void assertUserOwnActivity(Long activityId, String userEmail);
+    void assertUserOwnActivity(Activity activity, String userEmail);
 }
 

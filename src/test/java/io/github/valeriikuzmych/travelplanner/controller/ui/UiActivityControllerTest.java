@@ -1,6 +1,8 @@
 package io.github.valeriikuzmych.travelplanner.controller.ui;
 
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
+import io.github.valeriikuzmych.travelplanner.exception.ResourceNotFoundException;
+import io.github.valeriikuzmych.travelplanner.exception.UiExceptionHandler;
 import io.github.valeriikuzmych.travelplanner.service.ActivityService;
 import io.github.valeriikuzmych.travelplanner.service.TripService;
 
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import org.springframework.context.annotation.Import;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -26,6 +29,7 @@ public class UiActivityControllerTest {
 
     @Autowired
     MockMvc mockMvc;
+
 
     @MockitoBean
     private TripService tripService;
@@ -73,11 +77,10 @@ public class UiActivityControllerTest {
     void notFoundIfTripDoesNotExist() throws Exception {
 
         when(tripService.getTrip(1L, "user@mail.com"))
-                .thenThrow(new EntityNotFoundException("Trip not found"));
+                .thenThrow(new ResourceNotFoundException("Trip not found"));
 
         mockMvc.perform(get("/trips/1/activities"))
                 .andExpect(status().isNotFound());
+
     }
-
-
 }

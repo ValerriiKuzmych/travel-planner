@@ -12,41 +12,19 @@ import org.springframework.stereotype.Service;
 public class OwnershipValidatorImpl implements OwnershipValidator {
 
 
-    private final TripRepository tripRepository;
-    private final ActivityRepository activityRepository;
-
-    public OwnershipValidatorImpl(TripRepository tripRepository,
-                                  ActivityRepository activityRepository) {
-
-        this.tripRepository = tripRepository;
-        this.activityRepository = activityRepository;
-
-    }
-
     @Override
-    public void assertUserOwnTrip(Long tripId, String userEmail) {
-
-        Trip trip = tripRepository.findById(tripId)
-                .orElseThrow(() -> new ResourceNotFoundException("Trip not found"));
+    public void assertUserOwnTrip(Trip trip, String userEmail) {
 
         if (!trip.getUser().getEmail().equalsIgnoreCase(userEmail)) {
-
             throw new AccessDeniedException("You do not own this trip");
-
         }
-
     }
 
     @Override
-    public void assertUserOwnActivity(Long activityId, String userEmail) {
-
-        Activity activity = activityRepository.findById(activityId)
-                .orElseThrow(() -> new ResourceNotFoundException("activity not found"));
+    public void assertUserOwnActivity(Activity activity, String userEmail) {
 
         if (!activity.getTrip().getUser().getEmail().equalsIgnoreCase(userEmail)) {
-
             throw new AccessDeniedException("You do not own this activity");
         }
-
     }
 }

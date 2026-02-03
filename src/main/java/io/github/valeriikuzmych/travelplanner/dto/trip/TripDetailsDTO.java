@@ -23,6 +23,7 @@ public class TripDetailsDTO {
     public TripDetailsDTO() {
     }
 
+
     public Long getId() {
         return id;
     }

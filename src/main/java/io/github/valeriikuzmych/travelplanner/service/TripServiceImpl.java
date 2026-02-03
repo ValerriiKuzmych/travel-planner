@@ -20,21 +20,25 @@ import java.util.*;
 public class TripServiceImpl implements TripService {
 
     private final TripRepository tripRepository;
+    private final OwnershipValidator ownershipValidator;
     private final UserRepository userRepository;
-    private final OwnershipValidator validator;
 
-    public TripServiceImpl(TripRepository tripRepository, UserRepository userRepository, OwnershipValidator validator) {
+    public TripServiceImpl(TripRepository tripRepository, OwnershipValidator validator, UserRepository userRepository) {
         this.tripRepository = tripRepository;
+        this.ownershipValidator = validator;
         this.userRepository = userRepository;
-        this.validator = validator;
     }
 
     @Override
     public List<TripBasicDTO> getTripsForUser(String email) {
 
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        return tripRepository.findByUserId(user.getId()).stream().map(this::mapToBasicDTO).toList();
+        return tripRepository.findByUserId(user.getId())
+                .stream()
+                .map(this::mapToBasicDTO)
+                .toList();
 
     }
 
@@ -61,11 +65,10 @@ public class TripServiceImpl implements TripService {
     public Trip getTrip(Long id, String email) {
 
 
-        validator.assertUserOwnTrip(id, email);
-
         Trip trip = tripRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Trip not found"));
 
+        ownershipValidator.assertUserOwnTrip(trip, email);
 
         return trip;
 
@@ -76,12 +79,9 @@ public class TripServiceImpl implements TripService {
     public Trip updateTrip(Long id, TripForm form, String email) {
 
 
-        validator.assertUserOwnTrip(id, email);
-
         validateTripForm(form);
 
-        Trip trip = tripRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Trip not found"));
+        Trip trip = getTrip(id, email);
 
         trip.setCity(form.getCity());
         trip.setStartDate(form.getStartDate());
@@ -114,9 +114,9 @@ public class TripServiceImpl implements TripService {
     @Override
     public void deleteTrip(Long id, String email) {
 
-        validator.assertUserOwnTrip(id, email);
+        Trip trip = getTrip(id, email);
 
-        tripRepository.deleteById(id);
+        tripRepository.delete(trip);
     }
 
     private void validateTripForm(TripForm form) {
