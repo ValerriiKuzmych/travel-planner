@@ -68,6 +68,13 @@ public class ApiExceptionHandler {
                 .body(new ErrorResponse(ex.getMessage()));
     }
 
+    @ExceptionHandler(UserRegistrationException.class)
+    public ResponseEntity<ErrorResponse> handleUserRegistration(UserRegistrationException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(ex.getMessage()));
+    }
+
 
 }
 

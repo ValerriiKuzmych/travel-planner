@@ -36,10 +36,33 @@ public class AuthControllerTest {
 
         mockMvc.perform(post("/auth/registration").with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"email\":\"t3@t.com\",\"password\":\"pass\",\"confirmPassword\":\"pass\"}"))
+                        .content("""
+                                {
+                                  "email": "t3@t.com",
+                                  "password": "pass",
+                                  "confirmPassword": "pass"
+                                }
+                                """))
                 .andExpect(status().isCreated());
 
         assertTrue(userRepository.existsByEmail("t3@t.com"));
+    }
+
+    @Test
+    void registerUser_duplicateEmail_returns4xx() throws Exception {
+
+        userService.registerUser("dup@t.com", "pass");
+
+        mockMvc.perform(post("/auth/registration").with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "email": "dup@t.com",
+                                  "password": "pass",
+                                  "confirmPassword": "pass"
+                                }
+                                """))
+                .andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -49,10 +72,15 @@ public class AuthControllerTest {
 
         mockMvc.perform(post("/auth/login").with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"email\":\"t2@t.com\",\"password\":\"pass\"}"))
+                        .content("""
+                                {
+                                  "email": "t2@t.com",
+                                  "password": "pass"
+                                }
+                                """))
                 .andExpect(status().isOk());
-
     }
+
 
     @Test
     void loginUser_invalidPassword_returnsUnauthorized() throws Exception {
@@ -61,19 +89,27 @@ public class AuthControllerTest {
 
         mockMvc.perform(post("/auth/login").with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"email\":\"bad@t.com\",\"password\":\"wrong\"}"))
+                        .content("""
+                                {
+                                  "email": "bad@t.com",
+                                  "password": "wrong"
+                                }
+                                """))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    void registerUser_duplicateEmail_fails() throws Exception {
+    void loginUser_unknownEmail_returnsUnauthorized() throws Exception {
 
-        userService.registerUser("dup@t.com", "pass");
-
-        mockMvc.perform(post("/auth/registration").with(csrf())
+        mockMvc.perform(post("/auth/login").with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"email\":\"dup@t.com\",\"password\":\"pass\",\"confirmPassword\":\"pass\"}"))
-                .andExpect(status().is4xxClientError());
+                        .content("""
+                                {
+                                  "email": "no@user.com",
+                                  "password": "pass"
+                                }
+                                """))
+                .andExpect(status().isUnauthorized());
     }
 
 }

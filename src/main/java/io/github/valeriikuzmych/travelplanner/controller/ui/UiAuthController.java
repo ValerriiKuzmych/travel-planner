@@ -1,6 +1,7 @@
 package io.github.valeriikuzmych.travelplanner.controller.ui;
 
 import io.github.valeriikuzmych.travelplanner.dto.RegistrationRequest;
+import io.github.valeriikuzmych.travelplanner.exception.UserRegistrationException;
 import io.github.valeriikuzmych.travelplanner.service.UserService;
 import org.springframework.stereotype.Controller;
 
@@ -44,10 +45,10 @@ public class UiAuthController {
 
             return "redirect:/login?registered";
 
-        } catch (IllegalArgumentException e) {
+        } catch (UserRegistrationException ex) {
 
-            model.addAttribute("error", e.getMessage());
-
+            model.addAttribute("error", ex.getMessage());
+            
             return "register";
         }
     }

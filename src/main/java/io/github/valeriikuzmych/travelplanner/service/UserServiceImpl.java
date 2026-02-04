@@ -2,6 +2,7 @@ package io.github.valeriikuzmych.travelplanner.service;
 
 import io.github.valeriikuzmych.travelplanner.dto.RegistrationRequest;
 import io.github.valeriikuzmych.travelplanner.entity.User;
+import io.github.valeriikuzmych.travelplanner.exception.UserRegistrationException;
 import io.github.valeriikuzmych.travelplanner.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class UserServiceImpl implements UserService {
     public void registerUser(String email, String rawPassword) {
 
         if (userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("Email already in use");
+            throw new UserRegistrationException("Email already in use");
         }
 
         User user = new User();
@@ -41,19 +42,11 @@ public class UserServiceImpl implements UserService {
     public void registerUser(RegistrationRequest request) {
 
         if (!request.getPassword().equals(request.getConfirmPassword())) {
-            throw new IllegalArgumentException("Passwords do not match");
+            throw new UserRegistrationException("Passwords do not match");
         }
 
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("Email already in use");
-        }
+        registerUser(request.getEmail(), request.getPassword());
 
-        User user = new User();
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole("USER");
-
-        userRepository.save(user);
     }
 
 
