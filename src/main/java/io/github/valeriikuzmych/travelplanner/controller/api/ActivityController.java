@@ -1,10 +1,9 @@
-package io.github.valeriikuzmych.travelplanner.controller.rest;
+package io.github.valeriikuzmych.travelplanner.controller.api;
 
 import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityForm;
 import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityResponseDTO;
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
 import io.github.valeriikuzmych.travelplanner.service.ActivityService;
-import io.github.valeriikuzmych.travelplanner.service.OwnershipValidator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

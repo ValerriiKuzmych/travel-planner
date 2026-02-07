@@ -8,6 +8,7 @@ import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherPeriodDTO;
 import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherTimeDTO;
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
+import io.github.valeriikuzmych.travelplanner.exception.ResourceNotFoundException;
 import io.github.valeriikuzmych.travelplanner.repository.TripRepository;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +36,7 @@ public class TripPlannerServiceImpl implements TripPlannerService {
 
 
         Trip trip = tripRepository.findById(tripId)
-                .orElseThrow(() -> new IllegalArgumentException("Trip with id " + tripId + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Trip not found"));
 
         validator.assertUserOwnTrip(trip, userEmail);
 

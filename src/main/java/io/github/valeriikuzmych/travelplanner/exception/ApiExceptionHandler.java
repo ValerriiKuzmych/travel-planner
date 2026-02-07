@@ -8,7 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice
+@RestControllerAdvice(basePackages = "io.github.valeriikuzmych.travelplanner.controller.api")
 public class ApiExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -46,14 +46,7 @@ public class ApiExceptionHandler {
                 .status(HttpStatus.FORBIDDEN)
                 .body(new ErrorResponse("Access denied"));
     }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleUnexpected(Exception ex) {
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse("Unexpected server error"));
-    }
-
+    
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ErrorResponse> handleAuth(AuthenticationException ex) {
         return ResponseEntity

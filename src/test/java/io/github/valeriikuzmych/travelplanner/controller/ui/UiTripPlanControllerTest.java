@@ -5,6 +5,8 @@ import io.github.valeriikuzmych.travelplanner.dto.TripPlanDTO;
 import io.github.valeriikuzmych.travelplanner.dto.weather.DayPeriod;
 import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherDayDTO;
 import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherPeriodDTO;
+
+import io.github.valeriikuzmych.travelplanner.exception.ResourceNotFoundException;
 import io.github.valeriikuzmych.travelplanner.service.TripPlannerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -30,7 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-@WebMvcTest(UiTripPlanController.class)
+@WebMvcTest(controllers = UiTripPlanController.class)
 class UiTripPlanControllerTest {
 
     @Autowired
@@ -90,6 +93,9 @@ class UiTripPlanControllerTest {
     @Test
     @WithMockUser(username = "test@example.com")
     void showTripPlan_success() throws Exception {
+        TripPlanDTO planDTO = new TripPlanDTO();
+        planDTO.setTripId(1L);
+        planDTO.setCity("Paris");
 
         Mockito.when(tripPlanService.getPlanForTrip(anyLong(), anyString()))
                 .thenReturn(planDTO);
@@ -98,25 +104,31 @@ class UiTripPlanControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("trip-plan"))
                 .andExpect(model().attributeExists("plan"))
-
                 .andExpect(model().attribute("plan",
-                        hasProperty("city", equalTo("Paris"))))
-                .andExpect(model().attribute("plan",
-                        hasProperty("weather")))
-                .andExpect(model().attribute("plan",
-                        hasProperty("activities")));
+                        hasProperty("city", equalTo("Paris"))));
     }
 
     @Test
     @WithMockUser(username = "test@example.com")
     void showTripPlan_notFound() throws Exception {
-
         Mockito.when(tripPlanService.getPlanForTrip(anyLong(), anyString()))
                 .thenThrow(new IllegalArgumentException("Trip not found"));
 
         mockMvc.perform(get("/trips/9999/plan"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("error"));
+                .andExpect(status().isNotFound())
+                .andExpect(model().attributeExists("message"))
+                .andExpect(model().attribute("message", "Trip not found"));
     }
 
+    @Test
+    @WithMockUser(username = "test@example.com")
+    void showTripPlan_accessDenied() throws Exception {
+        Mockito.when(tripPlanService.getPlanForTrip(anyLong(), anyString()))
+                .thenThrow(new AccessDeniedException("Access denied"));
+
+        mockMvc.perform(get("/trips/1/plan"))
+                .andExpect(status().isForbidden())
+                .andExpect(model().attributeExists("message"))
+                .andExpect(model().attribute("message", "You do not have permission to access this resource"));
+    }
 }

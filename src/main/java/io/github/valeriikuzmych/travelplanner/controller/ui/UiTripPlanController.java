@@ -26,17 +26,12 @@ public class UiTripPlanController {
     public String showTripPlan(@PathVariable Long id, Principal principal,
                                Model model) {
 
-        try {
-            TripPlanDTO plan =
-                    tripPlannerService.getPlanForTrip(id, principal.getName());
+        TripPlanDTO plan =
+                tripPlannerService.getPlanForTrip(id, principal.getName());
 
-            model.addAttribute("plan", plan);
-            return "trip-plan";
-
-        } catch (IllegalArgumentException ex) {
-            return "error";
-
-        }
+        model.addAttribute("plan", plan);
+        
+        return "trip-plan";
 
 
     }

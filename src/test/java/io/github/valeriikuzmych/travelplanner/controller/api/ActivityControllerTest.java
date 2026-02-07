@@ -1,4 +1,4 @@
-package io.github.valeriikuzmych.travelplanner.controller.rest;
+package io.github.valeriikuzmych.travelplanner.controller.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityForm;

@@ -1,28 +1,33 @@
 package io.github.valeriikuzmych.travelplanner.exception;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
 public class UiExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleNotFound(ResourceNotFoundException ex, Model model) {
         model.addAttribute("message", ex.getMessage());
         return "error/404";
     }
 
     @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     public String handleForbidden(Model model) {
         model.addAttribute("message", "You do not have permission to access this resource");
         return "error/403";
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleBadRequest(IllegalArgumentException ex, Model model) {
         model.addAttribute("message", ex.getMessage());
-        return "error/400";
+        return "error/404"; // используем 404, так как сервис выбрасывает для "не найдено"
     }
 }

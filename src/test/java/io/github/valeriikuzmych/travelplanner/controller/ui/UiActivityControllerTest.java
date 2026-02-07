@@ -2,7 +2,6 @@ package io.github.valeriikuzmych.travelplanner.controller.ui;
 
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.exception.ResourceNotFoundException;
-import io.github.valeriikuzmych.travelplanner.exception.UiExceptionHandler;
 import io.github.valeriikuzmych.travelplanner.service.ActivityService;
 import io.github.valeriikuzmych.travelplanner.service.TripService;
 
