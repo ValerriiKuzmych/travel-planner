@@ -3,11 +3,10 @@ package io.github.valeriikuzmych.travelplanner.controller.ui;
 import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityDTO;
 import io.github.valeriikuzmych.travelplanner.dto.TripPlanDTO;
 import io.github.valeriikuzmych.travelplanner.dto.weather.DayPeriod;
-import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherDayDTO;
-import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherPeriodDTO;
+import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherDayResponse;
+import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherPeriodResponse;
 
-import io.github.valeriikuzmych.travelplanner.exception.ResourceNotFoundException;
-import io.github.valeriikuzmych.travelplanner.service.TripPlannerService;
+import io.github.valeriikuzmych.travelplanner.service.planner.TripPlannerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -54,10 +53,10 @@ class UiTripPlanControllerTest {
         planDTO.setEndDate(LocalDate.of(2025, 3, 20));
 
 
-        WeatherDayDTO weatherDay = new WeatherDayDTO();
+        WeatherDayResponse weatherDay = new WeatherDayResponse();
 
         weatherDay.getPeriods().add(
-                new WeatherPeriodDTO(
+                new WeatherPeriodResponse(
                         DayPeriod.MORNING,
                         14.0,
                         "rain"
@@ -65,14 +64,14 @@ class UiTripPlanControllerTest {
         );
 
         weatherDay.getPeriods().add(
-                new WeatherPeriodDTO(
+                new WeatherPeriodResponse(
                         DayPeriod.DAY,
                         18.0,
                         "sunny"
                 )
         );
 
-        Map<LocalDate, WeatherDayDTO> weatherMap = new HashMap<>();
+        Map<LocalDate, WeatherDayResponse> weatherMap = new HashMap<>();
 
         weatherMap.put(LocalDate.of(2025, 3, 11), weatherDay);
         planDTO.setWeather(weatherMap);

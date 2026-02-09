@@ -1,9 +1,9 @@
 package io.github.valeriikuzmych.travelplanner.controller.api;
 
 import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityForm;
-import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityResponseDTO;
+import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityResponse;
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
-import io.github.valeriikuzmych.travelplanner.service.ActivityService;
+import io.github.valeriikuzmych.travelplanner.service.activity.ActivityService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,35 +25,35 @@ public class ActivityController {
 
 
     @PostMapping
-    public ResponseEntity<ActivityResponseDTO> create(@RequestBody ActivityForm form,
-                                                      Principal principal) {
+    public ResponseEntity<ActivityResponse> create(@RequestBody ActivityForm form,
+                                                   Principal principal) {
 
         Activity created = activityService.createActivity(form, principal.getName());
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(ActivityResponseDTO.fromEntity(created));
+                .body(ActivityResponse.fromEntity(created));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ActivityResponseDTO> getActivity(@PathVariable Long id,
-                                                           Principal principal) {
+    public ResponseEntity<ActivityResponse> getActivity(@PathVariable Long id,
+                                                        Principal principal) {
 
         Activity activity = activityService.getActivityForUser(id, principal.getName());
 
-        return ResponseEntity.ok(ActivityResponseDTO.fromEntity(activity));
+        return ResponseEntity.ok(ActivityResponse.fromEntity(activity));
     }
 
 
     @GetMapping("/trip/{tripId}")
-    public ResponseEntity<List<ActivityResponseDTO>> getByTrip(@PathVariable Long tripId,
-                                                               Principal principal) {
+    public ResponseEntity<List<ActivityResponse>> getByTrip(@PathVariable Long tripId,
+                                                            Principal principal) {
 
         List<Activity> activities =
                 activityService.getActivitiesByTripForUser(tripId, principal.getName());
 
-        List<ActivityResponseDTO> dtos = activities.stream()
-                .map(ActivityResponseDTO::fromEntity)
+        List<ActivityResponse> dtos = activities.stream()
+                .map(ActivityResponse::fromEntity)
                 .toList();
 
         return ResponseEntity.ok(dtos);
@@ -61,14 +61,14 @@ public class ActivityController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<ActivityResponseDTO> updateActivity(@PathVariable Long id,
-                                                              @RequestBody ActivityForm form,
-                                                              Principal principal) {
+    public ResponseEntity<ActivityResponse> updateActivity(@PathVariable Long id,
+                                                           @RequestBody ActivityForm form,
+                                                           Principal principal) {
 
 
         Activity updated = activityService.updateActivity(id, form, principal.getName());
 
-        return ResponseEntity.ok(ActivityResponseDTO.fromEntity(updated));
+        return ResponseEntity.ok(ActivityResponse.fromEntity(updated));
     }
 
     @DeleteMapping("/{id}")

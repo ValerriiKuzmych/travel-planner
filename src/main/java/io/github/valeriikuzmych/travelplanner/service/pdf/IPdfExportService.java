@@ -4,7 +4,7 @@ import io.github.valeriikuzmych.travelplanner.dto.TripPlanDTO;
 
 import java.io.IOException;
 
-public interface IPDExportService {
+public interface IPdfExportService {
 
     byte[] exportTripPlanToPdf(TripPlanDTO plan) throws IOException;
 

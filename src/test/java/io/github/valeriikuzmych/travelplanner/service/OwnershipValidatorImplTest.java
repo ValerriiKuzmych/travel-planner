@@ -3,6 +3,7 @@ package io.github.valeriikuzmych.travelplanner.service;
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.entity.User;
+import io.github.valeriikuzmych.travelplanner.service.validator.OwnershipValidatorImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

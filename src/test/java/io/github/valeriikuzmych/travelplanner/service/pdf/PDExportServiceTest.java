@@ -3,8 +3,8 @@ package io.github.valeriikuzmych.travelplanner.service.pdf;
 import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityDTO;
 import io.github.valeriikuzmych.travelplanner.dto.TripPlanDTO;
 import io.github.valeriikuzmych.travelplanner.dto.weather.DayPeriod;
-import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherDayDTO;
-import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherPeriodDTO;
+import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherDayResponse;
+import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherPeriodResponse;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
@@ -36,10 +36,10 @@ public class PDExportServiceTest {
                         .toList()
         );
 
-        WeatherDayDTO weatherDay = new WeatherDayDTO();
+        WeatherDayResponse weatherDay = new WeatherDayResponse();
 
         weatherDay.getPeriods().add(
-                new WeatherPeriodDTO(
+                new WeatherPeriodResponse(
                         DayPeriod.MORNING,
                         16.0,
                         "rain"
@@ -47,7 +47,7 @@ public class PDExportServiceTest {
         );
 
         weatherDay.getPeriods().add(
-                new WeatherPeriodDTO(
+                new WeatherPeriodResponse(
                         DayPeriod.DAY,
                         20.0,
                         "sunny"
@@ -72,7 +72,7 @@ public class PDExportServiceTest {
                 Map.of(LocalDate.of(2025, 10, 10), List.of(a1, a2))
         );
 
-        PDExportService service = new PDExportService();
+        PdfExportService service = new PdfExportService();
 
         byte[] pdfBytes = service.exportTripPlanToPdf(dto);
 

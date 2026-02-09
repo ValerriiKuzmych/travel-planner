@@ -1,13 +1,13 @@
 package io.github.valeriikuzmych.travelplanner.controller.api;
 
-import io.github.valeriikuzmych.travelplanner.dto.trip.TripBasicDTO;
+import io.github.valeriikuzmych.travelplanner.dto.trip.TripResponse;
 import io.github.valeriikuzmych.travelplanner.dto.trip.TripForm;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.entity.User;
 import io.github.valeriikuzmych.travelplanner.exception.ResourceNotFoundException;
 import io.github.valeriikuzmych.travelplanner.repository.UserRepository;
-import io.github.valeriikuzmych.travelplanner.service.TripService;
-import io.github.valeriikuzmych.travelplanner.service.WeatherService;
+import io.github.valeriikuzmych.travelplanner.service.trip.TripService;
+import io.github.valeriikuzmych.travelplanner.service.weather.WeatherService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
@@ -56,7 +56,7 @@ public class TripController {
 
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<TripBasicDTO>> getTripsByUser(@PathVariable Long userId, Principal principal) {
+    public ResponseEntity<List<TripResponse>> getTripsByUser(@PathVariable Long userId, Principal principal) {
 
         User requestedUser = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -68,7 +68,7 @@ public class TripController {
 
         }
 
-        List<TripBasicDTO> trips = tripService.getTripsForUser(principal.getName());
+        List<TripResponse> trips = tripService.getTripsForUser(principal.getName());
 
         return ResponseEntity.ok(trips);
     }

@@ -5,7 +5,7 @@ import io.github.valeriikuzmych.travelplanner.entity.Activity;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public class ActivityResponseDTO {
+public class ActivityResponse {
 
     private Long id;
     private Long tripId;
@@ -15,12 +15,12 @@ public class ActivityResponseDTO {
     private LocalTime startTime;
     private LocalTime endTime;
 
-    public ActivityResponseDTO() {
+    public ActivityResponse() {
     }
 
-    public static ActivityResponseDTO fromEntity(Activity a) {
+    public static ActivityResponse fromEntity(Activity a) {
 
-        ActivityResponseDTO dto = new ActivityResponseDTO();
+        ActivityResponse dto = new ActivityResponse();
 
         dto.setId(a.getId());
         dto.setTripId(a.getTrip().getId());

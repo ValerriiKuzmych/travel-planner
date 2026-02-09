@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class TripDetailsDTO {
+public class TripDetailsResponse {
 
     private Long id;
     private String city;
@@ -20,7 +20,7 @@ public class TripDetailsDTO {
     private boolean editable;
 
 
-    public TripDetailsDTO() {
+    public TripDetailsResponse() {
     }
 
 
@@ -74,7 +74,7 @@ public class TripDetailsDTO {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof TripDetailsDTO that)) return false;
+        if (!(o instanceof TripDetailsResponse that)) return false;
         return editable == that.editable && Objects.equals(id, that.id) && Objects.equals(city, that.city) && Objects.equals(startDate, that.startDate) && Objects.equals(endDate, that.endDate) && Objects.equals(activitiesByDate, that.activitiesByDate);
     }
 

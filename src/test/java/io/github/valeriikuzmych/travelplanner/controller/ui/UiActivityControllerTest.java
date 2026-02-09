@@ -2,16 +2,14 @@ package io.github.valeriikuzmych.travelplanner.controller.ui;
 
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.exception.ResourceNotFoundException;
-import io.github.valeriikuzmych.travelplanner.service.ActivityService;
-import io.github.valeriikuzmych.travelplanner.service.TripService;
+import io.github.valeriikuzmych.travelplanner.service.activity.ActivityService;
+import io.github.valeriikuzmych.travelplanner.service.trip.TripService;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import org.springframework.context.annotation.Import;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;

@@ -1,12 +1,14 @@
 package io.github.valeriikuzmych.travelplanner.service;
 
-import io.github.valeriikuzmych.travelplanner.dto.trip.TripBasicDTO;
+import io.github.valeriikuzmych.travelplanner.dto.trip.TripResponse;
 import io.github.valeriikuzmych.travelplanner.dto.trip.TripForm;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.entity.User;
 import io.github.valeriikuzmych.travelplanner.exception.ResourceNotFoundException;
 import io.github.valeriikuzmych.travelplanner.repository.TripRepository;
 import io.github.valeriikuzmych.travelplanner.repository.UserRepository;
+import io.github.valeriikuzmych.travelplanner.service.trip.TripServiceImpl;
+import io.github.valeriikuzmych.travelplanner.service.validator.OwnershipValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -201,7 +203,7 @@ public class TripServiceImplTest {
         trip.setCity("Rome");
         when(tripRepository.findByUserId(1L)).thenReturn(List.of(trip));
 
-        List<TripBasicDTO> trips = tripServiceImpl.getTripsForUser("user@mail.com");
+        List<TripResponse> trips = tripServiceImpl.getTripsForUser("user@mail.com");
         assertEquals(1, trips.size());
         assertEquals("Rome", trips.get(0).getCity());
     }

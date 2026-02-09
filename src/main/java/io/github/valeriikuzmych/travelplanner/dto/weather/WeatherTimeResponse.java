@@ -1,15 +1,15 @@
 package io.github.valeriikuzmych.travelplanner.dto.weather;
 
-public class WeatherTimeDTO {
+public class WeatherTimeResponse {
 
     private String time;
     private Double temperature;
     private String description;
 
-    public WeatherTimeDTO() {
+    public WeatherTimeResponse() {
     }
 
-    public WeatherTimeDTO(String time, Double temperature, String description) {
+    public WeatherTimeResponse(String time, Double temperature, String description) {
         this.time = time;
         this.temperature = temperature;
         this.description = description;

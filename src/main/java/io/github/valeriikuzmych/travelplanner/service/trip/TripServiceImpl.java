@@ -1,9 +1,9 @@
-package io.github.valeriikuzmych.travelplanner.service;
+package io.github.valeriikuzmych.travelplanner.service.trip;
 
 import io.github.valeriikuzmych.travelplanner.dto.*;
 import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityDTO;
-import io.github.valeriikuzmych.travelplanner.dto.trip.TripBasicDTO;
-import io.github.valeriikuzmych.travelplanner.dto.trip.TripDetailsDTO;
+import io.github.valeriikuzmych.travelplanner.dto.trip.TripResponse;
+import io.github.valeriikuzmych.travelplanner.dto.trip.TripDetailsResponse;
 import io.github.valeriikuzmych.travelplanner.dto.trip.TripForm;
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
@@ -11,6 +11,7 @@ import io.github.valeriikuzmych.travelplanner.entity.User;
 import io.github.valeriikuzmych.travelplanner.exception.ResourceNotFoundException;
 import io.github.valeriikuzmych.travelplanner.repository.TripRepository;
 import io.github.valeriikuzmych.travelplanner.repository.UserRepository;
+import io.github.valeriikuzmych.travelplanner.service.validator.OwnershipValidator;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -30,7 +31,7 @@ public class TripServiceImpl implements TripService {
     }
 
     @Override
-    public List<TripBasicDTO> getTripsForUser(String email) {
+    public List<TripResponse> getTripsForUser(String email) {
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -92,11 +93,11 @@ public class TripServiceImpl implements TripService {
     }
 
     @Override
-    public TripDetailsDTO getTripDetails(Long id, String email) {
+    public TripDetailsResponse getTripDetails(Long id, String email) {
 
         Trip trip = getTrip(id, email);
 
-        TripDetailsDTO dto = mapToDetailsDTO(trip);
+        TripDetailsResponse dto = mapToDetailsDTO(trip);
 
         dto.setEditable(true);
 
@@ -137,9 +138,9 @@ public class TripServiceImpl implements TripService {
     }
 
 
-    private TripBasicDTO mapToBasicDTO(Trip trip) {
+    private TripResponse mapToBasicDTO(Trip trip) {
 
-        TripBasicDTO dto = new TripBasicDTO();
+        TripResponse dto = new TripResponse();
 
         dto.setId(trip.getId());
         dto.setCity(trip.getCity());
@@ -150,9 +151,9 @@ public class TripServiceImpl implements TripService {
         return dto;
     }
 
-    private TripDetailsDTO mapToDetailsDTO(Trip trip) {
+    private TripDetailsResponse mapToDetailsDTO(Trip trip) {
 
-        TripDetailsDTO dto = new TripDetailsDTO();
+        TripDetailsResponse dto = new TripDetailsResponse();
 
         dto.setId(trip.getId());
         dto.setCity(trip.getCity());

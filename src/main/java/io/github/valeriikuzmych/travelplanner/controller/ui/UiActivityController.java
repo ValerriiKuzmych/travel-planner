@@ -3,15 +3,13 @@ package io.github.valeriikuzmych.travelplanner.controller.ui;
 import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityForm;
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
-import io.github.valeriikuzmych.travelplanner.service.ActivityService;
-import io.github.valeriikuzmych.travelplanner.service.OwnershipValidator;
-import io.github.valeriikuzmych.travelplanner.service.TripService;
+import io.github.valeriikuzmych.travelplanner.service.activity.ActivityService;
+import io.github.valeriikuzmych.travelplanner.service.trip.TripService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.List;
 
 @Controller
 @RequestMapping("trips/{tripId}/activities")

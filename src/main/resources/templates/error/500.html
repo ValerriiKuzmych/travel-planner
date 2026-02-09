@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>500 Internal Server Error</title>
+</head>
+<body>
+<h1>500 - Internal Server Error</h1>
+<p th:text="${message} ?: 'Unexpected server error'">
+    Unexpected server error
+</p>
+<a href="/trips">Back to application</a>
+</body>
+</html>

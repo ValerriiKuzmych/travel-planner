@@ -1,4 +1,4 @@
-package io.github.valeriikuzmych.travelplanner.service;
+package io.github.valeriikuzmych.travelplanner.service.weather;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class WeatherService {
+public class WeatherServiceImpl implements WeatherService {
 
     @Value("${weather.api.key}")
     private String apiKey;
@@ -21,7 +21,7 @@ public class WeatherService {
 
     private final RestTemplate restTemplate;
 
-    public WeatherService(RestTemplate restTemplate) {
+    public WeatherServiceImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 

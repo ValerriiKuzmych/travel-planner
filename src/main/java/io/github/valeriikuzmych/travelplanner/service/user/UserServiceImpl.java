@@ -1,4 +1,4 @@
-package io.github.valeriikuzmych.travelplanner.service;
+package io.github.valeriikuzmych.travelplanner.service.user;
 
 import io.github.valeriikuzmych.travelplanner.dto.RegistrationRequest;
 import io.github.valeriikuzmych.travelplanner.entity.User;

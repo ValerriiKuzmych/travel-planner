@@ -2,14 +2,13 @@ package io.github.valeriikuzmych.travelplanner.service.pdf;
 
 import io.github.valeriikuzmych.travelplanner.dto.TripPlanDTO;
 import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityDTO;
-import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherDayDTO;
-import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherPeriodDTO;
+import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherDayResponse;
+import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherPeriodResponse;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -20,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class PDExportService implements IPDExportService {
+public class PdfExportService implements IPdfExportService {
 
 
     private static final int PAGE_WIDTH = 595;
@@ -142,7 +141,7 @@ public class PDExportService implements IPDExportService {
             int x,
             int y,
             LocalDate date,
-            WeatherDayDTO weather,
+            WeatherDayResponse weather,
             List<ActivityDTO> activities,
             PDType0Font fontBold,
             PDType0Font fontRegular
@@ -169,7 +168,7 @@ public class PDExportService implements IPDExportService {
 
 
         if (weather != null) {
-            for (WeatherPeriodDTO p : weather.getPeriods()) {
+            for (WeatherPeriodResponse p : weather.getPeriods()) {
                 cs.beginText();
                 cs.setFont(fontRegular, 9);
                 cs.newLineAtOffset(x + 10, cursorY);

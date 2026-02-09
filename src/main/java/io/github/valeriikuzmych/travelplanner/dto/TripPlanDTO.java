@@ -1,7 +1,7 @@
 package io.github.valeriikuzmych.travelplanner.dto;
 
 import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityDTO;
-import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherDayDTO;
+import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherDayResponse;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -22,7 +22,7 @@ public class TripPlanDTO {
 
     private boolean weatherLimited;
 
-    Map<LocalDate, WeatherDayDTO> weather = new HashMap<>();
+    Map<LocalDate, WeatherDayResponse> weather = new HashMap<>();
 
     Map<LocalDate, List<ActivityDTO>> activities = new HashMap<>();
 
@@ -58,11 +58,11 @@ public class TripPlanDTO {
         this.endDate = endDate;
     }
 
-    public Map<LocalDate, WeatherDayDTO> getWeather() {
+    public Map<LocalDate, WeatherDayResponse> getWeather() {
         return weather;
     }
 
-    public void setWeather(Map<LocalDate, WeatherDayDTO> weather) {
+    public void setWeather(Map<LocalDate, WeatherDayResponse> weather) {
         this.weather = weather;
     }
 

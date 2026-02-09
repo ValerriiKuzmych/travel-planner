@@ -1,12 +1,12 @@
 package io.github.valeriikuzmych.travelplanner.dto.weather;
 
-public class WeatherPeriodDTO {
+public class WeatherPeriodResponse {
 
     private DayPeriod period;
     private Double temperature;
     private String description;
 
-    public WeatherPeriodDTO(DayPeriod period, Double temperature, String description) {
+    public WeatherPeriodResponse(DayPeriod period, Double temperature, String description) {
         this.period = period;
         this.temperature = temperature;
         this.description = description;

@@ -2,7 +2,7 @@ package io.github.valeriikuzmych.travelplanner.controller.api;
 
 import io.github.valeriikuzmych.travelplanner.dto.LoginRequest;
 import io.github.valeriikuzmych.travelplanner.dto.RegistrationRequest;
-import io.github.valeriikuzmych.travelplanner.service.UserService;
+import io.github.valeriikuzmych.travelplanner.service.user.UserService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,10 +1,10 @@
 package io.github.valeriikuzmych.travelplanner.controller.ui;
 
-import io.github.valeriikuzmych.travelplanner.dto.trip.TripBasicDTO;
-import io.github.valeriikuzmych.travelplanner.dto.trip.TripDetailsDTO;
+import io.github.valeriikuzmych.travelplanner.dto.trip.TripResponse;
+import io.github.valeriikuzmych.travelplanner.dto.trip.TripDetailsResponse;
 import io.github.valeriikuzmych.travelplanner.dto.trip.TripForm;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
-import io.github.valeriikuzmych.travelplanner.service.TripService;
+import io.github.valeriikuzmych.travelplanner.service.trip.TripService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -46,7 +46,7 @@ class UiTripControllerTest {
     @Test
     void tripsPage_authenticated_rendersView() throws Exception {
         when(tripService.getTripsForUser("user@test.com"))
-                .thenReturn(List.of(new TripBasicDTO()));
+                .thenReturn(List.of(new TripResponse()));
 
         mockMvc.perform(get("/trips")
                         .with(user("user@test.com")))
@@ -116,7 +116,7 @@ class UiTripControllerTest {
 
     @Test
     void tripDetails_renders() throws Exception {
-        TripDetailsDTO dto = new TripDetailsDTO();
+        TripDetailsResponse dto = new TripDetailsResponse();
         dto.setId(1L);
 
         when(tripService.getTripDetails(1L, "user@test.com")).thenReturn(dto);

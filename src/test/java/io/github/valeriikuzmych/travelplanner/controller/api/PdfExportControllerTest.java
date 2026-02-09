@@ -2,8 +2,8 @@ package io.github.valeriikuzmych.travelplanner.controller.api;
 
 
 import io.github.valeriikuzmych.travelplanner.dto.TripPlanDTO;
-import io.github.valeriikuzmych.travelplanner.service.TripPlannerService;
-import io.github.valeriikuzmych.travelplanner.service.pdf.IPDExportService;
+import io.github.valeriikuzmych.travelplanner.service.planner.TripPlannerService;
+import io.github.valeriikuzmych.travelplanner.service.pdf.IPdfExportService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -26,7 +26,7 @@ public class PdfExportControllerTest {
     MockMvc mockMvc;
 
     @MockitoBean
-    IPDExportService pdfExportService;
+    IPdfExportService pdfExportService;
 
     @MockitoBean
     TripPlannerService tripPlannerService;

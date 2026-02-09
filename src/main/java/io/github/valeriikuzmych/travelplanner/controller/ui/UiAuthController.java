@@ -2,7 +2,7 @@ package io.github.valeriikuzmych.travelplanner.controller.ui;
 
 import io.github.valeriikuzmych.travelplanner.dto.RegistrationRequest;
 import io.github.valeriikuzmych.travelplanner.exception.UserRegistrationException;
-import io.github.valeriikuzmych.travelplanner.service.UserService;
+import io.github.valeriikuzmych.travelplanner.service.user.UserService;
 import org.springframework.stereotype.Controller;
 
 import org.springframework.ui.Model;
@@ -48,7 +48,7 @@ public class UiAuthController {
         } catch (UserRegistrationException ex) {
 
             model.addAttribute("error", ex.getMessage());
-            
+
             return "register";
         }
     }

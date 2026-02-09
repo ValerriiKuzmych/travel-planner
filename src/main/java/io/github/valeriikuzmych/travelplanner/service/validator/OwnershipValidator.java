@@ -1,4 +1,4 @@
-package io.github.valeriikuzmych.travelplanner.service;
+package io.github.valeriikuzmych.travelplanner.service.validator;
 
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;

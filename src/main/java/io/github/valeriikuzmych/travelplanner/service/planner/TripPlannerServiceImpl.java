@@ -1,15 +1,17 @@
-package io.github.valeriikuzmych.travelplanner.service;
+package io.github.valeriikuzmych.travelplanner.service.planner;
 
 import io.github.valeriikuzmych.travelplanner.dto.*;
 import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityDTO;
 import io.github.valeriikuzmych.travelplanner.dto.weather.DayPeriod;
-import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherDayDTO;
-import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherPeriodDTO;
-import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherTimeDTO;
+import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherDayResponse;
+import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherPeriodResponse;
+import io.github.valeriikuzmych.travelplanner.dto.weather.WeatherTimeResponse;
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
 import io.github.valeriikuzmych.travelplanner.exception.ResourceNotFoundException;
 import io.github.valeriikuzmych.travelplanner.repository.TripRepository;
+import io.github.valeriikuzmych.travelplanner.service.validator.OwnershipValidator;
+import io.github.valeriikuzmych.travelplanner.service.weather.WeatherService;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
@@ -51,7 +53,7 @@ public class TripPlannerServiceImpl implements TripPlannerService {
 
         Map<String, Object> raw = weatherService.getWeather(trip.getCity());
 
-        Map<LocalDate, WeatherDayDTO> convertedWeather = convertWeather(raw);
+        Map<LocalDate, WeatherDayResponse> convertedWeather = convertWeather(raw);
 
         int offset = 0;
         if (raw.get("city") instanceof Map<?, ?> city && city.get("timezone") instanceof Number tz) {
@@ -59,7 +61,7 @@ public class TripPlannerServiceImpl implements TripPlannerService {
         }
         ZoneId cityZone = ZoneOffset.ofTotalSeconds(offset);
 
-        Map<LocalDate, WeatherDayDTO> filteredWeather =
+        Map<LocalDate, WeatherDayResponse> filteredWeather =
                 filterWeatherForTrip(
                         convertedWeather,
                         trip.getStartDate(),
@@ -77,10 +79,10 @@ public class TripPlannerServiceImpl implements TripPlannerService {
     }
 
 
-    private Map<LocalDate, WeatherDayDTO> convertWeather(Map<String, Object> raw) {
+    private Map<LocalDate, WeatherDayResponse> convertWeather(Map<String, Object> raw) {
 
 
-        Map<LocalDate, WeatherDayDTO> result = new LinkedHashMap<>();
+        Map<LocalDate, WeatherDayResponse> result = new LinkedHashMap<>();
 
         if (raw == null || !(raw.get("list") instanceof List<?> list)) {
             return result;
@@ -92,7 +94,7 @@ public class TripPlannerServiceImpl implements TripPlannerService {
             timezoneOffsetSeconds = tz.intValue();
         }
 
-        Map<LocalDate, Map<DayPeriod, List<WeatherTimeDTO>>> buffer = new LinkedHashMap<>();
+        Map<LocalDate, Map<DayPeriod, List<WeatherTimeResponse>>> buffer = new LinkedHashMap<>();
 
         for (Object item : list) {
             if (!(item instanceof Map<?, ?> entry)) continue;
@@ -110,7 +112,7 @@ public class TripPlannerServiceImpl implements TripPlannerService {
 
             if (!(tempObj instanceof Number temp) || !(descObj instanceof String desc)) continue;
 
-            WeatherTimeDTO timeDTO = new WeatherTimeDTO(
+            WeatherTimeResponse timeDTO = new WeatherTimeResponse(
                     time.toString(),
                     Math.round(temp.doubleValue() * 10.0) / 10.0,
                     (String) desc
@@ -126,21 +128,21 @@ public class TripPlannerServiceImpl implements TripPlannerService {
 
         for (var dateEntry : buffer.entrySet()) {
 
-            WeatherDayDTO dayDTO = new WeatherDayDTO();
+            WeatherDayResponse dayDTO = new WeatherDayResponse();
 
             for (var periodEntry : dateEntry.getValue().entrySet()) {
 
-                List<WeatherTimeDTO> times = periodEntry.getValue();
+                List<WeatherTimeResponse> times = periodEntry.getValue();
 
                 double avgTemp = times.stream()
-                        .mapToDouble(WeatherTimeDTO::getTemperature)
+                        .mapToDouble(WeatherTimeResponse::getTemperature)
                         .average()
                         .orElse(0);
 
                 String description = times.get(0).getDescription();
 
                 dayDTO.getPeriods().add(
-                        new WeatherPeriodDTO(
+                        new WeatherPeriodResponse(
                                 periodEntry.getKey(),
                                 Math.round(avgTemp * 10.0) / 10.0,
                                 description
@@ -183,8 +185,8 @@ public class TripPlannerServiceImpl implements TripPlannerService {
         return result;
     }
 
-    private Map<LocalDate, WeatherDayDTO> filterWeatherForTrip(
-            Map<LocalDate, WeatherDayDTO> rawWeather,
+    private Map<LocalDate, WeatherDayResponse> filterWeatherForTrip(
+            Map<LocalDate, WeatherDayResponse> rawWeather,
             LocalDate tripStart,
             LocalDate tripEnd,
             ZoneId cityZone,
@@ -219,9 +221,9 @@ public class TripPlannerServiceImpl implements TripPlannerService {
 
         dto.setWeatherLimited(apiLastDate.isBefore(tripEnd));
 
-        Map<LocalDate, WeatherDayDTO> result = new LinkedHashMap<>();
+        Map<LocalDate, WeatherDayResponse> result = new LinkedHashMap<>();
 
-        for (Map.Entry<LocalDate, WeatherDayDTO> entry : rawWeather.entrySet()) {
+        for (Map.Entry<LocalDate, WeatherDayResponse> entry : rawWeather.entrySet()) {
             LocalDate date = entry.getKey();
 
             if (!date.isBefore(displayFrom) && !date.isAfter(displayTo)) {

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class TripBasicDTO {
+public class TripResponse {
 
 
     private Long id;
@@ -62,7 +62,7 @@ public class TripBasicDTO {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof TripBasicDTO that)) return false;
+        if (!(o instanceof TripResponse that)) return false;
         return Objects.equals(id, that.id) && Objects.equals(city, that.city) && Objects.equals(startDate, that.startDate) && Objects.equals(endDate, that.endDate) && Objects.equals(activities, that.activities);
     }
 

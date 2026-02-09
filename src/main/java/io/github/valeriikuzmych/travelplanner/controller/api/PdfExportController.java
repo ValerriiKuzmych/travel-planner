@@ -1,8 +1,8 @@
 package io.github.valeriikuzmych.travelplanner.controller.api;
 
 import io.github.valeriikuzmych.travelplanner.dto.TripPlanDTO;
-import io.github.valeriikuzmych.travelplanner.service.TripPlannerService;
-import io.github.valeriikuzmych.travelplanner.service.pdf.IPDExportService;
+import io.github.valeriikuzmych.travelplanner.service.planner.TripPlannerService;
+import io.github.valeriikuzmych.travelplanner.service.pdf.IPdfExportService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,11 +16,11 @@ import java.security.Principal;
 @RequestMapping("/trips")
 public class PdfExportController {
 
-    private final IPDExportService pdfExportService;
+    private final IPdfExportService pdfExportService;
     private final TripPlannerService tripPlannerService;
 
 
-    public PdfExportController(IPDExportService pdfExportService,
+    public PdfExportController(IPdfExportService pdfExportService,
                                TripPlannerService tripPlannerService) {
 
         this.pdfExportService = pdfExportService;

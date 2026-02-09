@@ -1,12 +1,12 @@
 package io.github.valeriikuzmych.travelplanner.controller.ui;
 
 
-import io.github.valeriikuzmych.travelplanner.dto.trip.TripBasicDTO;
-import io.github.valeriikuzmych.travelplanner.dto.trip.TripDetailsDTO;
+import io.github.valeriikuzmych.travelplanner.dto.trip.TripResponse;
+import io.github.valeriikuzmych.travelplanner.dto.trip.TripDetailsResponse;
 import io.github.valeriikuzmych.travelplanner.dto.trip.TripForm;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
-import io.github.valeriikuzmych.travelplanner.service.OwnershipValidator;
-import io.github.valeriikuzmych.travelplanner.service.TripService;
+import io.github.valeriikuzmych.travelplanner.service.validator.OwnershipValidator;
+import io.github.valeriikuzmych.travelplanner.service.trip.TripService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +33,7 @@ public class UiTripController {
 
         String email = principal.getName();
 
-        List<TripBasicDTO> trips = tripService.getTripsForUser(email);
+        List<TripResponse> trips = tripService.getTripsForUser(email);
 
         model.addAttribute("trips", trips);
 
@@ -103,7 +103,7 @@ public class UiTripController {
 
         String email = principal.getName();
 
-        TripDetailsDTO dto = tripService.getTripDetails(id, email);
+        TripDetailsResponse dto = tripService.getTripDetails(id, email);
 
         model.addAttribute("trip", dto);
 

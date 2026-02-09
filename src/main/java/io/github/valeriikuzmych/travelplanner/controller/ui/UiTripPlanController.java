@@ -2,7 +2,7 @@ package io.github.valeriikuzmych.travelplanner.controller.ui;
 
 
 import io.github.valeriikuzmych.travelplanner.dto.TripPlanDTO;
-import io.github.valeriikuzmych.travelplanner.service.TripPlannerService;
+import io.github.valeriikuzmych.travelplanner.service.planner.TripPlannerService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +30,7 @@ public class UiTripPlanController {
                 tripPlannerService.getPlanForTrip(id, principal.getName());
 
         model.addAttribute("plan", plan);
-        
+
         return "trip-plan";
 
 

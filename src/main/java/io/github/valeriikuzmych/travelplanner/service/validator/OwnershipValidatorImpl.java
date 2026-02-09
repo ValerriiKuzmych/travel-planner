@@ -1,10 +1,7 @@
-package io.github.valeriikuzmych.travelplanner.service;
+package io.github.valeriikuzmych.travelplanner.service.validator;
 
 import io.github.valeriikuzmych.travelplanner.entity.Activity;
 import io.github.valeriikuzmych.travelplanner.entity.Trip;
-import io.github.valeriikuzmych.travelplanner.exception.ResourceNotFoundException;
-import io.github.valeriikuzmych.travelplanner.repository.ActivityRepository;
-import io.github.valeriikuzmych.travelplanner.repository.TripRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package io.github.valeriikuzmych.travelplanner.service;
+package io.github.valeriikuzmych.travelplanner.service.planner;
 
 import io.github.valeriikuzmych.travelplanner.dto.TripPlanDTO;
 

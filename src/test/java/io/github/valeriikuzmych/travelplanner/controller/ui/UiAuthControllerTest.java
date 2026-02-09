@@ -1,6 +1,6 @@
 package io.github.valeriikuzmych.travelplanner.controller.ui;
 
-import io.github.valeriikuzmych.travelplanner.service.UserService;
+import io.github.valeriikuzmych.travelplanner.service.user.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
