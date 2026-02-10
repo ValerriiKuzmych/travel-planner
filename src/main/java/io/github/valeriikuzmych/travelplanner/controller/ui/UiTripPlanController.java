@@ -31,7 +31,7 @@ public class UiTripPlanController {
 
         model.addAttribute("plan", plan);
 
-        return "trip-plan";
+        return "trip_plan";
 
 
     }

@@ -1,6 +1,5 @@
-package io.github.valeriikuzmych.travelplanner.service;
+package io.github.valeriikuzmych.travelplanner.service.weather;
 
-import io.github.valeriikuzmych.travelplanner.service.weather.WeatherServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +18,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class WeatherServiceTest {
+class WeatherServiceImplTest {
 
     @Mock
     private RestTemplate restTemplate;

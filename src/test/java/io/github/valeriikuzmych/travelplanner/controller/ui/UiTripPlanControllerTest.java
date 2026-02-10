@@ -101,7 +101,7 @@ class UiTripPlanControllerTest {
 
         mockMvc.perform(get("/trips/1/plan"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("trip-plan"))
+                .andExpect(view().name("trip_plan"))
                 .andExpect(model().attributeExists("plan"))
                 .andExpect(model().attribute("plan",
                         hasProperty("city", equalTo("Paris"))));

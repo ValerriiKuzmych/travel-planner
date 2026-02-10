@@ -1,4 +1,4 @@
-package io.github.valeriikuzmych.travelplanner.security;
+package io.github.valeriikuzmych.travelplanner.config.security;
 
 import io.github.valeriikuzmych.travelplanner.service.user.CustomUserDetailsService;
 import jakarta.servlet.http.HttpServletResponse;

@@ -1,4 +1,4 @@
-package io.github.valeriikuzmych.travelplanner.service;
+package io.github.valeriikuzmych.travelplanner.service.trip;
 
 import io.github.valeriikuzmych.travelplanner.dto.trip.TripResponse;
 import io.github.valeriikuzmych.travelplanner.dto.trip.TripForm;
@@ -7,7 +7,6 @@ import io.github.valeriikuzmych.travelplanner.entity.User;
 import io.github.valeriikuzmych.travelplanner.exception.ResourceNotFoundException;
 import io.github.valeriikuzmych.travelplanner.repository.TripRepository;
 import io.github.valeriikuzmych.travelplanner.repository.UserRepository;
-import io.github.valeriikuzmych.travelplanner.service.trip.TripServiceImpl;
 import io.github.valeriikuzmych.travelplanner.service.validator.OwnershipValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
