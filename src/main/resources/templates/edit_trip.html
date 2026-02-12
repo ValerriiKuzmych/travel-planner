@@ -15,6 +15,13 @@
     <div class="card shadow-sm">
         <div class="card-body">
 
+
+            <div th:if="${error}"
+                 class="alert alert-danger"
+                 th:text="${error}">
+            </div>
+
+
             <form th:action="@{/trips/{id}/edit(id=${form.id})}"
                   th:object="${form}"
                   method="post">
