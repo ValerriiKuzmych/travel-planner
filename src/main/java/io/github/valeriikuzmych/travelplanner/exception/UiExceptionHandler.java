@@ -28,6 +28,6 @@ public class UiExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleBadRequest(IllegalArgumentException ex, Model model) {
         model.addAttribute("message", ex.getMessage());
-        return "error/404"; // используем 404, так как сервис выбрасывает для "не найдено"
+        return "error/404";
     }
 }

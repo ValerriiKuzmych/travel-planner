@@ -48,15 +48,21 @@ public class UiTripController {
     }
 
     @PostMapping("/create")
-    public String createTrip(@ModelAttribute TripForm form,
+    public String createTrip(@ModelAttribute TripForm form, Model model,
                              Principal principal) {
 
+        try {
+            tripService.createTrip(form, principal.getName());
 
-        String email = principal.getName();
+            return "redirect:/trips";
 
-        tripService.createTrip(form, email);
+        } catch (IllegalArgumentException ex) {
 
-        return "redirect:/trips";
+            model.addAttribute("trip", form);
+            model.addAttribute("error", ex.getMessage());
+
+            return "create_trip";
+        }
     }
 
 
@@ -77,14 +83,21 @@ public class UiTripController {
 
     @PostMapping("/{id}/edit")
     public String updateTrip(@PathVariable Long id,
-                             @ModelAttribute TripForm form,
+                             @ModelAttribute TripForm form, Model model,
                              Principal principal) {
+        try {
 
-        String email = principal.getName();
+            tripService.updateTrip(id, form, principal.getName());
 
-        tripService.updateTrip(id, form, email);
+            return "redirect:/trips/" + id;
 
-        return "redirect:/trips/" + id;
+        } catch (IllegalArgumentException ex) {
+
+            model.addAttribute("form", form);
+            model.addAttribute("error", ex.getMessage());
+            
+            return "edit_trip";
+        }
     }
 
     @PostMapping("/{id}/delete")

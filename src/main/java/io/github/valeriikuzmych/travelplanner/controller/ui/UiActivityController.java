@@ -64,9 +64,19 @@ public class UiActivityController {
     public String createActivity(@ModelAttribute("form") ActivityForm form,
                                  Model model, Principal principal) {
 
-        activityService.createActivity(form, principal.getName());
+        try {
 
-        return "redirect:/trips/" + form.getTripId();
+            activityService.createActivity(form, principal.getName());
+
+            return "redirect:/trips/" + form.getTripId();
+
+        } catch (IllegalArgumentException ex) {
+
+            model.addAttribute("form", form);
+            model.addAttribute("error", ex.getMessage());
+
+            return "create_activity";
+        }
     }
 
     @GetMapping("/{id}/edit")
@@ -90,9 +100,19 @@ public class UiActivityController {
                                @ModelAttribute("form") ActivityForm form,
                                Model model, Principal principal) {
 
-        activityService.updateActivity(id, form, principal.getName());
+        try {
 
-        return "redirect:/trips/" + form.getTripId();
+            activityService.updateActivity(id, form, principal.getName());
+
+            return "redirect:/trips/" + form.getTripId();
+
+        } catch (IllegalArgumentException ex) {
+
+            model.addAttribute("form", form);
+            model.addAttribute("error", ex.getMessage());
+
+            return "edit_activity";
+        }
     }
 
     @PostMapping("/{id}/delete")
