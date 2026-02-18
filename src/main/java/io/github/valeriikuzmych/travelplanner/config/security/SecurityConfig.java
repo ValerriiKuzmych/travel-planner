@@ -35,17 +35,14 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity httpSecurity,
-                                                       PasswordEncoder passwordEncoder)
-            throws Exception {
+    public DaoAuthenticationProvider authenticationProvider(
+            PasswordEncoder passwordEncoder) {
 
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder);
-
-        return new ProviderManager(provider);
-
-
+        
+        return provider;
     }
 
 

@@ -13,11 +13,13 @@ import io.github.valeriikuzmych.travelplanner.repository.TripRepository;
 import io.github.valeriikuzmych.travelplanner.repository.UserRepository;
 import io.github.valeriikuzmych.travelplanner.service.validator.OwnershipValidator;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
 
 @Service
+@Transactional
 public class TripServiceImpl implements TripService {
 
     private final TripRepository tripRepository;

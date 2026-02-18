@@ -6,6 +6,7 @@ import io.github.valeriikuzmych.travelplanner.exception.UserRegistrationExceptio
 import io.github.valeriikuzmych.travelplanner.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -23,6 +24,7 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Transactional
     @Override
     public void registerUser(String email, String rawPassword) {
 

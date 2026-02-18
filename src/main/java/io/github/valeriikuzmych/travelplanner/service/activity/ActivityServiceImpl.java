@@ -8,6 +8,7 @@ import io.github.valeriikuzmych.travelplanner.repository.ActivityRepository;
 import io.github.valeriikuzmych.travelplanner.repository.TripRepository;
 import io.github.valeriikuzmych.travelplanner.service.validator.OwnershipValidator;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Service
+@Transactional
 public class ActivityServiceImpl implements ActivityService {
 
 

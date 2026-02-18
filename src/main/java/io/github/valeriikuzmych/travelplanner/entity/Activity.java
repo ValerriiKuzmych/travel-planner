@@ -1,6 +1,7 @@
 package io.github.valeriikuzmych.travelplanner.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 
@@ -94,13 +95,15 @@ public class Activity {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Activity activity)) return false;
-        return Objects.equals(id, activity.id) && Objects.equals(trip, activity.trip) && Objects.equals(name, activity.name) && Objects.equals(note, activity.note) && Objects.equals(date, activity.date) && Objects.equals(startTime, activity.startTime) && Objects.equals(endTime, activity.endTime);
+        if (this == o) return true;
+        if (!(o instanceof Activity)) return false;
+        Activity that = (Activity) o;
+        return id != null && id.equals(that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, trip, name, note, date, startTime, endTime);
+        return getClass().hashCode();
     }
 
     @Override

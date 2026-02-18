@@ -1,6 +1,7 @@
 package io.github.valeriikuzmych.travelplanner.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 
@@ -32,7 +33,6 @@ public class Trip {
     private LocalDate endDate;
 
     @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonBackReference
     private List<Activity> activities = new ArrayList<>();
 
     public Long getId() {
@@ -77,13 +77,15 @@ public class Trip {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Trip trip)) return false;
-        return Objects.equals(id, trip.id) && Objects.equals(user, trip.user) && Objects.equals(city, trip.city) && Objects.equals(startDate, trip.startDate) && Objects.equals(endDate, trip.endDate);
+        if (this == o) return true;
+        if (!(o instanceof Trip)) return false;
+        Trip that = (Trip) o;
+        return id != null && id.equals(that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user, city, startDate, endDate);
+        return getClass().hashCode();
     }
 
     public List<Activity> getActivities() {
