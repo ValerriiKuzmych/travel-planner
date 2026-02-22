@@ -274,10 +274,8 @@ resources
 └─ fonts
 
 Possible Improvements
--
-Replace RestTemplate with WebClient  
-Add method-level @PreAuthorize  
-Add integration tests  
+-  
+Add method-level @PreAuthorize    
 Add Docker support  
 Add Swagger / OpenAPI  
 Introduce MapStruct  
