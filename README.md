@@ -275,7 +275,9 @@ resources
 
 Possible Improvements
 -
-Add method-level @PreAuthorize
+Replace RestTemplate with WebClient  
+Add method-level @PreAuthorize  
+Add integration tests  
 Add Docker support  
 Add Swagger / OpenAPI  
 Introduce MapStruct  
