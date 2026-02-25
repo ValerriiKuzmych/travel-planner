@@ -101,8 +101,6 @@ public class TripServiceImpl implements TripService {
 
         TripDetailsResponse dto = mapToDetailsDTO(trip);
 
-        dto.setEditable(true);
-
         return dto;
     }
 

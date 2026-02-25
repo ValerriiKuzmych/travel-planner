@@ -67,26 +67,4 @@ public class ActivityDTO {
     }
 
 
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof ActivityDTO that)) return false;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(note, that.note) && Objects.equals(date, that.date) && Objects.equals(startTime, that.startTime) && Objects.equals(endTime, that.endTime);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, note, date, startTime, endTime);
-    }
-
-    @Override
-    public String toString() {
-        return "ActivityDTO{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", note='" + note + '\'' +
-                ", date=" + date +
-                ", startTime=" + startTime +
-                ", endTime=" + endTime +
-                '}';
-    }
 }

@@ -17,8 +17,6 @@ public class TripDetailsResponse {
 
     private Map<LocalDate, List<ActivityDTO>> activitiesByDate = new HashMap<>();
 
-    private boolean editable;
-
 
     public TripDetailsResponse() {
     }
@@ -64,22 +62,5 @@ public class TripDetailsResponse {
         this.activitiesByDate = activitiesByDate;
     }
 
-    public boolean isEditable() {
-        return editable;
-    }
 
-    public void setEditable(boolean editable) {
-        this.editable = editable;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof TripDetailsResponse that)) return false;
-        return editable == that.editable && Objects.equals(id, that.id) && Objects.equals(city, that.city) && Objects.equals(startDate, that.startDate) && Objects.equals(endDate, that.endDate) && Objects.equals(activitiesByDate, that.activitiesByDate);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, city, startDate, endDate, activitiesByDate, editable);
-    }
 }

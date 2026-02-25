@@ -7,7 +7,6 @@ import io.github.valeriikuzmych.travelplanner.entity.User;
 import io.github.valeriikuzmych.travelplanner.exception.ResourceNotFoundException;
 import io.github.valeriikuzmych.travelplanner.repository.UserRepository;
 import io.github.valeriikuzmych.travelplanner.service.trip.TripService;
-import io.github.valeriikuzmych.travelplanner.service.weather.WeatherService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
@@ -25,14 +24,11 @@ public class TripController {
 
     private final UserRepository userRepository;
 
-    private final WeatherService weatherService;
 
-
-    public TripController(TripService tripService, WeatherService weatherService, UserRepository userRepository) {
+    public TripController(TripService tripService, UserRepository userRepository) {
 
         this.userRepository = userRepository;
         this.tripService = tripService;
-        this.weatherService = weatherService;
 
     }
 
@@ -47,11 +43,11 @@ public class TripController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<Trip> getTrip(@PathVariable Long id, Principal principal) {
+    public ResponseEntity<TripResponse> getTrip(@PathVariable Long id, Principal principal) {
 
         Trip trip = tripService.getTrip(id, principal.getName());
 
-        return ResponseEntity.ok(trip);
+        return ResponseEntity.ok(TripResponse.fromEntity(trip));
     }
 
 

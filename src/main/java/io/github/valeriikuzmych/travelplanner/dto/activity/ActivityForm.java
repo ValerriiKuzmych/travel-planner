@@ -96,27 +96,4 @@ public class ActivityForm {
         this.endTime = endTime;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof ActivityForm that)) return false;
-        return Objects.equals(id, that.id) && Objects.equals(tripId, that.tripId) && Objects.equals(name, that.name) && Objects.equals(note, that.note) && Objects.equals(date, that.date) && Objects.equals(startTime, that.startTime) && Objects.equals(endTime, that.endTime);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, tripId, name, note, date, startTime, endTime);
-    }
-
-    @Override
-    public String toString() {
-        return "ActivityForm{" +
-                "id=" + id +
-                ", tripId=" + tripId +
-                ", name='" + name + '\'' +
-                ", note='" + note + '\'' +
-                ", date=" + date +
-                ", startTime=" + startTime +
-                ", endTime=" + endTime +
-                '}';
-    }
 }

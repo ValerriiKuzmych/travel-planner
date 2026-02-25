@@ -1,6 +1,8 @@
 package io.github.valeriikuzmych.travelplanner.dto.trip;
 
 import io.github.valeriikuzmych.travelplanner.dto.activity.ActivityDTO;
+import io.github.valeriikuzmych.travelplanner.entity.Activity;
+import io.github.valeriikuzmych.travelplanner.entity.Trip;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -19,6 +21,33 @@ public class TripResponse {
     private LocalDate endDate;
 
     private List<ActivityDTO> activities = new ArrayList<>();
+
+    public static TripResponse fromEntity(Trip t) {
+
+        TripResponse dto = new TripResponse();
+
+        dto.setId(t.getId());
+        dto.setCity(t.getCity());
+        dto.setStartDate(t.getStartDate());
+        dto.setEndDate(t.getEndDate());
+        dto.setActivities(t.getActivities().stream().map(TripResponse::mapActivity).toList());
+
+        return dto;
+
+    }
+
+    private static ActivityDTO mapActivity(Activity activity) {
+
+        ActivityDTO dto = new ActivityDTO();
+        dto.setId(activity.getId());
+        dto.setName(activity.getName());
+        dto.setNote(activity.getNote());
+        dto.setDate(activity.getDate());
+        dto.setStartTime(activity.getStartTime());
+        dto.setEndTime(activity.getEndTime());
+
+        return dto;
+    }
 
     public Long getId() {
         return id;
@@ -60,14 +89,4 @@ public class TripResponse {
         this.activities = activities;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof TripResponse that)) return false;
-        return Objects.equals(id, that.id) && Objects.equals(city, that.city) && Objects.equals(startDate, that.startDate) && Objects.equals(endDate, that.endDate) && Objects.equals(activities, that.activities);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, city, startDate, endDate, activities);
-    }
 }

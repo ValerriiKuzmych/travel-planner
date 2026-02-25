@@ -103,14 +103,4 @@ public class TripPlanDTO {
                 .orElse(null);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof TripPlanDTO dto)) return false;
-        return weatherLimited == dto.weatherLimited && Objects.equals(tripId, dto.tripId) && Objects.equals(city, dto.city) && Objects.equals(startDate, dto.startDate) && Objects.equals(endDate, dto.endDate) && Objects.equals(tripDates, dto.tripDates) && Objects.equals(weather, dto.weather) && Objects.equals(activities, dto.activities);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(tripId, city, startDate, endDate, tripDates, weatherLimited, weather, activities);
-    }
 }
